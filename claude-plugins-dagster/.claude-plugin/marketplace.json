@@ -8,6 +8,11 @@
       "name": "dg-troubleshoot",
       "source": "./plugins/dg-troubleshoot",
       "description": "Adds a /dg-troubleshoot command to quickly debug Dagster runs"
+    },
+    {
+      "name": "dagster-conventions",
+      "source": "./plugins/dagster-conventions",
+      "description": "Comprehensive Dagster development conventions and best practices"
     }
   ]
 }

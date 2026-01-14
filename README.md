@@ -18,4 +18,6 @@ Install a plugin:
 
 ## Available Plugins
 
+**dagster-conventions** - Comprehensive Dagster development conventions and best practices
+
 **dg-troubleshoot** - Debug failing Dagster runs by fetching and analyzing run logs
