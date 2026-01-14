@@ -18,7 +18,9 @@ Install a plugin:
 
 ## Available Plugins
 
-**dg** - Dagster CLI commands including `/dg:troubleshoot` to debug failing runs by fetching and analyzing logs
+**dg** - Dagster CLI commands for working with runs and logs
+  - `/dg:troubleshoot <run-id>` - Debug failing runs by analyzing error logs
+  - `/dg:logs <run-id> [level] [limit]` - Retrieve and display logs for a run
 
 **dagster-conventions** - Comprehensive Dagster development conventions and best practices
 
