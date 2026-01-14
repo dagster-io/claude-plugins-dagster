@@ -6,8 +6,13 @@
 | ------- | ----------- |
 | Single code location | Small to medium projects, single team |
 | Multiple code locations | Large organizations, isolated dependencies |
-| Components | Reusable integrations, declarative config |
+| Components | Standardized, repeatable patterns with declarative config |
+| Pythonic assets + Components | Mix custom logic with standardized integrations |
+| Organize by technology | Team focused on specific tech stacks |
+| Organize by concept | Business-context clarity across organization |
 | Module-based organization | Domain-driven project structure |
+
+**Modern Recommendation**: Use `create-dagster` with auto-discovery for new projects. Combine components with pythonic assets using `Definitions.merge()`.
 
 ---
 
@@ -69,22 +74,45 @@ my_project/
 
 The `Definitions` object is the entry point for all Dagster objects.
 
-### Modern Autoloading Pattern
+### Modern Autoloading Pattern (Recommended)
 
+**Simple Auto-Discovery**:
 ```python
 # src/my_project/definitions.py
-from pathlib import Path
-from dagster import definitions, load_from_defs_folder
+from dagster import Definitions
+from dagster_dg import load_defs
 
-@definitions
-def defs():
-    return load_from_defs_folder(project_root=Path(__file__).parent.parent.parent)
+# Automatically discovers all definitions in defs/ folder
+defs = Definitions.merge(
+    load_defs()
+)
 ```
 
-This pattern:
-- Automatically loads all assets, jobs, schedules from `defs/`
-- Uses `@definitions` decorator for discoverability
-- Requires proper file placement in `defs/` directory
+**Combining Components with Pythonic Assets**:
+```python
+# src/my_project/definitions.py
+from dagster import Definitions
+from dagster_dg import load_defs
+from my_project.assets import custom_assets
+
+# Load component definitions from defs/
+component_defs = load_defs()
+
+# Define pythonic assets separately
+pythonic_defs = Definitions(
+    assets=custom_assets,
+    resources={...}
+)
+
+# Merge them together
+defs = Definitions.merge(component_defs, pythonic_defs)
+```
+
+**Benefits**:
+- Automatically loads all components from `defs/` directory
+- Zero boilerplate when adding new components
+- Clean separation between components and custom assets
+- Flexible resource sharing across both patterns
 
 ### Explicit Definitions Pattern
 
@@ -219,9 +247,9 @@ dg dev
 
 ---
 
-## pyproject.toml Configuration
+## Configuration Files
 
-### Basic Configuration
+### pyproject.toml (Python Package + dg Config)
 
 ```toml
 [project]
@@ -231,6 +259,8 @@ requires-python = ">=3.10"
 dependencies = [
     "dagster>=1.8.0",
     "dagster-duckdb",
+    "dagster-dbt",
+    "dagster-sling",
 ]
 
 [project.optional-dependencies]
@@ -245,42 +275,118 @@ directory_type = "project"
 [tool.dg.project]
 root_module = "my_project"
 registry_modules = [
-    "my_project.components.*",
-]
-```
-
-### With Components
-
-```toml
-[tool.dg]
-directory_type = "project"
-
-[tool.dg.project]
-root_module = "my_project"
-registry_modules = [
-    "dagster.components.*",      # Built-in components
+    "dagster.components.*",      # Built-in components (dbt, Sling, etc.)
     "my_project.components.*",   # Custom components
 ]
 ```
+
+**Key Settings**:
+- `directory_type`: "project" for dg-managed projects
+- `root_module`: Python module containing definitions.py
+- `registry_modules`: Where to discover components
+
+### dg.toml (Workspace Configuration)
+
+For managing multiple Dagster projects together:
+
+```toml
+# dg.toml (at workspace root)
+[workspace]
+projects = [
+    "etl_project",
+    "ml_project",
+    "analytics_project",
+]
+```
+
+**Use Cases**:
+- Multiple teams with separate projects
+- Shared dependencies across projects
+- Organization-wide development
+- Conflicting dependency requirements
+
+### dagster.yaml (Instance Configuration)
+
+```yaml
+# dagster.yaml (at project root or ~/.dagster)
+run_launcher:
+  module: dagster.core.launcher
+  class: DefaultRunLauncher
+
+run_storage:
+  module: dagster.core.storage.runs
+  class: SqliteRunStorage
+  config:
+    base_dir: /var/dagster/storage
+
+event_log_storage:
+  module: dagster.core.storage.event_log
+  class: SqliteEventLogStorage
+  config:
+    base_dir: /var/dagster/storage
+
+schedule_storage:
+  module: dagster.core.storage.schedules
+  class: SqliteScheduleStorage
+  config:
+    base_dir: /var/dagster/storage
+```
+
+**Purpose**: Configure Dagster instance behavior (storage, compute, scheduling)
+
+**Common Uses**:
+- Storage configuration (SQLite, PostgreSQL)
+- Run launcher settings (local, K8s, etc.)
+- Compute log storage
+- Scheduler configuration
 
 ---
 
 ## Components
 
-Components are reusable, declarative building blocks for integrations.
+**What are Components?** Reusable, declarative building blocks that generate `Definitions` from configuration (YAML). Components standardize repetitive patterns and integrations without writing Python code.
+
+### When to Use Components
+
+| Use Case | Example |
+| -------- | ------- |
+| Standardized ETL patterns | Multiple similar Sling replication jobs |
+| External tool integration | dbt, Sling, Fivetran |
+| Repeatable patterns | API ingestion with consistent structure |
+| Non-engineer contributions | Analysts defining pipelines via config |
+| Reducing code duplication | Same pattern repeated across teams |
+
+**Don't Use Components When**:
+- Custom logic is complex and doesn't fit a template
+- Pattern is used only once
+- You need fine-grained control over execution
+
+### Component Types
+
+**Built-in Components** (from Dagster):
+- `dagster_dbt.DbtProjectComponent`: dbt project integration
+- `dagster_sling.SlingReplicationComponent`: Database replication
+- Additional components for Fivetran, Airbyte, etc.
+
+**Custom Components**: Create organization-specific patterns
 
 ### Component Structure
 
 ```
-my_component/
-├── defs.yaml       # Component configuration
-└── (optional files)
+defs/
+├── ingest_postgres/        # Component instance
+│   ├── defs.yaml           # Component configuration
+│   └── replication.yaml    # Additional config files
+├── transform_dbt/
+│   └── defs.yaml
+└── shared_resources/       # Optional: shared resources
+    └── defs.py
 ```
 
 ### Sling Component Example
 
 ```yaml
-# defs/ingest_files/defs.yaml
+# defs/ingest_postgres/defs.yaml
 component: dagster_sling.SlingReplicationComponent
 
 params:
@@ -298,7 +404,7 @@ params:
 ```
 
 ```yaml
-# defs/ingest_files/replication.yaml
+# defs/ingest_postgres/replication.yaml
 source: MY_POSTGRES
 target: MY_DUCKDB
 
@@ -311,13 +417,49 @@ streams:
   data.orders:
 ```
 
+### dbt Component Example
+
+```yaml
+# defs/transform_dbt/defs.yaml
+component: dagster_dbt.DbtProjectComponent
+
+params:
+  project_dir: ../../dbt_project
+  dbt:
+    target: dev
+    profiles_dir: ~/.dbt
+```
+
+### Combining Components with Pythonic Assets
+
+```python
+# src/my_project/definitions.py
+from dagster import Definitions
+from dagster_dg import load_defs
+
+# Load component definitions
+component_defs = load_defs()
+
+# Define custom pythonic assets
+from my_project.assets import custom_pipeline
+
+pythonic_defs = Definitions(
+    assets=[custom_pipeline],
+    resources={...}
+)
+
+# Merge: components AND custom assets in one project
+defs = Definitions.merge(component_defs, pythonic_defs)
+```
+
 ### Component Best Practices
 
-1. **Isolation**: Each component is self-contained
-2. **Typed config**: Use config models for clear interfaces
-3. **Composability**: Small, focused components that combine
-4. **Versioning**: Track component changes
-5. **Testing**: Validate components independently
+1. **Single Responsibility**: Each component handles one integration or pattern
+2. **Typed Configuration**: Use structured YAML for validation
+3. **Documentation**: Document component parameters and examples
+4. **Testing**: Validate component configurations before deployment
+5. **Versioning**: Pin component versions for stability
+6. **Resource Sharing**: Share resources across components and pythonic assets
 
 ---
 

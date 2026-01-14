@@ -7,8 +7,11 @@
 | Built-in resource | Database/service with Dagster integration (DuckDB, Snowflake, etc.) |
 | Custom `ConfigurableResource` | Custom API clients, services, or shared logic |
 | `EnvVar` configuration | Secrets, environment-specific values |
+| Environment-based resources | Different resources per environment (dev/staging/prod) |
 | Resource with methods | Complex services with multiple operations |
 | Nested resources | Resources that depend on other resources |
+
+**Best Practice**: Always use `EnvVar` for secrets and environment-specific configuration. Never hardcode credentials.
 
 ---
 
@@ -144,6 +147,8 @@ def resources():
 | UI visibility | Shown in resource config | Not visible |
 | Best for | Production secrets | Development defaults |
 
+**Recommendation**: Always use `dg.EnvVar` for production deployments. It provides better observability and dynamic configuration.
+
 ---
 
 ## Registering Resources
@@ -180,6 +185,193 @@ defs = dg.Definitions(
         "api": MyAPIResource(...),
     },
 )
+```
+
+---
+
+## Environment-Based Resource Configuration
+
+**Goal**: Run the same code across dev, staging, and production with different resource implementations.
+
+### Pattern 1: Environment Variable Selection
+
+```python
+import os
+import dagster as dg
+from dagster_duckdb import DuckDBResource
+from dagster_snowflake import SnowflakeResource
+
+def get_warehouse_resource():
+    """Return appropriate warehouse based on environment."""
+    env = os.getenv("DAGSTER_ENV", "dev")
+
+    if env == "production":
+        return SnowflakeResource(
+            account=dg.EnvVar("SNOWFLAKE_ACCOUNT"),
+            user=dg.EnvVar("SNOWFLAKE_USER"),
+            password=dg.EnvVar("SNOWFLAKE_PASSWORD"),
+            database="PROD_DB",
+            warehouse="PROD_WH",
+        )
+    elif env == "staging":
+        return SnowflakeResource(
+            account=dg.EnvVar("SNOWFLAKE_ACCOUNT"),
+            user=dg.EnvVar("SNOWFLAKE_USER"),
+            password=dg.EnvVar("SNOWFLAKE_PASSWORD"),
+            database="STAGING_DB",
+            warehouse="STAGING_WH",
+        )
+    else:  # dev
+        return DuckDBResource(database="data/dev.duckdb")
+
+@dg.definitions
+def resources():
+    return dg.Definitions(
+        resources={"warehouse": get_warehouse_resource()}
+    )
+```
+
+### Pattern 2: EnvVar-Based Configuration
+
+```python
+import dagster as dg
+from dagster_snowflake import SnowflakeResource
+
+# Configuration lives in environment variables
+# .env.dev, .env.staging, .env.prod
+@dg.definitions
+def resources():
+    return dg.Definitions(
+        resources={
+            "warehouse": SnowflakeResource(
+                account=dg.EnvVar("SNOWFLAKE_ACCOUNT"),
+                user=dg.EnvVar("SNOWFLAKE_USER"),
+                password=dg.EnvVar("SNOWFLAKE_PASSWORD"),
+                database=dg.EnvVar("SNOWFLAKE_DATABASE"),
+                warehouse=dg.EnvVar("SNOWFLAKE_WAREHOUSE"),
+            ),
+        }
+    )
+```
+
+**Environment Files**:
+```bash
+# .env.dev
+SNOWFLAKE_ACCOUNT=myaccount
+SNOWFLAKE_USER=dev_user
+SNOWFLAKE_PASSWORD=dev_password
+SNOWFLAKE_DATABASE=DEV_DB
+SNOWFLAKE_WAREHOUSE=DEV_WH
+
+# .env.prod
+SNOWFLAKE_ACCOUNT=myaccount
+SNOWFLAKE_USER=prod_user
+SNOWFLAKE_PASSWORD=prod_password
+SNOWFLAKE_DATABASE=PROD_DB
+SNOWFLAKE_WAREHOUSE=PROD_WH
+```
+
+### Pattern 3: Resource Factories
+
+```python
+from typing import Literal
+
+def create_database_resource(
+    env: Literal["dev", "staging", "prod"]
+):
+    """Factory to create environment-specific resources."""
+    if env == "dev":
+        return DuckDBResource(database=":memory:")
+    elif env == "staging":
+        return PostgresResource(
+            host="staging.db.internal",
+            database="staging",
+            user=dg.EnvVar("DB_USER"),
+            password=dg.EnvVar("DB_PASSWORD"),
+        )
+    else:  # prod
+        return PostgresResource(
+            host="prod.db.internal",
+            database="production",
+            user=dg.EnvVar("DB_USER"),
+            password=dg.EnvVar("DB_PASSWORD"),
+        )
+
+# Use in definitions
+env = os.getenv("DAGSTER_ENV", "dev")
+defs = dg.Definitions(
+    assets=[...],
+    resources={"database": create_database_resource(env)}
+)
+```
+
+### Best Practices for Environment Management
+
+1. **Single Codebase**: Same code runs in all environments
+2. **Configuration Externalization**: All environment-specific values in env vars
+3. **Secrets Management**: Use `EnvVar` for all secrets (never commit .env files)
+4. **Development Simplicity**: Dev environment should work with minimal setup (in-memory DBs, local files)
+5. **Production Safety**: Validate required env vars on startup
+6. **Testing Flexibility**: Easy to mock resources for tests
+
+### Example: Complete Environment Setup
+
+```python
+# src/my_project/defs/resources.py
+import os
+import dagster as dg
+from dagster_duckdb import DuckDBResource
+from dagster_snowflake import SnowflakeResource
+
+def get_environment() -> str:
+    """Get current environment."""
+    return os.getenv("DAGSTER_ENV", "dev")
+
+def create_warehouse():
+    """Create warehouse resource based on environment."""
+    env = get_environment()
+
+    if env == "production":
+        return SnowflakeResource(
+            account=dg.EnvVar("SNOWFLAKE_ACCOUNT"),
+            user=dg.EnvVar("SNOWFLAKE_USER"),
+            password=dg.EnvVar("SNOWFLAKE_PASSWORD"),
+            database="PROD",
+            warehouse="PROD_WH",
+        )
+    elif env == "staging":
+        return SnowflakeResource(
+            account=dg.EnvVar("SNOWFLAKE_ACCOUNT"),
+            user=dg.EnvVar("SNOWFLAKE_USER"),
+            password=dg.EnvVar("SNOWFLAKE_PASSWORD"),
+            database="STAGING",
+            warehouse="STAGING_WH",
+        )
+    else:
+        # Dev: use local DuckDB
+        return DuckDBResource(database="data/dev.duckdb")
+
+@dg.definitions
+def resources():
+    return dg.Definitions(
+        resources={
+            "warehouse": create_warehouse(),
+        }
+    )
+```
+
+**Running in Different Environments**:
+```bash
+# Development (default)
+dg dev
+
+# Staging
+export DAGSTER_ENV=staging
+dg dev
+
+# Production
+export DAGSTER_ENV=production
+dagster-daemon run
 ```
 
 ---

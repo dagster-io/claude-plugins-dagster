@@ -4,13 +4,17 @@
 
 | Pattern | When to Use |
 | ------- | ----------- |
-| Basic `@dg.asset` | Simple computation with no dependencies |
+| Basic `@dg.asset` | Simple one-to-one transformation |
+| `@multi_asset` | Single operation produces multiple related assets |
+| `@graph_asset` | Multiple steps needed to produce one asset |
+| `@graph_multi_asset` | Complex pipeline producing multiple assets |
 | Parameter-based dependency | Asset depends on another managed asset |
 | `deps=` dependency | Asset depends on external or non-Python asset |
 | Asset with metadata | Track runtime metrics (row counts, timestamps) |
 | Asset groups | Organize related assets visually |
 | Asset key prefixes | Namespace assets for multi-tenant or layered data |
 | Partitioned assets | Time-series or categorical data splits |
+| Asset with `code_version` | Track when asset logic changes |
 
 ---
 
@@ -108,11 +112,20 @@ Applied once when the asset is defined:
     group_name="analytics",
     key_prefix=["warehouse", "staging"],
     owners=["team:data-engineering", "user@example.com"],
-    tags={"priority": "high", "pii": "true"},
+    tags={"priority": "high", "pii": "true", "domain": "sales"},
+    code_version="1.2.0",
 )
 def my_asset() -> None:
     pass
 ```
+
+**Best Practices for Metadata**:
+- **owners**: Specify team (`team:name`) or individuals for accountability
+- **tags**: Primary organizational mechanism—use liberally for filtering and grouping
+- **code_version**: Track when asset logic changes for lineage and debugging
+- **description**: Explain what the asset represents and its business purpose
+- **group_name**: Visual organization in UI (use for layers or domains)
+- **key_prefix**: Hierarchical namespacing for multi-tenant or layered architectures
 
 ### Materialization Metadata (Dynamic)
 
@@ -315,6 +328,72 @@ def load_data():
 
 ---
 
+## Graph Assets
+
+### @graph_asset Pattern
+
+Use when multiple steps are needed to produce a single asset:
+
+```python
+from dagster import graph_asset, op
+
+@op
+def fetch_data() -> dict:
+    return {"raw": [1, 2, 3]}
+
+@op
+def transform_data(data: dict) -> dict:
+    return {"processed": [x * 2 for x in data["raw"]]}
+
+@op
+def validate_data(data: dict) -> dict:
+    assert len(data["processed"]) > 0
+    return data
+
+@graph_asset
+def complex_asset():
+    """Encapsulates multi-step logic into a single asset."""
+    raw = fetch_data()
+    processed = transform_data(raw)
+    return validate_data(processed)
+```
+
+**Use When**:
+- Single asset requires multiple distinct steps
+- You want to encapsulate complexity
+- Testing individual steps is important
+- Steps are reusable across multiple assets
+
+### @graph_multi_asset Pattern
+
+Use for complex pipelines producing multiple assets:
+
+```python
+from dagster import graph_multi_asset, AssetOut
+
+@graph_multi_asset(
+    outs={
+        "users": AssetOut(),
+        "orders": AssetOut(),
+    }
+)
+def etl_pipeline():
+    """Multi-step pipeline producing multiple assets."""
+    raw_data = extract_from_api()
+    cleaned = clean_data(raw_data)
+    users_out = extract_users(cleaned)
+    orders_out = extract_orders(cleaned)
+
+    return {"users": users_out, "orders": orders_out}
+```
+
+**Use When**:
+- Multiple assets require shared complex logic
+- Steps are expensive and should be shared
+- Better encapsulation than separate assets with deps
+
+---
+
 ## Asset Factories
 
 Generate similar assets programmatically:
@@ -334,6 +413,86 @@ def create_table_asset(table_name: str, schema: str):
 customers = create_table_asset("customers", "sales")
 products = create_table_asset("products", "catalog")
 orders = create_table_asset("orders", "sales")
+```
+
+---
+
+## Asset Selection Syntax
+
+Select subsets of assets for materialization or job definition:
+
+### Basic Selection
+
+```python
+from dagster import AssetSelection
+
+# Select specific assets
+AssetSelection.assets("asset_a", "asset_b", "asset_c")
+
+# Select all assets
+AssetSelection.all()
+
+# Select by group
+AssetSelection.groups("analytics", "raw_data")
+
+# Select by key prefix
+AssetSelection.key_prefixes(["warehouse", "staging"])
+
+# Select by tag
+AssetSelection.tag("priority", "high")
+```
+
+### Dependency-Based Selection
+
+```python
+# Select asset and all upstream dependencies
+AssetSelection.assets("final_report").upstream()
+
+# Select asset and all downstream dependencies
+AssetSelection.assets("raw_data").downstream()
+
+# Select asset and immediate upstream only
+AssetSelection.assets("final_report").upstream(depth=1)
+```
+
+### Combining Selections
+
+```python
+# Union: assets in A OR B
+selection_a | selection_b
+
+# Intersection: assets in A AND B
+selection_a & selection_b
+
+# Difference: assets in A but not in B
+selection_a - selection_b
+
+# Example: All analytics assets except one
+AssetSelection.groups("analytics") - AssetSelection.assets("excluded_asset")
+```
+
+### Using in Jobs
+
+```python
+import dagster as dg
+
+analytics_job = dg.define_asset_job(
+    name="analytics_job",
+    selection=AssetSelection.groups("analytics").downstream(),
+)
+```
+
+### Using in CLI
+
+```bash
+# Materialize specific assets
+dg launch --assets asset_a,asset_b
+
+# Materialize all assets
+dg launch --assets "*"
+
+# Materialize by group (requires selection in job)
+dg launch --job analytics_job
 ```
 
 ---

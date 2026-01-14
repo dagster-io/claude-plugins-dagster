@@ -4,11 +4,105 @@
 
 | Pattern | When to Use |
 | ------- | ----------- |
+| `AutomationCondition` | Modern asset-centric automation with conditions |
 | `ScheduleDefinition` | Fixed time intervals (daily, hourly, monthly) |
 | `@dg.schedule` decorator | Custom schedule logic with dynamic job selection |
 | `@dg.sensor` | Event-driven triggers (file changes, API updates) |
 | `PartitionsDefinition` | Time-series or categorical data splits |
 | Partitioned schedules | Automate partition materialization |
+
+**Modern Recommendation**: Use `AutomationCondition` for new asset-centric pipelines. Schedules and sensors remain useful for ops-based jobs and event-driven automation.
+
+---
+
+## Declarative Automation
+
+**Modern automation pattern** that sets conditions on assets rather than scheduling jobs.
+
+### What is Declarative Automation?
+
+Instead of defining schedules or sensors that trigger jobs, you define **conditions** directly on assets. Dagster evaluates these conditions and automatically materializes assets when conditions are met.
+
+### Basic AutomationCondition Patterns
+
+```python
+import dagster as dg
+from dagster import AutomationCondition
+
+# Materialize when missing (never been created)
+@dg.asset(
+    automation_condition=AutomationCondition.on_missing()
+)
+def initial_load() -> None:
+    pass
+
+# Materialize on cron schedule
+@dg.asset(
+    automation_condition=AutomationCondition.on_cron("0 9 * * *")
+)
+def daily_report() -> None:
+    pass
+
+# Materialize when upstream assets update
+@dg.asset(
+    deps=["raw_data"],
+    automation_condition=AutomationCondition.eager()
+)
+def processed_data() -> None:
+    """Automatically updates when raw_data changes."""
+    pass
+```
+
+### Combining Conditions
+
+```python
+# OR: Materialize if ANY condition is true
+@dg.asset(
+    automation_condition=(
+        AutomationCondition.on_missing()
+        | AutomationCondition.on_cron("0 0 * * *")
+    )
+)
+def flexible_asset() -> None:
+    """Updates if missing OR daily at midnight."""
+    pass
+
+# AND: Materialize only if ALL conditions are true
+@dg.asset(
+    automation_condition=(
+        AutomationCondition.on_cron("0 9 * * *")
+        & AutomationCondition.any_deps_updated()
+    )
+)
+def conditional_report() -> None:
+    """Only updates at 9am if upstream deps changed."""
+    pass
+```
+
+### Common AutomationCondition Patterns
+
+| Condition | Behavior |
+| --------- | -------- |
+| `on_missing()` | Materialize if never created |
+| `on_cron(schedule)` | Materialize on cron schedule |
+| `eager()` | Materialize when upstream assets update |
+| `any_deps_updated()` | True if any upstream assets updated |
+| `any_deps_missing()` | True if any upstream assets are missing |
+| `all_deps_updated_since_cron(cron)` | True if all deps updated since last cron tick |
+
+### Benefits of Declarative Automation
+
+1. **Asset-Native**: No separate job definitions needed
+2. **Expressive**: Combine conditions with boolean logic
+3. **Dependency-Aware**: Automatically understands asset graph
+4. **Better for Complex Logic**: More readable than schedule/sensor combinations
+5. **Centralized**: Automation logic lives with asset definition
+
+### When to Use
+
+- **Declarative Automation**: Asset-centric pipelines with condition-based triggers
+- **Schedules**: Simple time-based triggers, ops-based jobs, or when you need exact cron control
+- **Sensors**: Event-driven automation with external systems, complex state tracking
 
 ---
 
@@ -310,6 +404,34 @@ category_partition = dg.StaticPartitionsDefinition([
     "sports",
 ])
 ```
+
+### Dynamic Partitions
+
+Partitions created at runtime based on external data:
+
+```python
+from dagster import DynamicPartitionsDefinition
+
+# Define dynamic partition
+customer_partition = DynamicPartitionsDefinition(name="customers")
+
+@dg.asset(partitions_def=customer_partition)
+def customer_data(context: dg.AssetExecutionContext) -> None:
+    customer_id = context.partition_key
+    # Process data for this customer
+    pass
+
+# Add partitions at runtime
+def add_new_customer(customer_id: str):
+    from dagster import get_dagster_instance
+    instance = get_dagster_instance()
+    instance.add_dynamic_partitions("customers", [customer_id])
+```
+
+**Use Cases**:
+- Customer-specific processing where customers are added dynamically
+- File-based partitioning where files arrive unpredictably
+- Any scenario where partition keys aren't known at definition time
 
 ### Multi-Dimensional Partitions
 

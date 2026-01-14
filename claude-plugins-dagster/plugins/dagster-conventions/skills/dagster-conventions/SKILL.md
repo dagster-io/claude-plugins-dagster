@@ -5,12 +5,27 @@ description: Expert guidance for Dagster data orchestration including assets, re
 
 # Dagster Development Expert
 
+## Core Philosophy
+
+**Think in Assets**: Dagster is built around the asset abstraction—persistent objects like tables, files, or models that your pipeline produces. Assets provide:
+- **Clear Lineage**: Explicit dependencies define data flow
+- **Better Observability**: Track what data exists and how it was created
+- **Improved Testability**: Assets are just Python functions that can be tested directly
+- **Declarative Pipelines**: Focus on *what* to produce, not *how* to execute
+
+**Assets over Ops**: For most data pipelines, prefer assets over ops. Use ops only when the asset abstraction doesn't fit (non-data workflows, complex execution patterns).
+
+**Environment Separation**: Use resources and `EnvVar` to maintain separate configurations for dev, staging, and production without code changes.
+
+---
+
 ## Quick Reference
 
 | If you're writing...                  | Check this section/reference                                  |
 | ------------------------------------- | ------------------------------------------------------------- |
 | `@dg.asset`                           | [Assets](#assets-quick-reference) or `references/assets.md`   |
 | `ConfigurableResource`                | [Resources](#resources-quick-reference) or `references/resources.md` |
+| `AutomationCondition`                 | [Declarative Automation](#declarative-automation-quick-reference) or `references/automation.md` |
 | `@dg.schedule` or `ScheduleDefinition`| [Automation](#automation-quick-reference) or `references/automation.md` |
 | `@dg.sensor`                          | [Sensors](#sensors-quick-reference) or `references/automation.md` |
 | `PartitionsDefinition`                | [Partitions](#partitions-quick-reference) or `references/automation.md` |
@@ -19,6 +34,7 @@ description: Expert guidance for Dagster data orchestration including assets, re
 | `@dlt_assets` or `@sling_assets`      | `references/etl-patterns.md`                                  |
 | `@dbt_assets`                         | [dbt Integration](#dbt-integration) or `dbt-development` skill |
 | `Definitions` or code locations       | `references/project-structure.md`                             |
+| Components (`defs.yaml`)              | `references/project-structure.md#components`                  |
 
 ---
 
@@ -37,6 +53,10 @@ description: Expert guidance for Dagster data orchestration including assets, re
 **Partition**: Logical divisions of data (by date, category). Define with `PartitionsDefinition`.
 
 **Definitions**: The container for all Dagster objects in a code location.
+
+**Component**: Reusable, declarative building blocks that generate `Definitions` from configuration (YAML). Use for standardized patterns.
+
+**Declarative Automation**: Modern automation framework where you set conditions on assets rather than scheduling jobs.
 
 ---
 
@@ -70,12 +90,19 @@ def downstream_asset(upstream_asset) -> dict:
     group_name="analytics",
     key_prefix=["warehouse", "staging"],
     description="Cleaned customer data",
+    owners=["team:data-engineering", "alice@example.com"],
+    tags={"priority": "high", "domain": "sales"},
+    code_version="1.2.0",
 )
 def customers() -> None:
     pass
 ```
 
-**Naming**: Use nouns describing what is produced (`customers`, `daily_revenue`), not verbs (`load_customers`).
+**Best Practices**:
+- **Naming**: Use nouns describing what is produced (`customers`, `daily_revenue`), not verbs (`load_customers`)
+- **Tags**: Primary mechanism for organization (use liberally)
+- **Owners**: Specify team or individual owners for accountability
+- **code_version**: Track when asset logic changes for lineage
 
 ---
 
@@ -136,6 +163,53 @@ my_schedule = dg.ScheduleDefinition(
 | `0 0 * * 1`   | Weekly on Monday           |
 | `0 0 1 * *`   | Monthly on the 1st         |
 | `0 0 5 * *`   | Monthly on the 5th         |
+
+---
+
+## Declarative Automation Quick Reference
+
+**Modern automation pattern**: Set conditions on assets instead of scheduling jobs.
+
+### AutomationCondition Examples
+
+```python
+from dagster import AutomationCondition
+
+# Update when upstream data changes
+@dg.asset(
+    automation_condition=AutomationCondition.on_missing()
+)
+def my_asset() -> None:
+    pass
+
+# Update daily at a specific time
+@dg.asset(
+    automation_condition=AutomationCondition.on_cron("0 9 * * *")
+)
+def daily_report() -> None:
+    pass
+
+# Combine conditions
+@dg.asset(
+    automation_condition=(
+        AutomationCondition.on_missing()
+        | AutomationCondition.on_cron("0 0 * * *")
+    )
+)
+def flexible_asset() -> None:
+    pass
+```
+
+**Benefits over Schedules**:
+- More expressive condition logic
+- Asset-native (no separate job definitions needed)
+- Automatic dependency-aware execution
+- Better for complex automation scenarios
+
+**When to Use**:
+- Asset-centric pipelines with complex update logic
+- Condition-based triggers (data availability, freshness)
+- Prefer over schedules for new projects
 
 ---
 
@@ -201,8 +275,12 @@ def regional_data(context: dg.AssetExecutionContext) -> None:
 | `DailyPartitionsDefinition` | One partition per day |
 | `WeeklyPartitionsDefinition` | One partition per week |
 | `MonthlyPartitionsDefinition` | One partition per month |
+| `HourlyPartitionsDefinition` | One partition per hour |
 | `StaticPartitionsDefinition` | Fixed set of partitions |
+| `DynamicPartitionsDefinition` | Partitions created at runtime |
 | `MultiPartitionsDefinition` | Combine multiple partition dimensions |
+
+**Best Practice**: Limit partitions to **100,000 or fewer per asset** for optimal UI performance.
 
 ---
 
@@ -304,6 +382,7 @@ dg.Definitions(
 - Creating schedules with complex cron patterns
 - Building sensors with cursors and state management
 - Implementing partitions and backfills
+- Using declarative automation conditions
 - Automating dbt or other integration runs
 
 ### Load `references/testing.md` when:
@@ -350,14 +429,50 @@ my_project/
 
 ### Definitions Pattern (Modern)
 
+**Auto-Discovery (Simplest)**:
 ```python
 # src/my_project/definitions.py
-from pathlib import Path
-from dagster import definitions, load_from_defs_folder
+from dagster import Definitions
+from dagster_dg import load_defs
 
-@definitions
-def defs():
-    return load_from_defs_folder(project_root=Path(__file__).parent.parent.parent)
+# Automatically discovers all definitions in defs/ folder
+defs = Definitions.merge(
+    load_defs()
+)
+```
+
+**Combining Components with Pythonic Assets**:
+```python
+# src/my_project/definitions.py
+from dagster import Definitions
+from dagster_dg import load_defs
+from my_project.assets import custom_assets
+
+# Load component definitions from defs/ folder
+component_defs = load_defs()
+
+# Define pythonic assets separately
+pythonic_defs = Definitions(
+    assets=custom_assets,
+    resources={...}
+)
+
+# Merge them together
+defs = Definitions.merge(component_defs, pythonic_defs)
+```
+
+**Traditional (Explicit)**:
+```python
+# src/my_project/definitions.py
+from dagster import Definitions
+from my_project.defs import assets, jobs, schedules, resources
+
+defs = Definitions(
+    assets=assets,
+    jobs=jobs,
+    schedules=schedules,
+    resources=resources,
+)
 ```
 
 ### Scaffolding with dg CLI
@@ -432,20 +547,36 @@ def derived_asset() -> None:
 
 ## CLI Quick Reference
 
+### dg CLI (Recommended for Modern Projects)
+
 ```bash
 # Development
-dg dev                          # Start Dagster UI
-dg check defs                   # Validate definitions
+dg dev                          # Start Dagster UI (port 3000)
+dg check defs                   # Validate definitions load correctly
+dg list defs                    # Show all loaded definitions
+dg list components              # Show available components
 
 # Scaffolding
 dg scaffold defs dagster.asset assets/file.py
 dg scaffold defs dagster.schedule schedules.py
 dg scaffold defs dagster.sensor sensors.py
+dg scaffold defs dagster.resources resources.py
 
-# Production
+# Execution
+dg launch --assets my_asset     # Materialize specific asset
+dg launch --assets "*"          # Materialize all assets
+```
+
+### dagster CLI (Legacy/General Purpose)
+
+```bash
+# Use for non-dg projects or advanced scenarios
+dagster dev                     # Start Dagster UI
 dagster job execute -j my_job   # Execute a job
 dagster asset materialize -a my_asset  # Materialize an asset
 ```
+
+**Use `dg` CLI for projects created with `create-dagster`**. It provides auto-discovery, scaffolding, and modern workflow support.
 
 ---
 

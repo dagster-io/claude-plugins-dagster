@@ -134,7 +134,51 @@ def test_with_config():
             "configurable_asset": StateConfig(name="ny", limit=100)
         }),
     )
-    
+
+    assert result.success
+```
+
+### Testing Assets with Context
+
+Use `build_asset_context()` to create context for testing:
+
+```python
+from dagster import build_asset_context
+
+def test_asset_with_context():
+    """Test asset that requires AssetExecutionContext."""
+    context = build_asset_context(
+        partition_key="2024-01-01",
+        resources={"database": mock_database},
+    )
+
+    result = my_asset(context)
+    assert result is not None
+```
+
+### Testing Multi-Assets with Mock IO Managers
+
+```python
+from dagster import build_asset_context, IOManager
+
+class MockIOManager(IOManager):
+    def __init__(self, mock_data):
+        self.mock_data = mock_data
+
+    def handle_output(self, context, obj):
+        pass  # No-op for testing
+
+    def load_input(self, context):
+        return self.mock_data.get(context.asset_key.path[-1])
+
+def test_multi_asset():
+    mock_io = MockIOManager({"upstream_asset": {"data": [1, 2, 3]}})
+
+    result = dg.materialize(
+        assets=[my_multi_asset],
+        resources={"io_manager": mock_io},
+    )
+
     assert result.success
 ```
 
@@ -328,6 +372,33 @@ def non_negative(total_population: int) -> dg.AssetCheckResult:
     )
 ```
 
+### Blocking Asset Checks
+
+Use `blocking=True` to prevent downstream asset materialization on failure:
+
+```python
+@dg.asset_check(asset=raw_data, blocking=True)
+def validate_schema(raw_data: list[dict]) -> dg.AssetCheckResult:
+    """Block downstream processing if schema is invalid."""
+    required_columns = {"id", "name", "email"}
+    actual_columns = set(raw_data[0].keys()) if raw_data else set()
+
+    passed = required_columns.issubset(actual_columns)
+
+    return dg.AssetCheckResult(
+        passed=passed,
+        metadata={
+            "required_columns": list(required_columns),
+            "actual_columns": list(actual_columns),
+        },
+    )
+```
+
+**When to Use Blocking**:
+- Schema validation before transformation
+- Critical data quality checks
+- Prerequisites for expensive downstream operations
+
 ### Asset Checks with Severity
 
 ```python
@@ -369,13 +440,14 @@ def test_non_negative_check():
 
 ### Multiple Asset Checks
 
+**Individual Checks**:
 ```python
 @dg.asset_check(asset=customer_data)
 def unique_ids(customer_data: list[dict]) -> dg.AssetCheckResult:
     ids = [row["id"] for row in customer_data]
     unique_count = len(set(ids))
     total_count = len(ids)
-    
+
     return dg.AssetCheckResult(
         passed=unique_count == total_count,
         metadata={
@@ -388,11 +460,68 @@ def unique_ids(customer_data: list[dict]) -> dg.AssetCheckResult:
 @dg.asset_check(asset=customer_data)
 def no_null_emails(customer_data: list[dict]) -> dg.AssetCheckResult:
     null_emails = sum(1 for row in customer_data if row["email"] is None)
-    
+
     return dg.AssetCheckResult(
         passed=null_emails == 0,
         metadata={"null_count": null_emails},
     )
+```
+
+**Multi-Asset Check (Efficient)**:
+```python
+from dagster import multi_asset_check, AssetCheckResult, AssetCheckSpec
+
+@multi_asset_check(
+    specs=[
+        AssetCheckSpec(name="unique_ids", asset="customer_data"),
+        AssetCheckSpec(name="no_null_emails", asset="customer_data"),
+    ]
+)
+def customer_data_checks(customer_data: list[dict]):
+    """Run multiple checks in a single execution."""
+    ids = [row["id"] for row in customer_data]
+    unique_count = len(set(ids))
+    total_count = len(ids)
+
+    yield AssetCheckResult(
+        check_name="unique_ids",
+        passed=unique_count == total_count,
+        metadata={"duplicates": total_count - unique_count},
+    )
+
+    null_emails = sum(1 for row in customer_data if row["email"] is None)
+
+    yield AssetCheckResult(
+        check_name="no_null_emails",
+        passed=null_emails == 0,
+        metadata={"null_count": null_emails},
+    )
+```
+
+**Use `@multi_asset_check` when**:
+- Multiple checks run on the same data
+- Loading the asset is expensive
+- Checks share computation logic
+
+### Factory Pattern for Asset Checks
+
+Generate asset checks programmatically:
+
+```python
+def create_not_null_check(asset_name: str, column: str):
+    """Factory to create not-null checks for any column."""
+    @dg.asset_check(asset=asset_name, name=f"{column}_not_null")
+    def check_fn(asset_value: list[dict]) -> dg.AssetCheckResult:
+        null_count = sum(1 for row in asset_value if row.get(column) is None)
+        return dg.AssetCheckResult(
+            passed=null_count == 0,
+            metadata={"null_count": null_count, "column": column},
+        )
+    return check_fn
+
+# Generate checks
+email_check = create_not_null_check("customer_data", "email")
+name_check = create_not_null_check("customer_data", "name")
 ```
 
 ---
