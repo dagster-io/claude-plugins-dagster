@@ -41,6 +41,7 @@ This command guides you through building production-ready Dagster code with:
 - Need declarative YAML configuration
 - Want reusability across projects
 - Building standardized data pipelines
+- **For dbt**: Use remote Git repository configuration to avoid cloning projects locally
 
 **Use Pythonic Assets when**:
 - Custom business logic required
@@ -71,6 +72,7 @@ This command guides you through building production-ready Dagster code with:
    - Set all required parameters
    - Reference environment variables appropriately
    - Configure component-specific settings
+   - **For dbt components**: Prefer `repo_url` + `repo_relative_path` over `project_dir`
 
 4. **Validate the component loads**:
    ```bash

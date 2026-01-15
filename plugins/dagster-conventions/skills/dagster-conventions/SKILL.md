@@ -337,9 +337,44 @@ def validate_non_empty(my_asset):
 
 ## dbt Integration
 
-For dbt integration, use the minimal pattern below. For comprehensive dbt patterns, see the `dbt-development` skill.
+For dbt integration, **prefer the component-based approach** for standard dbt projects. Use Pythonic assets only when you need custom logic or fine-grained control.
 
-### Basic dbt Assets
+### Component-Based dbt (Recommended)
+
+Use `DbtProjectComponent` with remote Git repository:
+
+```yaml
+# defs/transform/defs.yaml
+type: dagster_dbt.DbtProjectComponent
+
+attributes:
+  project:
+    repo_url: https://github.com/dagster-io/jaffle-platform.git
+    repo_relative_path: jdbt
+  dbt:
+    target: dev
+```
+
+**When to use**:
+- Standard dbt transformations
+- Remote dbt project in Git repository
+- Declarative configuration preferred
+- Component reusability desired
+
+**For private repositories**:
+```yaml
+attributes:
+  project:
+    repo_url: https://github.com/your-org/dbt-project.git
+    repo_relative_path: dbt
+    token: '{{ env.GIT_TOKEN }}'
+  dbt:
+    target: dev
+```
+
+### Pythonic dbt Assets
+
+For custom logic or local development:
 
 ```python
 from dagster_dbt import DbtCliResource, dbt_assets
@@ -350,16 +385,17 @@ dbt_project_dir = Path(__file__).parent / "dbt_project"
 @dbt_assets(manifest=dbt_project_dir / "target" / "manifest.json")
 def my_dbt_assets(context: dg.AssetExecutionContext, dbt: DbtCliResource):
     yield from dbt.cli(["build"], context=context).stream()
-```
 
-### dbt Resource
-
-```python
 dg.Definitions(
     assets=[my_dbt_assets],
     resources={"dbt": DbtCliResource(project_dir=dbt_project_dir)},
 )
 ```
+
+**When to use**:
+- Custom transformation logic needed
+- Local development with frequent dbt code changes
+- Fine-grained control over dbt execution
 
 **Full patterns**: See [Dagster dbt docs](https://docs.dagster.io/integrations/libraries/dbt)
 

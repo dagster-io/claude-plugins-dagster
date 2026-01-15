@@ -15,11 +15,24 @@ Transform data using SQL models with automatic dependency management, incrementa
 - Test data quality with dbt tests
 - Document data lineage and schemas
 
-**Quick start:**
+**Quick start (Component-based - Recommended):**
+```yaml
+# defs/transform/defs.yaml
+type: dagster_dbt.DbtProjectComponent
+
+attributes:
+  project:
+    repo_url: https://github.com/dagster-io/jaffle-platform.git
+    repo_relative_path: jdbt
+  dbt:
+    target: dev
+```
+
+**Quick start (Pythonic):**
 ```python
 from dagster_dbt import DbtProject, dbt_assets
 
-# Scaffold a dbt project
+# For local projects
 my_project = DbtProject(project_dir="path/to/dbt/project")
 
 # Create assets from dbt models
@@ -38,10 +51,11 @@ defs = dg.Definitions(
 **Docs:** https://docs.dagster.io/integrations/libraries/dbt
 
 **Key features:**
-- Component-based scaffolding with `dagster-dbt project scaffold`
+- Component-based scaffolding with remote Git repositories
 - Automatic asset creation from dbt models
 - Incremental model support
 - dbt test integration
+- Support for both remote and local projects
 
 ---
 

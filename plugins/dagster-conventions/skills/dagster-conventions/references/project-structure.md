@@ -419,16 +419,49 @@ streams:
 
 ### dbt Component Example
 
-```yaml
-# defs/transform_dbt/defs.yaml
-component: dagster_dbt.DbtProjectComponent
+**Remote Git Repository (Recommended)**:
 
-params:
-  project_dir: ../../dbt_project
+```yaml
+# defs/transform/defs.yaml
+type: dagster_dbt.DbtProjectComponent
+
+attributes:
+  project:
+    repo_url: https://github.com/dagster-io/jaffle-platform.git
+    repo_relative_path: jdbt
+  dbt:
+    target: dev
+```
+
+The remote configuration manages the dbt project as component state without requiring you to clone the repository locally.
+
+**For private repositories**, add token authentication:
+
+```yaml
+attributes:
+  project:
+    repo_url: https://github.com/your-org/dbt-project.git
+    repo_relative_path: dbt
+    token: '{{ env.GIT_TOKEN }}'
+  dbt:
+    target: dev
+```
+
+**Local Project (Alternative for Development)**:
+
+```yaml
+# defs/transform/defs.yaml
+type: dagster_dbt.DbtProjectComponent
+
+attributes:
+  project:
+    project_dir: ../../dbt_project
   dbt:
     target: dev
     profiles_dir: ~/.dbt
 ```
+
+Use local configuration when actively developing dbt models or when the dbt project is colocated in your Dagster repository.
 
 ### Combining Components with Pythonic Assets
 
