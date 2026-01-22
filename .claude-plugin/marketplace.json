@@ -18,6 +18,11 @@
       "name": "dagster-integrations",
       "source": "./plugins/dagster-integrations",
       "description": "Comprehensive index of 82+ Dagster integrations for cloud platforms, data warehouses, ETL tools, AI/ML, and more"
+    },
+    {
+      "name": "dignified-python",
+      "source": "./plugins/dignified-python",
+      "description": "Production-tested Python coding standards with version-aware type annotations, LBYL exception handling, and modern typing patterns. Includes guides for CLI patterns, subprocess handling, and Python 3.10-3.13 features."
     }
   ]
 }

@@ -49,6 +49,18 @@ Comprehensive index of 82+ Dagster integrations including cloud platforms, data 
 
 This skill helps you discover and integrate with the right tools for your data pipelines.
 
+### dignified-python
+
+Production-tested Python coding standards with version-aware type annotations, LBYL exception handling, and modern typing patterns.
+
+This skill provides comprehensive guidance for writing dignified Python code including:
+- Automatic Python version detection (3.10-3.13)
+- LBYL exception handling patterns
+- Modern type syntax (list[str], str | None)
+- Pathlib operations and ABC-based interfaces
+- CLI patterns and subprocess handling
+- API design and code organization best practices
+
 ---
 
 <div align="center">
