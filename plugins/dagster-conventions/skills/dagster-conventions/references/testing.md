@@ -13,6 +13,205 @@
 
 ---
 
+## Testing Workflow
+
+Tests should focus on ensuring the logic of code when possible rather than testing Dagster functionality.
+
+### Testing Philosophy
+
+Use a **defense-in-depth testing strategy** with multiple layers:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Layer 3: Integration & E2E Tests (20%)                 │  ← Real services, Docker, staging
+├─────────────────────────────────────────────────────────┤
+│  Layer 2: Asset Graph Tests (25%)                       │  ← dg.materialize() with mocks
+├─────────────────────────────────────────────────────────┤
+│  Layer 1: Direct Function Tests (55%)                   │  ← Call asset functions directly
+└─────────────────────────────────────────────────────────┘
+```
+
+**Philosophy**: Test business logic extensively with fast, isolated tests. Use real implementations sparingly for integration validation.
+
+### Test Distribution
+
+| Layer | Test Type | Location | Portion |
+| ----- | --------- | -------- | ------- |
+| 1 | Direct function tests | `tests/unit/test_*.py` | 55% |
+| 2 | Asset graph tests | `tests/unit/test_*.py` | 25% |
+| 3 | Integration & E2E tests | `tests/integration/test_*.py` | 20% |
+
+### Layer 1: Direct Function Tests (55%)
+
+**Purpose**: Test asset business logic directly as Python functions.
+
+**When to use**: For EVERY asset. This is the default testing approach.
+
+**Why**: Fast, reliable, easy to debug. No Dagster overhead.
+
+```python
+# Asset under test
+@dg.asset
+def calculate_revenue(orders: list[dict]) -> float:
+    return sum(order["price"] * order["quantity"] for order in orders)
+
+# Direct function test - call the asset like a regular function
+def test_calculate_revenue():
+    mock_orders = [
+        {"price": 10.0, "quantity": 2},
+        {"price": 25.0, "quantity": 1},
+    ]
+    
+    result = calculate_revenue(mock_orders)
+    
+    assert result == 45.0
+```
+
+**What to test at this layer**:
+- Business logic and calculations
+- Data transformations
+- Edge cases (empty inputs, nulls, invalid data)
+- Error conditions
+
+**Characteristics**:
+- Runs in milliseconds
+- No Dagster context needed
+- Provide mock inputs for upstream dependencies
+- Test the function, not the framework
+
+### Layer 2: Asset Graph Tests (25%)
+
+**Purpose**: Test asset materialization, graph execution, and resource integration with mocked resources.
+
+**When to use**: When testing asset interactions, configs, or resource dependencies.
+
+**Why**: Validates Dagster-specific behavior (context, configs, IO managers) without slow external calls.
+
+```python
+def test_asset_graph_with_mocked_resource():
+    mocked_db = Mock()
+    mocked_db.query.return_value = [{"id": 1, "name": "Alice"}]
+    
+    result = dg.materialize(
+        assets=[fetch_users, process_users],
+        resources={"database": mocked_db},
+    )
+    
+    assert result.success
+    assert result.output_for_node("process_users") == [{"id": 1, "name": "ALICE"}]
+```
+
+**What to test at this layer**:
+- Asset graph execution order
+- Resource injection
+- Run configs and asset configs
+- Multi-asset interactions
+- IO manager behavior
+- Partitioned asset logic
+
+**Characteristics**:
+- Uses `dg.materialize()` or `build_asset_context()`
+- Mock external resources (databases, APIs)
+- Validates Dagster integration points
+- Slower than Layer 1, but still fast (no I/O)
+
+### Layer 3: Integration & E2E Tests (20%)
+
+**Purpose**: Validate real resource connections, external system behavior, and end-to-end workflows.
+
+**When to use**: For critical paths where mock behavior might diverge from reality, and for smoke testing complete workflows.
+
+**Why**: Catches issues that mocks miss (actual SQL syntax, API quirks, authentication, real system interactions).
+
+**Resource connection test**:
+```python
+@pytest.mark.integration
+def test_snowflake_connection():
+    """Integration test with real Snowflake (staging)."""
+    resource = SnowflakeResource(
+        account=dg.EnvVar("SNOWFLAKE_ACCOUNT"),
+        user=dg.EnvVar("SNOWFLAKE_USERNAME"),
+        password=dg.EnvVar("SNOWFLAKE_PASSWORD"),
+        database="STAGING",
+    )
+    
+    # Test actual connection works
+    with resource.get_connection() as conn:
+        result = conn.execute("SELECT 1").fetchone()
+        assert result[0] == 1
+```
+
+**End-to-end pipeline test**:
+```python
+@pytest.mark.integration
+def test_complete_etl_pipeline(docker_postgres):
+    """E2E test: complete pipeline with real database."""
+    result = dg.materialize(
+        assets=[extract_orders, transform_orders, load_orders],
+        resources={"database": docker_postgres},
+    )
+    
+    assert result.success
+    
+    # Verify data actually landed
+    with docker_postgres.get_connection() as conn:
+        rows = conn.execute("SELECT COUNT(*) FROM orders").fetchone()
+        assert rows[0] > 0
+```
+
+**What to test at this layer**:
+- Database connection and query execution
+- API authentication and response parsing
+- Critical business workflows
+- Data pipeline end-to-end correctness
+- Production configuration validation
+
+**Characteristics**:
+- Requires environment setup (credentials, staging systems, Docker)
+- Slower (seconds to minutes with real network calls)
+- May be skipped in CI without proper environment
+- Use pytest markers: `@pytest.mark.integration`
+- Use sparingly as final validation
+
+### Decision Tree: Where Should My Test Go?
+
+```
+┌─ I need to test...
+│
+├─ BUSINESS LOGIC in an asset (calculations, transformations)
+│  └─> Layer 1: Direct function test
+│
+├─ ASSET INTERACTIONS (graph execution, dependencies)
+│  └─> Layer 2: Asset graph test with mocked resources
+│
+├─ RESOURCE BEHAVIOR (configs, partitions, IO managers)
+│  └─> Layer 2: Asset graph test with build_asset_context()
+│
+└─ REAL SERVICE CONNECTION or CRITICAL E2E WORKFLOW
+   └─> Layer 3: Integration test (sparingly)
+```
+
+**Default**: Start with Layer 1 (direct function test). Only move up layers when you need to test Dagster-specific behavior or real integrations.
+
+### When NOT to Use Higher Layers
+
+| Don't Use | For | Instead Use |
+| --------- | --- | ----------- |
+| Layer 2 (materialize) | Testing pure business logic | Layer 1 (direct call) |
+| Layer 3 (integration) | Testing error handling | Layer 1/2 with mocked errors |
+| Layer 3 (integration) | Rapid iteration during development | Layer 1/2 |
+| Layer 3 (integration) | Testing edge cases | Layer 1 with mock inputs |
+
+### Test Speed Guidelines
+
+| Layer | Expected Speed | If Slower, Consider |
+| ----- | -------------- | ------------------- |
+| 1 | < 100ms | Check for hidden I/O |
+| 2 | < 500ms | Mock expensive resources |
+| 3 | < 60s | Parallelize or reduce scope |
+
+---
+
 ## Unit Testing Assets
 
 ### Direct Function Testing
@@ -30,7 +229,7 @@ def state_population_file() -> list[dict]:
 ```
 
 ```python
-# tests/test_population.py
+# tests/unit/test_population.py
 def test_state_population_file():
     result = population.state_population_file()
     
@@ -143,11 +342,11 @@ def test_with_config():
 Use `build_asset_context()` to create context for testing:
 
 ```python
-from dagster import build_asset_context
+import dagster as dg
 
 def test_asset_with_context():
     """Test asset that requires AssetExecutionContext."""
-    context = build_asset_context(
+    context = dg.build_asset_context(
         partition_key="2024-01-01",
         resources={"database": mock_database},
     )
@@ -159,9 +358,9 @@ def test_asset_with_context():
 ### Testing Multi-Assets with Mock IO Managers
 
 ```python
-from dagster import build_asset_context, IOManager
+import dagster as dg
 
-class MockIOManager(IOManager):
+class MockIOManager(dg.IOManager):
     def __init__(self, mock_data):
         self.mock_data = mock_data
 
@@ -180,6 +379,144 @@ def test_multi_asset():
     )
 
     assert result.success
+```
+
+---
+
+## Ephemeral instance
+
+Some Dagster objects (such as sensors) rely on state in order to be tested correctly. Temporary state can be maintained for tests with `dg.DagsterInstance.ephemeral()`.
+
+To test a sensor that checks for new files:
+
+```python
+def check_for_new_files() -> list[str]:
+    if random.random() > 0.5:
+        return ["file1", "file2"]
+    return []
+
+
+@dg.sensor(
+    name="my_sensor",
+    job=jobs.my_job_configured,
+    minimum_interval_seconds=5,
+)
+def my_sensor():
+    new_files = check_for_new_files()
+    # New files, run `my_job`
+    if new_files:
+        for filename in new_files:
+            yield dg.RunRequest(run_key=filename)
+    # No new files, skip the run and log the reason
+    else:
+        yield dg.SkipReason("No new files found")
+```
+
+There should be a test to confirm that sensor registers a `dg.RunRequest` when the sensor logic is met and that there is a `dg.SkipReason` when the logic is not met:
+
+```python
+@patch("dagster_testing.defs.sensors.check_for_new_files", return_value=[])
+def test_sensor_skip(mock_check_new_files):
+    instance = dg.DagsterInstance.ephemeral()
+    context = dg.build_sensor_context(instance=instance)
+    assert sensors.my_sensor(context).__next__() == dg.SkipReason("No new files found")
+
+
+@patch(
+    "dagster_testing.defs.sensors.check_for_new_files",
+    return_value=["test_file"],
+)
+def test_sensor_run(mock_check_new_files):
+    instance = dg.DagsterInstance.ephemeral()
+    context = dg.build_sensor_context(instance=instance)
+    assert sensors.my_sensor(context).__next__() == dg.RunRequest(run_key="test_file")
+```
+
+---
+
+## Components
+
+Custom components can be tested using `from dagster.components.testing.utils import create_defs_folder_sandbox`. This creates a temporary component as if the user had run `dg scaffold defs` to initialize it.
+
+This can be helpful when confirming the component schema when components have complex models:
+
+```python
+import dagster as dg
+
+class Ingredient(dg.Model):
+    name: str = dg.Field
+    quantity: int = dg.Field
+    unit: str = dg.Field
+
+class Recipe(dg.Model):
+    title: str = dg.Field
+    serves: int = dg.Field
+    prep_time: int = dg.Field
+    cook_time: int = dg.Field
+    ingredients: list[Ingredient] = dg.Field
+
+class Cookbook(dg.Component, dg.Model, dg.Resolvable):
+    cookbook_title: str = dg.Field
+    recipes: list[Recipe]
+
+    def build_defs(self, context: dg.ComponentLoadContext) -> dg.Definitions:
+        ...
+        return dg.Definitions(assets=[_asset])
+```
+
+This test will initialize the component and ensures that the correct Dagster objects are created:
+
+```python
+import dagster as dg
+from dagster.components.testing.utils import create_defs_folder_sandbox
+
+cookbook_yaml_config = {
+    "type": "my_project.components.cookbook.Cookbook",
+    "attributes": {
+        "cookbook_title": "Test Cookbook",
+        "recipes": [
+            {
+                "title": "Test Recipe",
+                "serves": 4,
+                "prep_time": 10,
+                "cook_time": 15,
+                "ingredients": [
+                    {
+                        "name": "Test Ingredient",
+                        "quantity": 1,
+                        "unit": "Test Unit"
+                    }
+                ],
+            },
+        ]
+    }
+}
+
+
+def test_cookbook_component():
+    with create_defs_folder_sandbox() as sandbox:
+        defs_path = sandbox.scaffold_component(component_cls=Cookbook)
+        sandbox.scaffold_component(
+            component_cls=Cookbook,
+            defs_path=defs_path,
+            defs_yaml_contents=cookbook_yaml_config
+        )
+
+        # Check that all assets are created
+        with sandbox.build_all_defs() as defs:
+            assert defs.resolve_asset_graph().get_all_asset_keys() == {
+                dg.AssetKey(["test_recipe"]),
+            }
+```
+
+The asset can also be materialized for further testing: 
+
+```python
+    result = dg.materialize(
+        assets=[
+            defs.get_assets_def(dg.AssetKey(["test_recipe"])),
+        ],
+    )
 ```
 
 ---
@@ -313,7 +650,7 @@ def test_snowflake_staging():
 Use Docker Compose for isolated test environments:
 
 ```yaml
-# tests/docker-compose.yaml
+# tests/e2e/docker-compose.yaml
 version: "3.8"
 services:
   postgres:
@@ -327,7 +664,7 @@ services:
 ```
 
 ```python
-# tests/conftest.py
+# tests/e2e/conftest.py
 import pytest
 
 @pytest.fixture(scope="session")
@@ -469,12 +806,12 @@ def no_null_emails(customer_data: list[dict]) -> dg.AssetCheckResult:
 
 **Multi-Asset Check (Efficient)**:
 ```python
-from dagster import multi_asset_check, AssetCheckResult, AssetCheckSpec
+import dagster as dg
 
-@multi_asset_check(
+@dg.multi_asset_check(
     specs=[
-        AssetCheckSpec(name="unique_ids", asset="customer_data"),
-        AssetCheckSpec(name="no_null_emails", asset="customer_data"),
+        dg.AssetCheckSpec(name="unique_ids", asset="customer_data"),
+        dg.AssetCheckSpec(name="no_null_emails", asset="customer_data"),
     ]
 )
 def customer_data_checks(customer_data: list[dict]):
@@ -483,7 +820,7 @@ def customer_data_checks(customer_data: list[dict]):
     unique_count = len(set(ids))
     total_count = len(ids)
 
-    yield AssetCheckResult(
+    yield dg.AssetCheckResult(
         check_name="unique_ids",
         passed=unique_count == total_count,
         metadata={"duplicates": total_count - unique_count},
@@ -491,7 +828,7 @@ def customer_data_checks(customer_data: list[dict]):
 
     null_emails = sum(1 for row in customer_data if row["email"] is None)
 
-    yield AssetCheckResult(
+    yield dg.AssetCheckResult(
         check_name="no_null_emails",
         passed=null_emails == 0,
         metadata={"null_count": null_emails},
