@@ -18,6 +18,17 @@ Auto-invoke when users say:
 - "set up a dagster project"
 - "create a new dagster project"
 
+## When to Use This Skill vs. Others
+
+| If User Says... | Use This Skill/Command | Why |
+|----------------|------------------------|-----|
+| "create a dagster project" | `/dg:create-project` | Initialize new project |
+| "create a workspace" | `/dg:create-workspace` | Multi-project workspace needed |
+| "implement X pipeline" | `/dg:prototype` | Add to existing project |
+| "best practices" | `/dagster-conventions` | Learn patterns first |
+| "which integration" | `/dagster-integrations` | Integration discovery |
+| "review my code" | `/dignified-python` | Python code quality |
+
 ## How It Works
 
 When this skill is invoked:

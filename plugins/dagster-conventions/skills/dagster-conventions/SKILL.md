@@ -5,6 +5,20 @@ description: Expert guidance for Dagster data orchestration including assets, re
 
 # Dagster Development Expert
 
+## When to Use This Skill vs. Others
+
+| If User Says... | Use This Skill/Command | Why |
+|----------------|------------------------|-----|
+| "what's the best way to X" | `/dagster-conventions` | Need patterns/best practices |
+| "how do I structure assets" | `/dagster-conventions` | Asset design guidance |
+| "which integration should I use" | `/dagster-integrations` | Integration discovery needed |
+| "implement X pipeline" | `/dg:prototype` | Ready to build, not just learn |
+| "is this pythonic" | `/dignified-python` | Python code review needed |
+| "create new project" | `/dg:create-project` | Project initialization needed |
+| "how do I test assets" | `/dagster-conventions` (testing section) | Testing patterns guidance |
+| "schedule patterns" | `/dagster-conventions` (automation section) | Scheduling/automation guidance |
+| "dbt best practices" | `/dagster-conventions` (dbt section) | dbt-specific patterns |
+
 ## Core Philosophy
 
 **Think in Assets**: Dagster is built around the asset abstraction—persistent objects like tables, files, or models that your pipeline produces. Assets provide:

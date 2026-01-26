@@ -18,6 +18,17 @@ Auto-invoke when users say:
 - "start a new dagster workspace"
 - "scaffold a dagster workspace"
 
+## When to Use This Skill vs. Others
+
+| If User Says... | Use This Skill/Command | Why |
+|----------------|------------------------|-----|
+| "create a workspace" | `/dg:create-workspace` | Multi-project workspace needed |
+| "create a project" | `/dg:create-project` | Single project initialization |
+| "implement X pipeline" | `/dg:prototype` | Add to existing project |
+| "manage multiple projects" | `/dg:create-workspace` | Workspace for multiple projects |
+| "best practices" | `/dagster-conventions` | Learn patterns first |
+| "which integration" | `/dagster-integrations` | Integration discovery |
+
 ## How It Works
 
 When this skill is invoked:

@@ -20,6 +20,19 @@ Auto-invoke when users say:
 - "build assets for [X]"
 - "implement [X] with dagster"
 
+## When to Use This Skill vs. Others
+
+| If User Says... | Use This Skill/Command | Why |
+|----------------|------------------------|-----|
+| "what's the best way to X" | `/dagster-conventions` | Need patterns/best practices guidance |
+| "which integration for X" | `/dagster-integrations` | Need integration discovery |
+| "make this pythonic" | `/dignified-python` | Need Python code review |
+| "prototype X pipeline" | `/dg:prototype` | Need full implementation |
+| "create a new project" | `/dg:create-project` | Need project initialization |
+| "create a workspace" | `/dg:create-workspace` | Need workspace initialization |
+| "how do I structure my code" | `/dagster-conventions` | Need project structure guidance |
+| "show me dbt patterns" | `/dagster-conventions` then `/dg:prototype` | First learn patterns, then implement |
+
 ## How It Works
 
 When this skill is invoked:

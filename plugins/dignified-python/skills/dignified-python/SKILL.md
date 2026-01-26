@@ -11,6 +11,19 @@ description: Python coding standards with automatic version detection.
 
 # Dignified Python Coding Standards
 
+## When to Use This Skill vs. Others
+
+| If User Says... | Use This Skill/Command | Why |
+|----------------|------------------------|-----|
+| "make this pythonic" | `/dignified-python` | Python code review needed |
+| "is this good python" | `/dignified-python` | Code quality assessment |
+| "LBYL vs EAFP" | `/dignified-python` | Exception handling patterns |
+| "type hints" | `/dignified-python` | Modern typing guidance |
+| "pathlib vs os.path" | `/dignified-python` | Path handling patterns |
+| "best practices for dagster" | `/dagster-conventions` | Dagster-specific patterns |
+| "implement X pipeline" | `/dg:prototype` | Ready to build, not just review |
+| "which integration to use" | `/dagster-integrations` | Integration discovery |
+
 ## Core Knowledge (ALWAYS Loaded)
 
 @dignified-python-core.md

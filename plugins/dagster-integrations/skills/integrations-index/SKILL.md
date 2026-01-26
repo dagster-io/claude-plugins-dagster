@@ -7,6 +7,19 @@ description: Comprehensive index of 82+ Dagster integrations organized by offici
 
 Navigate 82+ Dagster integrations organized by Dagster's official taxonomy. Find AI/ML tools, ETL platforms, data storage, compute services, BI tools, and monitoring integrations.
 
+## When to Use This Skill vs. Others
+
+| If User Says... | Use This Skill/Command | Why |
+|----------------|------------------------|-----|
+| "which integration for X" | `/dagster-integrations` | Need to discover appropriate integration |
+| "does dagster support X" | `/dagster-integrations` | Check integration availability |
+| "snowflake vs bigquery" | `/dagster-integrations` | Compare integrations in same category |
+| "best practices for X" | `/dagster-conventions` | Implementation patterns needed |
+| "implement X integration" | `/dg:prototype` | Ready to build with specific integration |
+| "how do I use dbt" | `/dagster-conventions` (dbt section) | dbt-specific implementation patterns |
+| "make this code better" | `/dignified-python` | Python code review needed |
+| "create new project" | `/dg:create-project` | Project initialization needed |
+
 ## Quick Reference by Category
 
 | Category | Count | Common Tools | Reference |
