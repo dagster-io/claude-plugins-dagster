@@ -1,5 +1,5 @@
 {
   "name": "dignified-python",
   "description": "Production-tested Python coding standards with version-aware type annotations and LBYL exception patterns",
-  "version": "1.0.0"
+  "version": "0.0.1"
 }

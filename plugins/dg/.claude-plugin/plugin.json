@@ -1,5 +1,5 @@
 {
   "name": "dg",
   "description": "Dagster CLI commands for debugging runs, analyzing logs, and troubleshooting",
-  "version": "1.0.0"
+  "version": "0.0.1"
 }

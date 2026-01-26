@@ -1,0 +1,103 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 0.0.2, 1.0.0, 1.0.0-beta)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ inputs.version }}"
+          if ! echo "$VERSION" | grep -qE '^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$'; then
+            echo "Error: Invalid version format: $VERSION"
+            echo "Version must follow semantic versioning (X.Y.Z or X.Y.Z-prerelease)"
+            exit 1
+          fi
+          echo "✓ Version format is valid: $VERSION"
+
+      - name: Check if tag already exists
+        run: |
+          VERSION="${{ inputs.version }}"
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Error: Tag v$VERSION already exists"
+            exit 1
+          fi
+          echo "✓ Tag v$VERSION does not exist"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Bump version
+        run: |
+          python scripts/release/bump.py ${{ inputs.version }}
+
+      - name: Extract changelog
+        id: changelog
+        run: |
+          python scripts/release/changelog.py ${{ inputs.version }} > release_notes.md
+          echo "Release notes:"
+          cat release_notes.md
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit version bump
+        run: |
+          git add -A
+          git commit -m "Bump version to ${{ inputs.version }}"
+
+      - name: Create tag
+        run: |
+          git tag -a "v${{ inputs.version }}" -m "Release ${{ inputs.version }}"
+
+      - name: Push changes
+        run: |
+          git push origin master
+          git push origin "v${{ inputs.version }}"
+
+      - name: Determine if prerelease
+        id: prerelease
+        run: |
+          VERSION="${{ inputs.version }}"
+          if echo "$VERSION" | grep -q '-'; then
+            echo "prerelease=true" >> $GITHUB_OUTPUT
+          else
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ inputs.version }}
+          name: Release ${{ inputs.version }}
+          body_path: release_notes.md
+          prerelease: ${{ steps.prerelease.outputs.prerelease }}
+
+      - name: Release summary
+        run: |
+          echo "## Release Complete! :rocket:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Version **${{ inputs.version }}** has been released." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Tag: \`v${{ inputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: \`$(git rev-parse HEAD)\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Release URL: https://github.com/${{ github.repository }}/releases/tag/v${{ inputs.version }}" >> $GITHUB_STEP_SUMMARY

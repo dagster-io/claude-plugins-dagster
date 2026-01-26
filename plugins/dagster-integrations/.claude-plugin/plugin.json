@@ -1,5 +1,5 @@
 {
   "name": "dagster-integrations",
   "description": "Comprehensive index of 82+ Dagster integrations including cloud platforms, data warehouses, ETL tools, AI/ML, and more",
-  "version": "1.0.0"
+  "version": "0.0.1"
 }
