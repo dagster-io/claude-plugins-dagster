@@ -30,12 +30,15 @@ To update your marketplace plugins:
 
 ### dg
 
-Commands for building and debugging.
+Commands for building, executing, and debugging Dagster projects.
 
 Build:
   - `/dg:create-project <name>` - Create a new Dagster project with recommended structure
   - `/dg:create-workspace <name>` - Initialize a workspace for managing multiple projects
   - `/dg:prototype <requirements>` - Build production-ready Dagster implementations with best practices, testing, and validation
+
+Execute:
+  - `/dg:launch` - Launch (materialize) Dagster assets with comprehensive guidance on partitions, configuration, environment setup, and troubleshooting
 
 Debug:
   - `/dg:logs <run-id> [level] [limit]` - Retrieve and display logs for a run

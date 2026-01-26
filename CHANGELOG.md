@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **dg**: `/dg:launch` command and skill for comprehensive asset launching
+  - Complete documentation for `dg launch` CLI command
+  - Asset selection patterns (tags, groups, kinds, wildcards)
+  - Partition support (single partition, partition ranges/backfills)
+  - Configuration patterns (inline JSON, config files)
+  - Environment variable setup (uv auto-loading, shell sourcing, per-environment)
+  - Job execution patterns
+  - Advanced patterns (IDE integration, CI/CD)
+  - Cloud/remote execution guidance
+  - Troubleshooting guide for common launch failures
+  - Migration guide from legacy `dagster asset materialize` to `dg launch`
+- **dagster-conventions**: Expanded CLI Quick Reference with partition and config examples
+- **dagster-conventions**: Added "Launching Assets" section to assets reference
+- **README**: Added `/dg:launch` command to dg plugin documentation with new "Execute" section
 
 ### Changed
 

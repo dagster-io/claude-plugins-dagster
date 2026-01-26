@@ -18,6 +18,115 @@
 
 ---
 
+## Launching Assets
+
+Once you've defined assets, you'll need to materialize (launch) them. Use the modern `dg launch` command for all asset execution.
+
+### Quick Launch Examples
+
+```bash
+# Single asset
+dg launch --assets my_asset
+
+# Multiple assets
+dg launch --assets customers orders products
+
+# All assets
+dg launch --assets "*"
+
+# Assets by tag
+dg launch --assets "tag:priority=high"
+
+# Assets by group
+dg launch --assets "group:sales_analytics"
+
+# Assets by kind
+dg launch --assets "kind:dbt"
+```
+
+### With Environment Variables
+
+Assets often need environment variables for resources (database URLs, API keys):
+
+```bash
+# Method 1: uv auto-loads .env
+uv run dg launch --assets my_asset
+
+# Method 2: Manual .env loading
+set -a; source .env; set +a
+dg launch --assets my_asset
+
+# Method 3: Per-environment files
+source .env.staging && dg launch --assets my_asset
+```
+
+### Partitioned Assets
+
+For assets with partition definitions:
+
+```bash
+# Single partition
+dg launch --assets my_daily_asset --partition 2024-01-15
+
+# Partition range (backfill)
+dg launch --assets my_asset --partition-range "2024-01-01:2024-01-31"
+
+# Multiple partitioned assets
+dg launch --assets "tag:schedule=daily" --partition 2024-01-15
+```
+
+### With Configuration
+
+Pass runtime configuration to assets:
+
+```bash
+# Inline JSON config
+dg launch --assets my_asset --config-json '{
+  "ops": {
+    "my_asset": {
+      "config": {
+        "batch_size": 1000,
+        "enable_validation": true
+      }
+    }
+  }
+}'
+
+# Config from file
+dg launch --assets my_asset --config-json "$(cat config.json)"
+```
+
+### Testing Asset Materialization
+
+Before deploying, test that assets materialize successfully:
+
+```bash
+# Validate definitions load
+dg check defs
+
+# List all assets
+dg list defs
+
+# Test single asset
+dg launch --assets my_asset
+
+# Test asset chain (materializes dependencies)
+dg launch --assets downstream_asset
+```
+
+### Comprehensive Launch Documentation
+
+For detailed coverage of all launch features, see:
+- **`/dg:launch` command** - Complete guide to asset launching
+- Partition patterns (daily, static, multi-dimensional)
+- Configuration structure and patterns
+- Environment variable methods
+- Asset selection syntax reference
+- Troubleshooting guide
+- Migration from legacy `dagster asset materialize`
+
+---
+
 ## Basic Asset Definition
 
 ```python

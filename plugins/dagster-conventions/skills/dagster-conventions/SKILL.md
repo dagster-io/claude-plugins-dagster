@@ -613,8 +613,26 @@ dg scaffold defs dagster.sensor sensors.py
 dg scaffold defs dagster.resources resources.py
 
 # Execution
-dg launch --assets my_asset     # Materialize specific asset
-dg launch --assets "*"          # Materialize all assets
+dg launch --assets my_asset                    # Materialize specific asset
+dg launch --assets asset1 asset2               # Multiple assets
+dg launch --assets "*"                         # Materialize all assets
+dg launch --assets "tag:priority=high"         # Assets by tag
+dg launch --assets "group:sales_analytics"     # Assets by group
+dg launch --assets "kind:dbt"                  # Assets by kind
+dg launch --job my_job                         # Execute a job
+
+# Partitions
+dg launch --assets my_asset --partition 2024-01-15              # Single partition
+dg launch --assets my_asset --partition-range "2024-01-01:2024-01-31"  # Backfill range
+
+# Configuration
+dg launch --assets my_asset --config-json '{"ops": {"my_asset": {"config": {"param": "value"}}}}'
+
+# Environment Variables
+uv run dg launch --assets my_asset             # Auto-loads .env with uv
+set -a; source .env; set +a; dg launch --assets my_asset  # Manual .env loading
+
+# See /dg:launch command for comprehensive launch documentation
 ```
 
 ### dagster CLI (Legacy/General Purpose)
@@ -632,11 +650,12 @@ dagster asset materialize -a my_asset  # Materialize an asset
 
 ## References
 
-- **Assets**: `references/assets.md` - Detailed asset patterns
+- **Assets**: `references/assets.md` - Detailed asset patterns and launching guidance
 - **Resources**: `references/resources.md` - Resource configuration
 - **Automation**: `references/automation.md` - Schedules, sensors, partitions
 - **Testing**: `references/testing.md` - Testing patterns and asset checks
 - **ETL Patterns**: `references/etl-patterns.md` - dlt, Sling, file/API ingestion
 - **Project Structure**: `references/project-structure.md` - Definitions, Components
+- **Launch Command**: `/dg:launch` - Comprehensive asset launching documentation
 - **Official Docs**: https://docs.dagster.io
 - **API Reference**: https://docs.dagster.io/api/dagster
