@@ -94,7 +94,7 @@ User: "Run my sales pipeline assets"
 → Based on response, provide appropriate command:
   dg launch --assets "group:sales_analytics"
   # or
-  dg launch --assets customers orders revenue
+  dg launch --assets customers,orders,revenue
 ```
 
 ### Partition Launch
@@ -247,7 +247,7 @@ dg launch --assets "group:analytics"
 dg launch --assets "kind:dbt"
 
 # Specific (good for ad-hoc)
-dg launch --assets customers orders
+dg launch --assets customers,orders
 
 # Wildcard (good for namespaces)
 dg launch --assets "staging_*"

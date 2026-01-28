@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- **dg**: Fixed `dg launch` documentation to use comma-separated asset syntax
+  - Updated SKILL.md and launch.md to show correct syntax: `--assets asset1,asset2,asset3`
+  - Previous incorrect examples showed space-separated: `--assets asset1 asset2 asset3`
+  - Verified against actual CLI implementation in dagster repository
+  - Selection patterns (tags, groups, kinds) preserved correctly
 
 ### Security
 

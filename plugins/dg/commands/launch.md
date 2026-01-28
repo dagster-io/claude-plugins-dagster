@@ -24,7 +24,7 @@ The `dg launch` command is the modern, streamlined way to materialize assets in 
 dg launch --assets my_asset
 
 # Multiple specific assets
-dg launch --assets asset_1 asset_2 asset_3
+dg launch --assets asset_1,asset_2,asset_3
 
 # All assets
 dg launch --assets "*"
@@ -61,7 +61,7 @@ The `--assets` flag accepts powerful selection patterns to target specific asset
 dg launch --assets customers
 
 # Multiple assets by name
-dg launch --assets customers orders products
+dg launch --assets customers,orders,products
 
 # Wildcard patterns
 dg launch --assets "customer*"        # All assets starting with "customer"
@@ -780,7 +780,7 @@ Migrating from legacy `dagster asset materialize` to modern `dg launch`.
 |----------------|-------------------|
 | `dagster asset materialize -a my_asset` | `dg launch --assets my_asset` |
 | `dagster asset materialize --select my_asset` | `dg launch --assets my_asset` |
-| `dagster asset materialize -a asset1 -a asset2` | `dg launch --assets asset1 asset2` |
+| `dagster asset materialize -a asset1 -a asset2` | `dg launch --assets asset1,asset2` |
 | `python -m dagster asset materialize -a my_asset` | `dg launch --assets my_asset` or `uv run dg launch --assets my_asset` |
 | `dagster asset materialize --select "tag:priority=high"` | `dg launch --assets "tag:priority=high"` |
 | `dagster job execute -j my_job` | `dg launch --job my_job` |
@@ -812,7 +812,7 @@ All legacy features are supported in `dg launch`:
 | Feature | Legacy | Modern |
 |---------|--------|--------|
 | Single asset | `-a my_asset` | `--assets my_asset` |
-| Multiple assets | `-a a1 -a a2` | `--assets a1 a2` |
+| Multiple assets | `-a a1 -a a2` | `--assets a1,a2` |
 | Selection patterns | `--select "tag:x"` | `--assets "tag:x"` |
 | Partitions | `--partition` | `--partition` |
 | Partition ranges | `--partition-range` | `--partition-range` |
