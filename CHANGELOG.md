@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.0.4] - 2026-01-28
+
+### Added
 - **dagster-integrations**: Added comprehensive audit summary document (AUDIT_SUMMARY.md)
   - Documents all 82+ integration verifications
   - Lists critical fixes applied and remaining work
@@ -121,7 +135,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Modern type syntax (list[str], str | None)
   - Pathlib operations and ABC-based interfaces
 
-[Unreleased]: https://github.com/dagster-io/claude-plugins-dagster/compare/v0.0.3...HEAD
+[Unreleased]: https://github.com/dagster-io/claude-plugins-dagster/compare/v0.0.4...HEAD
 [0.0.2]: https://github.com/dagster-io/claude-plugins-dagster/releases/tag/v0.0.2
 [0.0.3]: https://github.com/dagster-io/claude-plugins-dagster/releases/tag/v0.0.3
+[0.0.4]: https://github.com/dagster-io/claude-plugins-dagster/releases/tag/v0.0.4
 [0.0.1]: https://github.com/dagster-io/claude-plugins-dagster/releases/tag/v0.0.1
