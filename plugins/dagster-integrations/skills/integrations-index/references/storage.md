@@ -124,23 +124,22 @@ AWS managed data warehouse based on PostgreSQL, optimized for OLAP workloads.
 
 **Quick start:**
 ```python
-from dagster_aws.redshift import RedshiftResource
+from dagster_aws.redshift import RedshiftClientResource
 
-redshift = RedshiftResource(
-    host="my-cluster.redshift.amazonaws.com",
-    port=5439,
-    user=dg.EnvVar("REDSHIFT_USER"),
-    password=dg.EnvVar("REDSHIFT_PASSWORD"),
-    database="analytics"
+redshift = RedshiftClientResource(
+    cluster_identifier="my-cluster",
+    db_name="analytics",
+    db_user=dg.EnvVar("REDSHIFT_USER"),
+    region_name="us-west-2"
 )
 
 @dg.asset
-def redshift_query(redshift: RedshiftResource):
-    with redshift.get_connection() as conn:
-        return pd.read_sql(
-            "SELECT * FROM sales_summary",
-            conn
-        )
+def redshift_query(redshift: RedshiftClientResource):
+    result = redshift.get_client().execute_statement(
+        Database="analytics",
+        Sql="SELECT * FROM sales_summary"
+    )
+    return result
 ```
 
 **Docs:** https://docs.dagster.io/integrations/libraries/aws
@@ -184,12 +183,51 @@ def teradata_data(teradata: TeradataResource):
 ### Postgres
 **Package:** `dagster-postgres` | **Support:** Dagster-supported
 
-Postgres-backed storage for Dagster's event log, run storage, and schedule storage. This integration is for Dagster's internal storage, not for storing user data assets.
+⚠️ **Note:** The `dagster-postgres` package provides Dagster instance storage only (event logs, run storage, schedule storage). For connecting to Postgres from your assets, create a custom resource using the ConfigurableResource pattern.
 
 **Use cases:**
-- Configure Dagster instance to use Postgres for metadata storage
-- Store run history and event logs in Postgres
-- Enable Postgres-backed schedule storage
+- Dagster instance storage configuration (dagster.yaml)
+- Custom Postgres connections for assets (via ConfigurableResource pattern)
+
+**Quick start (custom resource pattern):**
+```python
+import psycopg2
+from dagster import ConfigurableResource
+import dg
+
+class PostgresResource(ConfigurableResource):
+    """Custom Postgres resource for asset data access."""
+    host: str
+    port: int = 5432
+    user: str
+    password: str
+    database: str
+
+    def get_connection(self):
+        return psycopg2.connect(
+            host=self.host,
+            port=self.port,
+            user=self.user,
+            password=self.password,
+            database=self.database
+        )
+
+# Usage in definitions
+postgres = PostgresResource(
+    host="localhost",
+    port=5432,
+    user=dg.EnvVar("POSTGRES_USER"),
+    password=dg.EnvVar("POSTGRES_PASSWORD"),
+    database="analytics"
+)
+
+@dg.asset
+def postgres_table(postgres: PostgresResource):
+    with postgres.get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users")
+        return cursor.fetchall()
+```
 
 **Docs:** https://docs.dagster.io/integrations/libraries/postgres
 
@@ -341,7 +379,7 @@ def qdrant_vectors(qdrant: QdrantResource):
 ## Table Formats & Storage Layers
 
 ### Delta Lake
-**Package:** `dagster-deltalake` | **Support:** Dagster-supported
+**Package:** `dagster-deltalake` | **Support:** Community-supported
 
 Open-source storage layer providing ACID transactions and time travel for data lakes.
 
@@ -353,20 +391,20 @@ Open-source storage layer providing ACID transactions and time travel for data l
 
 **Quick start:**
 ```python
-from dagster_deltalake import DeltaTableResource, S3Config
+from dagster_deltalake import DeltaTableResource
 
 deltalake = DeltaTableResource(
-    url="s3://bucket/delta/table",
-    storage_options=S3Config(
-        aws_access_key_id=dg.EnvVar("AWS_KEY"),
-        aws_secret_access_key=dg.EnvVar("AWS_SECRET")
-    )
+    table_uri="s3://bucket/delta/table",
+    storage_options={
+        "AWS_ACCESS_KEY_ID": dg.EnvVar("AWS_KEY"),
+        "AWS_SECRET_ACCESS_KEY": dg.EnvVar("AWS_SECRET")
+    }
 )
 
 @dg.asset
-def my_delta_table(deltalake: DeltaTableResource):
-    df = deltalake.load().to_pandas()
-    return df
+def delta_table(deltalake: DeltaTableResource):
+    delta = deltalake.load()
+    return delta.to_pandas()
 ```
 
 **Docs:** https://docs.dagster.io/integrations/libraries/deltalake
@@ -407,7 +445,7 @@ def iceberg_table(iceberg: IcebergResource):
 ## File & Object Storage
 
 ### LakeFS
-**Package:** `dagster-lakefs` | **Support:** Community-supported
+**Package:** `lakefs-client` (use with custom resource) | **Support:** Community-supported
 
 Git-like version control for data lakes with branching and merging.
 
@@ -419,7 +457,22 @@ Git-like version control for data lakes with branching and merging.
 
 **Quick start:**
 ```python
-from dagster_lakefs import LakeFSResource
+from dagster import ConfigurableResource
+from lakefs_client import Configuration, LakeFSClient
+
+class LakeFSResource(ConfigurableResource):
+    """Custom LakeFS resource using lakefs-client SDK."""
+    endpoint_url: str
+    access_key_id: str
+    secret_access_key: str
+
+    def get_client(self) -> LakeFSClient:
+        config = Configuration(
+            host=self.endpoint_url,
+            username=self.access_key_id,
+            password=self.secret_access_key
+        )
+        return LakeFSClient(config)
 
 lakefs = LakeFSResource(
     endpoint_url="http://localhost:8000",
@@ -430,13 +483,8 @@ lakefs = LakeFSResource(
 @dg.asset
 def lakefs_data(lakefs: LakeFSResource):
     client = lakefs.get_client()
-    # Read from specific branch
-    data = client.read_object(
-        repository="my-repo",
-        ref="main",
-        path="data/file.parquet"
-    )
-    return data
+    # Use LakeFS SDK for operations
+    # See LakeFS Python SDK documentation
 ```
 
 **Docs:** https://docs.dagster.io/integrations/libraries/lakefs
@@ -491,88 +539,22 @@ Metadata catalog for data discovery, lineage, and governance.
 
 **Quick start:**
 ```python
-from dagster_datahub import DataHubResource
+from dagster_datahub import DatahubRESTEmitterResource
 
-datahub = DataHubResource(
-    server_url="http://localhost:8080",
+datahub = DatahubRESTEmitterResource(
+    connection="http://localhost:8080",
     token=dg.EnvVar("DATAHUB_TOKEN")
 )
 
 @dg.asset
-def publish_to_datahub(datahub: DataHubResource):
-    # Publish metadata to DataHub
-    datahub.emit_metadata(
-        dataset_urn="urn:li:dataset:my_table",
-        metadata={"description": "User data"}
-    )
+def publish_to_datahub(datahub: DatahubRESTEmitterResource):
+    # Get emitter to publish metadata to DataHub
+    emitter = datahub.get_emitter()
+    # Use DataHub SDK to create and emit metadata events
+    # See DataHub documentation for specific metadata event creation
 ```
 
 **Docs:** https://docs.dagster.io/integrations/libraries/datahub
-
----
-
-### Atlan
-**Package:** `dagster-atlan` | **Support:** Dagster-supported
-
-Modern data catalog for discovery, collaboration, and governance.
-
-**Use cases:**
-- Data catalog integration
-- Metadata synchronization
-- Data governance
-- Lineage tracking
-
-**Quick start:**
-```python
-from dagster_atlan import AtlanResource
-
-atlan = AtlanResource(
-    base_url="https://company.atlan.com",
-    api_key=dg.EnvVar("ATLAN_API_KEY")
-)
-
-@dg.asset
-def sync_to_atlan(atlan: AtlanResource):
-    client = atlan.get_client()
-    # Sync Dagster assets to Atlan catalog
-    client.create_or_update_asset(
-        name="my_asset",
-        type="TABLE",
-        metadata={...}
-    )
-```
-
-**Docs:** https://docs.dagster.io/integrations/libraries/atlan
-
----
-
-### Secoda
-**Package:** `dagster-secoda` | **Support:** Community-supported
-
-Data discovery and documentation platform.
-
-**Use cases:**
-- Automated documentation
-- Data lineage visualization
-- Team collaboration on data
-- Data search and discovery
-
-**Quick start:**
-```python
-from dagster_secoda import SecodaResource
-
-secoda = SecodaResource(
-    api_key=dg.EnvVar("SECODA_API_KEY"),
-    workspace_url="https://company.secoda.co"
-)
-
-@dg.asset
-def publish_to_secoda(secoda: SecodaResource):
-    # Publish Dagster metadata to Secoda
-    secoda.sync_assets()
-```
-
-**Docs:** https://docs.dagster.io/integrations/libraries/secoda
 
 ---
 
@@ -585,7 +567,7 @@ def publish_to_secoda(secoda: SecodaResource):
 | **Vector** | Embeddings, AI | Weaviate, Chroma, Qdrant | Medium-Large |
 | **Table Formats** | Data lake tables | Delta, Iceberg | Large |
 | **Object Storage** | Files, unstructured | S3, GCS, Azure Blob | Any |
-| **Metadata** | Catalogs, lineage | DataHub, Atlan, Secoda | N/A |
+| **Metadata** | Catalogs, lineage | DataHub | N/A |
 
 ## Common Patterns
 

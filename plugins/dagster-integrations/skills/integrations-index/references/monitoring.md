@@ -91,7 +91,7 @@ def track_metric(prometheus: PrometheusResource):
 ---
 
 ### Papertrail
-**Package:** `dagster-papertrail` | **Support:** Community-supported
+**Package:** `dagster-papertrail` | **Support:** Dagster-supported
 
 Send logs to Papertrail for centralized log management.
 

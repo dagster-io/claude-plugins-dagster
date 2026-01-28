@@ -5,7 +5,7 @@ Business intelligence and visualization platforms for data exploration, dashboar
 ---
 
 ### Looker
-**Package:** `dagster-looker` | **Support:** Community-supported
+**Package:** `dagster-looker` | **Support:** Dagster-supported
 
 Google's business intelligence platform for creating interactive dashboards and SQL-based analytics.
 
@@ -107,7 +107,7 @@ def refresh_powerbi_dataset(powerbi: PowerBIResource):
 ---
 
 ### Sigma
-**Package:** `dagster-sigma` | **Support:** Community-supported
+**Package:** `dagster-sigma` | **Support:** Dagster-supported
 
 Cloud-native analytics and BI platform with spreadsheet-like interface for data exploration.
 

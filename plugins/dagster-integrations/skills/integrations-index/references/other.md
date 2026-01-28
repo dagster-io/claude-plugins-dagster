@@ -46,7 +46,7 @@ def events() -> EventDataFrame:
 ---
 
 ### Polars
-**Package:** `dagster-polars` | **Support:** Dagster-supported
+**Package:** `dagster-polars` | **Support:** Community-supported
 
 Fast DataFrame library with columnar storage and lazy evaluation, often 5-10x faster than pandas.
 
@@ -58,7 +58,6 @@ Fast DataFrame library with columnar storage and lazy evaluation, often 5-10x fa
 
 **Quick start:**
 ```python
-from dagster_polars import PolarsDataFrame
 import polars as pl
 
 @dg.asset

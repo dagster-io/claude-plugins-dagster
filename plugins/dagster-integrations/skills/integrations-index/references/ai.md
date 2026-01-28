@@ -143,7 +143,7 @@ def train_model(context):
 ---
 
 ### Weights & Biases (W&B)
-**Package:** `dagster-wandb` | **Support:** Dagster-supported
+**Package:** `dagster-wandb` | **Support:** Community-supported
 
 ML experiment tracking and visualization platform with advanced collaboration features.
 

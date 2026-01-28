@@ -275,6 +275,26 @@ SNOWFLAKE_WAREHOUSE=PROD_WH
 
 ```python
 from typing import Literal
+from dagster import ConfigurableResource
+import psycopg2
+
+# Define custom Postgres resource (dagster-postgres only provides instance storage)
+class PostgresResource(ConfigurableResource):
+    """Custom Postgres resource for asset data access."""
+    host: str
+    database: str
+    user: str
+    password: str
+    port: int = 5432
+
+    def get_connection(self):
+        return psycopg2.connect(
+            host=self.host,
+            port=self.port,
+            user=self.user,
+            password=self.password,
+            database=self.database
+        )
 
 def create_database_resource(
     env: Literal["dev", "staging", "prod"]

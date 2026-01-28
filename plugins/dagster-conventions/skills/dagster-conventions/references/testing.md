@@ -613,6 +613,27 @@ def test_materialization_with_mocked_resource():
 ### Test with Real Services
 
 ```python
+from dagster import ConfigurableResource
+import psycopg2
+
+# Define custom Postgres resource (dagster-postgres only provides instance storage)
+class PostgresResource(ConfigurableResource):
+    """Custom Postgres resource for asset data access."""
+    host: str
+    port: int = 5432
+    database: str
+    user: str
+    password: str
+
+    def get_connection(self):
+        return psycopg2.connect(
+            host=self.host,
+            port=self.port,
+            user=self.user,
+            password=self.password,
+            database=self.database
+        )
+
 def test_database_integration():
     """Integration test with actual database."""
     postgres_resource = PostgresResource(
@@ -622,9 +643,9 @@ def test_database_integration():
         user="test_user",
         password="test_pass",
     )
-    
+
     result = state_population_database(postgres_resource)
-    
+
     assert len(result) > 0
 ```
 
@@ -666,6 +687,26 @@ services:
 ```python
 # tests/e2e/conftest.py
 import pytest
+from dagster import ConfigurableResource
+import psycopg2
+
+# Define custom Postgres resource (dagster-postgres only provides instance storage)
+class PostgresResource(ConfigurableResource):
+    """Custom Postgres resource for asset data access."""
+    host: str
+    port: int = 5432
+    database: str
+    user: str
+    password: str
+
+    def get_connection(self):
+        return psycopg2.connect(
+            host=self.host,
+            port=self.port,
+            user=self.user,
+            password=self.password,
+            database=self.database
+        )
 
 @pytest.fixture(scope="session")
 def postgres_resource():
