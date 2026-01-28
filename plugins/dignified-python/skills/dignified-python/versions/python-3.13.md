@@ -3,11 +3,14 @@
 
 # Type Annotations - Python 3.13
 
-This document provides complete, canonical type annotation guidance for Python 3.13. Python 3.13 implements PEP 649 (Deferred Evaluation of Annotations), fundamentally changing how annotations are evaluated.
+This document provides complete, canonical type annotation guidance for Python 3.13. Python 3.13
+implements PEP 649 (Deferred Evaluation of Annotations), fundamentally changing how annotations are
+evaluated.
 
 ## Overview
 
-**The key change: forward references and circular imports work naturally without `from __future__ import annotations`.**
+**The key change: forward references and circular imports work naturally without
+`from __future__ import annotations`.**
 
 All type features from previous versions (3.10-3.12) continue to work.
 
@@ -83,7 +86,8 @@ from typing import List, Dict, Set, Tuple  # Don't do this
 names: List[str] = []
 ```
 
-**Why**: Built-in types are more concise, don't require imports, and are the modern Python standard (available since 3.10).
+**Why**: Built-in types are more concise, don't require imports, and are the modern Python standard
+(available since 3.10).
 
 ## Union Types
 

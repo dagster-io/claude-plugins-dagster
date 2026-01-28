@@ -1,15 +1,21 @@
 ---
 name: dg:launch
-description: Launch (materialize) Dagster assets with comprehensive guidance on partitions, configuration, environment setup, and troubleshooting. Use when user wants to run, launch, materialize, or execute assets.
+description:
+  Launch (materialize) Dagster assets with comprehensive guidance on partitions, configuration,
+  environment setup, and troubleshooting. Use when user wants to run, launch, materialize, or
+  execute assets.
 ---
 
 # Launch Dagster Assets Skill
 
-This skill helps users launch (materialize) Dagster assets through natural language requests, providing comprehensive guidance on asset selection, partitions, configuration, and environment setup.
+This skill helps users launch (materialize) Dagster assets through natural language requests,
+providing comprehensive guidance on asset selection, partitions, configuration, and environment
+setup.
 
 ## When to Use This Skill
 
 Auto-invoke when users say:
+
 - "launch my assets"
 - "run my assets"
 - "materialize my asset"
@@ -30,17 +36,17 @@ Auto-invoke when users say:
 
 ## When to Use This Skill vs. Others
 
-| If User Says... | Use This Skill/Command | Why |
-|----------------|------------------------|-----|
-| "launch my assets" | `/dg:launch` | Asset execution guidance needed |
-| "run my pipeline" | `/dg:launch` | Pipeline execution (assets) |
-| "materialize X" | `/dg:launch` | Direct materialization request |
-| "backfill partitions" | `/dg:launch` | Partition range guidance needed |
-| "how do I launch with config" | `/dg:launch` | Config patterns needed |
-| "prototype a pipeline" | `/dg:prototype` | Need to build new assets first |
-| "best practices for assets" | `/dagster-conventions` | Learning patterns, not executing |
-| "test my assets" (writing tests) | `/dagster-conventions` | Testing patterns, not execution |
-| "test my assets" (run them) | `/dg:launch` | Execution/validation |
+| If User Says...                  | Use This Skill/Command | Why                              |
+| -------------------------------- | ---------------------- | -------------------------------- |
+| "launch my assets"               | `/dg:launch`           | Asset execution guidance needed  |
+| "run my pipeline"                | `/dg:launch`           | Pipeline execution (assets)      |
+| "materialize X"                  | `/dg:launch`           | Direct materialization request   |
+| "backfill partitions"            | `/dg:launch`           | Partition range guidance needed  |
+| "how do I launch with config"    | `/dg:launch`           | Config patterns needed           |
+| "prototype a pipeline"           | `/dg:prototype`        | Need to build new assets first   |
+| "best practices for assets"      | `/dagster-conventions` | Learning patterns, not executing |
+| "test my assets" (writing tests) | `/dagster-conventions` | Testing patterns, not execution  |
+| "test my assets" (run them)      | `/dg:launch`           | Execution/validation             |
 
 ## How It Works
 
@@ -288,6 +294,7 @@ dg launch --assets "tag:schedule=daily" --partition 2024-01-15
 ### Before Launching
 
 Users may need to:
+
 - `/dg:prototype` - Build assets if they don't exist yet
 - `/dg:create-project` - Initialize project structure
 - `/dagster-conventions` - Learn asset patterns and best practices

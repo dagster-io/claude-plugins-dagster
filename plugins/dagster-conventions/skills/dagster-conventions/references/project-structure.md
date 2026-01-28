@@ -2,17 +2,18 @@
 
 ## Pattern Summary
 
-| Pattern | When to Use |
-| ------- | ----------- |
-| Single code location | Small to medium projects, single team |
-| Multiple code locations | Large organizations, isolated dependencies |
-| Components | Standardized, repeatable patterns with declarative config |
-| Pythonic assets + Components | Mix custom logic with standardized integrations |
-| Organize by technology | Team focused on specific tech stacks |
-| Organize by concept | Business-context clarity across organization |
-| Module-based organization | Domain-driven project structure |
+| Pattern                      | When to Use                                               |
+| ---------------------------- | --------------------------------------------------------- |
+| Single code location         | Small to medium projects, single team                     |
+| Multiple code locations      | Large organizations, isolated dependencies                |
+| Components                   | Standardized, repeatable patterns with declarative config |
+| Pythonic assets + Components | Mix custom logic with standardized integrations           |
+| Organize by technology       | Team focused on specific tech stacks                      |
+| Organize by concept          | Business-context clarity across organization              |
+| Module-based organization    | Domain-driven project structure                           |
 
-**Modern Recommendation**: Use `create-dagster` with auto-discovery for new projects. Combine components with pythonic assets using `Definitions.merge()`.
+**Modern Recommendation**: Use `create-dagster` with auto-discovery for new projects. Combine
+components with pythonic assets using `Definitions.merge()`.
 
 ---
 
@@ -77,6 +78,7 @@ The `Definitions` object is the entry point for all Dagster objects.
 ### Modern Autoloading Pattern (Recommended)
 
 **Simple Auto-Discovery**:
+
 ```python
 # src/my_project/definitions.py
 from dagster import Definitions
@@ -89,6 +91,7 @@ defs = Definitions.merge(
 ```
 
 **Combining Components with Pythonic Assets**:
+
 ```python
 # src/my_project/definitions.py
 from dagster import Definitions
@@ -109,6 +112,7 @@ defs = Definitions.merge(component_defs, pythonic_defs)
 ```
 
 **Benefits**:
+
 - Automatically loads all components from `defs/` directory
 - Zero boilerplate when adding new components
 - Clean separation between components and custom assets
@@ -163,18 +167,19 @@ def resources():
 ### What is a Code Location?
 
 A code location is:
+
 1. A Python module containing a `Definitions` object
 2. A Python environment that can load that module
 
 ### When to Use Multiple Code Locations
 
-| Use Case | Benefit |
-| -------- | ------- |
-| Different teams | Independent deployments, isolated failures |
-| Different Python versions | Legacy code alongside modern code |
-| Different dependency versions | PyTorch v1 vs v2, pandas versions |
-| Compliance separation | HIPAA, PCI data isolation |
-| Functional separation | ETL vs ML vs BI layers |
+| Use Case                      | Benefit                                    |
+| ----------------------------- | ------------------------------------------ |
+| Different teams               | Independent deployments, isolated failures |
+| Different Python versions     | Legacy code alongside modern code          |
+| Different dependency versions | PyTorch v1 vs v2, pandas versions          |
+| Compliance separation         | HIPAA, PCI data isolation                  |
+| Functional separation         | ETL vs ML vs BI layers                     |
 
 ### Code Location Configuration
 
@@ -206,6 +211,7 @@ cd my_project
 ```
 
 This creates:
+
 - Virtual environment with uv
 - Standard project layout
 - pyproject.toml with Dagster dependencies
@@ -281,6 +287,7 @@ registry_modules = [
 ```
 
 **Key Settings**:
+
 - `directory_type`: "project" for dg-managed projects
 - `root_module`: Python module containing definitions.py
 - `registry_modules`: Where to discover components
@@ -300,6 +307,7 @@ projects = [
 ```
 
 **Use Cases**:
+
 - Multiple teams with separate projects
 - Shared dependencies across projects
 - Organization-wide development
@@ -335,6 +343,7 @@ schedule_storage:
 **Purpose**: Configure Dagster instance behavior (storage, compute, scheduling)
 
 **Common Uses**:
+
 - Storage configuration (SQLite, PostgreSQL)
 - Run launcher settings (local, K8s, etc.)
 - Compute log storage
@@ -344,19 +353,22 @@ schedule_storage:
 
 ## Components
 
-**What are Components?** Reusable, declarative building blocks that generate `Definitions` from configuration (YAML). Components standardize repetitive patterns and integrations without writing Python code.
+**What are Components?** Reusable, declarative building blocks that generate `Definitions` from
+configuration (YAML). Components standardize repetitive patterns and integrations without writing
+Python code.
 
 ### When to Use Components
 
-| Use Case | Example |
-| -------- | ------- |
-| Standardized ETL patterns | Multiple similar Sling replication jobs |
-| External tool integration | dbt, Sling, Fivetran |
-| Repeatable patterns | API ingestion with consistent structure |
-| Non-engineer contributions | Analysts defining pipelines via config |
-| Reducing code duplication | Same pattern repeated across teams |
+| Use Case                   | Example                                 |
+| -------------------------- | --------------------------------------- |
+| Standardized ETL patterns  | Multiple similar Sling replication jobs |
+| External tool integration  | dbt, Sling, Fivetran                    |
+| Repeatable patterns        | API ingestion with consistent structure |
+| Non-engineer contributions | Analysts defining pipelines via config  |
+| Reducing code duplication  | Same pattern repeated across teams      |
 
 **Don't Use Components When**:
+
 - Custom logic is complex and doesn't fit a template
 - Pattern is used only once
 - You need fine-grained control over execution
@@ -364,6 +376,7 @@ schedule_storage:
 ### Component Types
 
 **Built-in Components** (from Dagster):
+
 - `dagster_dbt.DbtProjectComponent`: dbt project integration
 - `dagster_sling.SlingReplicationComponent`: Database replication
 - Additional components for Fivetran, Airbyte, etc.
@@ -433,7 +446,8 @@ attributes:
     target: dev
 ```
 
-The remote configuration manages the dbt project as component state without requiring you to clone the repository locally.
+The remote configuration manages the dbt project as component state without requiring you to clone
+the repository locally.
 
 **For private repositories**, add token authentication:
 
@@ -442,7 +456,7 @@ attributes:
   project:
     repo_url: https://github.com/your-org/dbt-project.git
     repo_relative_path: dbt
-    token: '{{ env.GIT_TOKEN }}'
+    token: "{{ env.GIT_TOKEN }}"
   dbt:
     target: dev
 ```
@@ -461,7 +475,8 @@ attributes:
     profiles_dir: ~/.dbt
 ```
 
-Use local configuration when actively developing dbt models or when the dbt project is colocated in your Dagster repository.
+Use local configuration when actively developing dbt models or when the dbt project is colocated in
+your Dagster repository.
 
 ### Combining Components with Pythonic Assets
 
@@ -580,11 +595,13 @@ else:
 ### When to Reload
 
 Reload definitions when:
+
 - Adding new assets, jobs, schedules, or sensors
 - Modifying decorator arguments (`@dg.asset(...)`)
 - Changing Definitions object
 
 **Not required** when:
+
 - Editing asset function logic (with `-e` install)
 - Updating SQL queries inside assets
 - Changing resource method implementations
@@ -594,6 +611,7 @@ Reload definitions when:
 **UI**: Click "Reload Definitions" button
 
 **CLI**:
+
 ```bash
 dagster dev  # Restart for full reload
 ```
@@ -602,13 +620,13 @@ dagster dev  # Restart for full reload
 
 ## Anti-Patterns to Avoid
 
-| Anti-Pattern | Better Approach |
-| ------------ | --------------- |
-| All assets in one file | Organize by domain/layer |
-| Hardcoded paths | Use constants or EnvVar |
-| No definitions validation | Run `dg check defs` in CI |
-| Mixing production/dev config | Use environment variables |
-| Monolithic code location | Split by team/function as you grow |
+| Anti-Pattern                 | Better Approach                    |
+| ---------------------------- | ---------------------------------- |
+| All assets in one file       | Organize by domain/layer           |
+| Hardcoded paths              | Use constants or EnvVar            |
+| No definitions validation    | Run `dg check defs` in CI          |
+| Mixing production/dev config | Use environment variables          |
+| Monolithic code location     | Split by team/function as you grow |
 
 ---
 
@@ -618,4 +636,3 @@ dagster dev  # Restart for full reload
 - [Code Locations](https://docs.dagster.io/guides/deploy/code-locations)
 - [Components Guide](https://docs.dagster.io/guides/build/components)
 - [dg CLI Reference](https://docs.dagster.io/api/clis/dg-cli/dg-cli-reference)
-

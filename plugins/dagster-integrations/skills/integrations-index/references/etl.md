@@ -5,17 +5,21 @@ Extract, transform, and load tools for data ingestion, transformation, and orche
 ---
 
 ### dbt
+
 **Package:** `dagster-dbt` | **Support:** Dagster-supported
 
-Transform data using SQL models with automatic dependency management, incremental updates, and testing. Component-based integration.
+Transform data using SQL models with automatic dependency management, incremental updates, and
+testing. Component-based integration.
 
 **Use cases:**
+
 - SQL-based data transformations in warehouses
 - Build dimensional models and data marts
 - Test data quality with dbt tests
 - Document data lineage and schemas
 
 **Quick start (Component-based - Recommended):**
+
 ```bash
 # Scaffold a dbt component
 dg scaffold defs dagster_dbt.DbtProjectComponent my_dbt_project
@@ -26,10 +30,11 @@ dg scaffold defs dagster_dbt.DbtProjectComponent my_dbt_project
 type: dagster_dbt.DbtProjectComponent
 
 attributes:
-  project: '{{ project_root }}/dbt'
+  project: "{{ project_root }}/dbt"
 ```
 
 **Quick start (Pythonic):**
+
 ```python
 from dagster_dbt import DbtProject, dbt_assets
 
@@ -52,6 +57,7 @@ defs = dg.Definitions(
 **Docs:** https://docs.dagster.io/integrations/libraries/dbt
 
 **Key features:**
+
 - Component scaffolding with `dg scaffold defs dagster_dbt.DbtProjectComponent`
 - Automatic asset creation from dbt models
 - Incremental model support
@@ -61,17 +67,21 @@ defs = dg.Definitions(
 ---
 
 ### Fivetran
+
 **Package:** `dagster-fivetran` | **Support:** Dagster-supported
 
-Orchestrate Fivetran connectors for automated data ingestion from 400+ SaaS applications and databases. Component-based integration.
+Orchestrate Fivetran connectors for automated data ingestion from 400+ SaaS applications and
+databases. Component-based integration.
 
 **Use cases:**
+
 - Replicate data from SaaS tools (Salesforce, HubSpot, etc.)
 - Sync databases to data warehouses
 - Automated schema change detection
 - Schedule data syncs with Dagster
 
 **Quick start:**
+
 ```python
 from dagster_fivetran import FivetranResource, fivetran_assets, load_fivetran_asset_specs
 
@@ -92,6 +102,7 @@ defs = dg.Definitions(
 **Docs:** https://docs.dagster.io/integrations/libraries/fivetran
 
 **Key features:**
+
 - Component scaffolding with `dg scaffold defs dagster_fivetran.FivetranAccountComponent`
 - Automatic connector discovery
 - Sync monitoring and error handling
@@ -100,17 +111,21 @@ defs = dg.Definitions(
 ---
 
 ### Airbyte
+
 **Package:** `dagster-airbyte` | **Support:** Dagster-supported
 
-Manage Airbyte connections for ELT data movement from various sources to destinations with open-source or cloud deployment.
+Manage Airbyte connections for ELT data movement from various sources to destinations with
+open-source or cloud deployment.
 
 **Use cases:**
+
 - Open-source ELT pipelines
 - Custom connector development
 - Sync data between databases
 - Extract data from APIs
 
 **Quick start:**
+
 ```python
 from dagster_airbyte import AirbyteResource, load_airbyte_asset_specs
 
@@ -133,6 +148,7 @@ defs = dg.Definitions(
 **Docs:** https://docs.dagster.io/integrations/libraries/airbyte
 
 **Key features:**
+
 - Automatic connection asset generation
 - Sync status monitoring
 - Error handling and retries
@@ -141,17 +157,21 @@ defs = dg.Definitions(
 ---
 
 ### dlt
+
 **Package:** `dagster-dlt` | **Support:** Dagster-supported
 
-Python-based data loading tool for building ELT pipelines with schema evolution and data contracts. Component-based integration.
+Python-based data loading tool for building ELT pipelines with schema evolution and data contracts.
+Component-based integration.
 
 **Use cases:**
+
 - Python-based data ingestion pipelines
 - API data extraction with automatic schema inference
 - Load data from custom sources
 - Incremental loading with state management
 
 **Quick start:**
+
 ```python
 from dagster_dlt import DltResource, dlt_assets
 import dlt
@@ -185,6 +205,7 @@ defs = dg.Definitions(
 **Docs:** https://docs.dagster.io/integrations/libraries/dlt
 
 **Key features:**
+
 - Component scaffolding with `dg scaffold defs dagster_dlt.DltLoadCollectionComponent`
 - Automatic schema evolution
 - State management for incremental loads
@@ -193,17 +214,21 @@ defs = dg.Definitions(
 ---
 
 ### Sling
+
 **Package:** `dagster-sling` | **Support:** Dagster-supported
 
-High-performance data replication tool for moving data between databases, data warehouses, and file systems. Component-based integration.
+High-performance data replication tool for moving data between databases, data warehouses, and file
+systems. Component-based integration.
 
 **Use cases:**
+
 - Fast database-to-database replication
 - Bulk data transfers
 - File-to-database ingestion
 - Cross-platform data movement
 
 **Quick start:**
+
 ```python
 from dagster_sling import SlingResource, sling_assets
 
@@ -239,6 +264,7 @@ defs = dg.Definitions(
 **Docs:** https://docs.dagster.io/integrations/libraries/sling
 
 **Key features:**
+
 - Component scaffolding with `dg scaffold defs dagster_sling.SlingReplicationCollectionComponent`
 - High-performance bulk transfers
 - Multiple source/destination support
@@ -247,17 +273,21 @@ defs = dg.Definitions(
 ---
 
 ### PySpark
+
 **Package:** `dagster-pyspark` | **Support:** Dagster-supported
 
-Python API for Apache Spark enabling distributed data processing and transformation on large datasets across clusters.
+Python API for Apache Spark enabling distributed data processing and transformation on large
+datasets across clusters.
 
 **Use cases:**
+
 - Process datasets too large for memory
 - Distributed ETL transformations across clusters
 - Large-scale data aggregations and joins
 - Transform data at petabyte scale
 
 **Quick start:**
+
 ```python
 from dagster_pyspark import PySparkResource
 from pyspark.sql import DataFrame
@@ -282,14 +312,14 @@ def transform_large_dataset(pyspark: PySparkResource) -> DataFrame:
 
 ## ETL Tool Selection Guide
 
-| Tool | Best For | Architecture | Complexity |
-|------|----------|--------------|------------|
-| **dbt** | SQL transformations | Transform-only | Medium |
-| **Fivetran** | SaaS connectors (managed) | ELT (SaaS) | Low |
-| **Airbyte** | Open-source ELT | ELT (OSS/SaaS) | Medium |
-| **dlt** | Python-based extraction | EL (Python) | Medium |
-| **Sling** | High-speed replication | EL (CLI) | Low |
-| **PySpark** | Distributed ETL | Transformation | High |
+| Tool         | Best For                  | Architecture   | Complexity |
+| ------------ | ------------------------- | -------------- | ---------- |
+| **dbt**      | SQL transformations       | Transform-only | Medium     |
+| **Fivetran** | SaaS connectors (managed) | ELT (SaaS)     | Low        |
+| **Airbyte**  | Open-source ELT           | ELT (OSS/SaaS) | Medium     |
+| **dlt**      | Python-based extraction   | EL (Python)    | Medium     |
+| **Sling**    | High-speed replication    | EL (CLI)       | Low        |
+| **PySpark**  | Distributed ETL           | Transformation | High       |
 
 ## Component-Based Integration Pattern
 
@@ -315,4 +345,3 @@ type: dagster_<tool>.<ComponentClass>
 attributes:
   # Tool-specific configuration
 ```
-

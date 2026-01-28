@@ -1,62 +1,71 @@
 ---
 name: dagster-conventions
-description: Expert guidance for Dagster data orchestration including assets, resources, schedules, sensors, partitions, testing, and ETL patterns. Use when building or extending Dagster projects, writing assets, configuring automation, or integrating with dbt/dlt/Sling.
+description:
+  Expert guidance for Dagster data orchestration including assets, resources, schedules, sensors,
+  partitions, testing, and ETL patterns. Use when building or extending Dagster projects, writing
+  assets, configuring automation, or integrating with dbt/dlt/Sling.
 ---
 
 # Dagster Development Expert
 
 ## When to Use This Skill vs. Others
 
-| If User Says... | Use This Skill/Command | Why |
-|----------------|------------------------|-----|
-| "what's the best way to X" | `/dagster-conventions` | Need patterns/best practices |
-| "how do I structure assets" | `/dagster-conventions` | Asset design guidance |
-| "which integration should I use" | `/dagster-integrations` | Integration discovery needed |
-| "implement X pipeline" | `/dg:prototype` | Ready to build, not just learn |
-| "is this pythonic" | `/dignified-python` | Python code review needed |
-| "create new project" | `/dg:create-project` | Project initialization needed |
-| "how do I test assets" | `/dagster-conventions` (testing section) | Testing patterns guidance |
-| "schedule patterns" | `/dagster-conventions` (automation section) | Scheduling/automation guidance |
-| "dbt best practices" | `/dagster-conventions` (dbt section) | dbt-specific patterns |
+| If User Says...                  | Use This Skill/Command                      | Why                            |
+| -------------------------------- | ------------------------------------------- | ------------------------------ |
+| "what's the best way to X"       | `/dagster-conventions`                      | Need patterns/best practices   |
+| "how do I structure assets"      | `/dagster-conventions`                      | Asset design guidance          |
+| "which integration should I use" | `/dagster-integrations`                     | Integration discovery needed   |
+| "implement X pipeline"           | `/dg:prototype`                             | Ready to build, not just learn |
+| "is this pythonic"               | `/dignified-python`                         | Python code review needed      |
+| "create new project"             | `/dg:create-project`                        | Project initialization needed  |
+| "how do I test assets"           | `/dagster-conventions` (testing section)    | Testing patterns guidance      |
+| "schedule patterns"              | `/dagster-conventions` (automation section) | Scheduling/automation guidance |
+| "dbt best practices"             | `/dagster-conventions` (dbt section)        | dbt-specific patterns          |
 
 ## Core Philosophy
 
-**Think in Assets**: Dagster is built around the asset abstraction—persistent objects like tables, files, or models that your pipeline produces. Assets provide:
+**Think in Assets**: Dagster is built around the asset abstraction—persistent objects like tables,
+files, or models that your pipeline produces. Assets provide:
+
 - **Clear Lineage**: Explicit dependencies define data flow
 - **Better Observability**: Track what data exists and how it was created
 - **Improved Testability**: Assets are just Python functions that can be tested directly
-- **Declarative Pipelines**: Focus on *what* to produce, not *how* to execute
+- **Declarative Pipelines**: Focus on _what_ to produce, not _how_ to execute
 
-**Assets over Ops**: For most data pipelines, prefer assets over ops. Use ops only when the asset abstraction doesn't fit (non-data workflows, complex execution patterns).
+**Assets over Ops**: For most data pipelines, prefer assets over ops. Use ops only when the asset
+abstraction doesn't fit (non-data workflows, complex execution patterns).
 
-**Environment Separation**: Use resources and `EnvVar` to maintain separate configurations for dev, staging, and production without code changes.
+**Environment Separation**: Use resources and `EnvVar` to maintain separate configurations for dev,
+staging, and production without code changes.
 
 ---
 
 ## Quick Reference
 
-| If you're writing...                  | Check this section/reference                                  |
-| ------------------------------------- | ------------------------------------------------------------- |
-| `@dg.asset`                           | [Assets](#assets-quick-reference) or `references/assets.md`   |
-| `ConfigurableResource`                | [Resources](#resources-quick-reference) or `references/resources.md` |
-| `AutomationCondition`                 | [Declarative Automation](#declarative-automation-quick-reference) or `references/automation.md` |
-| `@dg.schedule` or `ScheduleDefinition`| [Automation](#automation-quick-reference) or `references/automation.md` |
-| `@dg.sensor`                          | [Sensors](#sensors-quick-reference) or `references/automation.md` |
-| `PartitionsDefinition`                | [Partitions](#partitions-quick-reference) or `references/automation.md` |
-| Tests with `dg.materialize()`         | [Testing](#testing-quick-reference) or `references/testing.md` |
-| `@asset_check`                        | `references/testing.md#asset-checks`                          |
-| `@dlt_assets` or `@sling_assets`      | `references/etl-patterns.md`                                  |
-| `@dbt_assets`                         | [dbt Integration](#dbt-integration) or `dbt-development` skill |
-| `Definitions` or code locations       | `references/project-structure.md`                             |
-| Components (`defs.yaml`)              | `references/project-structure.md#components`                  |
+| If you're writing...                   | Check this section/reference                                                                    |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `@dg.asset`                            | [Assets](#assets-quick-reference) or `references/assets.md`                                     |
+| `ConfigurableResource`                 | [Resources](#resources-quick-reference) or `references/resources.md`                            |
+| `AutomationCondition`                  | [Declarative Automation](#declarative-automation-quick-reference) or `references/automation.md` |
+| `@dg.schedule` or `ScheduleDefinition` | [Automation](#automation-quick-reference) or `references/automation.md`                         |
+| `@dg.sensor`                           | [Sensors](#sensors-quick-reference) or `references/automation.md`                               |
+| `PartitionsDefinition`                 | [Partitions](#partitions-quick-reference) or `references/automation.md`                         |
+| Tests with `dg.materialize()`          | [Testing](#testing-quick-reference) or `references/testing.md`                                  |
+| `@asset_check`                         | `references/testing.md#asset-checks`                                                            |
+| `@dlt_assets` or `@sling_assets`       | `references/etl-patterns.md`                                                                    |
+| `@dbt_assets`                          | [dbt Integration](#dbt-integration) or `dbt-development` skill                                  |
+| `Definitions` or code locations        | `references/project-structure.md`                                                               |
+| Components (`defs.yaml`)               | `references/project-structure.md#components`                                                    |
 
 ---
 
 ## Core Concepts
 
-**Asset**: A persistent object (table, file, model) that your pipeline produces. Define with `@dg.asset`.
+**Asset**: A persistent object (table, file, model) that your pipeline produces. Define with
+`@dg.asset`.
 
-**Resource**: External services/tools (databases, APIs) shared across assets. Define with `ConfigurableResource`.
+**Resource**: External services/tools (databases, APIs) shared across assets. Define with
+`ConfigurableResource`.
 
 **Job**: A selection of assets to execute together. Create with `dg.define_asset_job()`.
 
@@ -68,9 +77,11 @@ description: Expert guidance for Dagster data orchestration including assets, re
 
 **Definitions**: The container for all Dagster objects in a code location.
 
-**Component**: Reusable, declarative building blocks that generate `Definitions` from configuration (YAML). Use for standardized patterns.
+**Component**: Reusable, declarative building blocks that generate `Definitions` from configuration
+(YAML). Use for standardized patterns.
 
-**Declarative Automation**: Modern automation framework where you set conditions on assets rather than scheduling jobs.
+**Declarative Automation**: Modern automation framework where you set conditions on assets rather
+than scheduling jobs.
 
 ---
 
@@ -113,7 +124,9 @@ def customers() -> None:
 ```
 
 **Best Practices**:
-- **Naming**: Use nouns describing what is produced (`customers`, `daily_revenue`), not verbs (`load_customers`)
+
+- **Naming**: Use nouns describing what is produced (`customers`, `daily_revenue`), not verbs
+  (`load_customers`)
 - **Tags**: Primary mechanism for organization (use liberally)
 - **Owners**: Specify team or individual owners for accountability
 - **code_version**: Track when asset logic changes for lineage
@@ -170,13 +183,13 @@ my_schedule = dg.ScheduleDefinition(
 
 ### Common Cron Patterns
 
-| Pattern       | Meaning                    |
-| ------------- | -------------------------- |
-| `0 * * * *`   | Every hour                 |
-| `0 0 * * *`   | Daily at midnight          |
-| `0 0 * * 1`   | Weekly on Monday           |
-| `0 0 1 * *`   | Monthly on the 1st         |
-| `0 0 5 * *`   | Monthly on the 5th         |
+| Pattern     | Meaning            |
+| ----------- | ------------------ |
+| `0 * * * *` | Every hour         |
+| `0 0 * * *` | Daily at midnight  |
+| `0 0 * * 1` | Weekly on Monday   |
+| `0 0 1 * *` | Monthly on the 1st |
+| `0 0 5 * *` | Monthly on the 5th |
 
 ---
 
@@ -215,12 +228,14 @@ def flexible_asset() -> None:
 ```
 
 **Benefits over Schedules**:
+
 - More expressive condition logic
 - Asset-native (no separate job definitions needed)
 - Automatic dependency-aware execution
 - Better for complex automation scenarios
 
 **When to Use**:
+
 - Asset-centric pipelines with complex update logic
 - Condition-based triggers (data availability, freshness)
 - Prefer over schedules for new projects
@@ -284,15 +299,15 @@ def regional_data(context: dg.AssetExecutionContext) -> None:
 
 ### Partition Types
 
-| Type | Use Case |
-| ---- | -------- |
-| `DailyPartitionsDefinition` | One partition per day |
-| `WeeklyPartitionsDefinition` | One partition per week |
-| `MonthlyPartitionsDefinition` | One partition per month |
-| `HourlyPartitionsDefinition` | One partition per hour |
-| `StaticPartitionsDefinition` | Fixed set of partitions |
-| `DynamicPartitionsDefinition` | Partitions created at runtime |
-| `MultiPartitionsDefinition` | Combine multiple partition dimensions |
+| Type                          | Use Case                              |
+| ----------------------------- | ------------------------------------- |
+| `DailyPartitionsDefinition`   | One partition per day                 |
+| `WeeklyPartitionsDefinition`  | One partition per week                |
+| `MonthlyPartitionsDefinition` | One partition per month               |
+| `HourlyPartitionsDefinition`  | One partition per hour                |
+| `StaticPartitionsDefinition`  | Fixed set of partitions               |
+| `DynamicPartitionsDefinition` | Partitions created at runtime         |
+| `MultiPartitionsDefinition`   | Combine multiple partition dimensions |
 
 **Best Practice**: Limit partitions to **100,000 or fewer per asset** for optimal UI performance.
 
@@ -351,7 +366,8 @@ def validate_non_empty(my_asset):
 
 ## dbt Integration
 
-For dbt integration, **prefer the component-based approach** for standard dbt projects. Use Pythonic assets only when you need custom logic or fine-grained control.
+For dbt integration, **prefer the component-based approach** for standard dbt projects. Use Pythonic
+assets only when you need custom logic or fine-grained control.
 
 ### Component-Based dbt (Recommended)
 
@@ -370,18 +386,20 @@ attributes:
 ```
 
 **When to use**:
+
 - Standard dbt transformations
 - Remote dbt project in Git repository
 - Declarative configuration preferred
 - Component reusability desired
 
 **For private repositories**:
+
 ```yaml
 attributes:
   project:
     repo_url: https://github.com/your-org/dbt-project.git
     repo_relative_path: dbt
-    token: '{{ env.GIT_TOKEN }}'
+    token: "{{ env.GIT_TOKEN }}"
   dbt:
     target: dev
 ```
@@ -407,6 +425,7 @@ dg.Definitions(
 ```
 
 **When to use**:
+
 - Custom transformation logic needed
 - Local development with frequent dbt code changes
 - Fine-grained control over dbt execution
@@ -418,17 +437,20 @@ dg.Definitions(
 ## When to Load References
 
 ### Load `references/assets.md` when:
+
 - Defining complex asset dependencies
 - Adding metadata, groups, or key prefixes
 - Working with asset factories
 - Understanding asset materialization patterns
 
 ### Load `references/resources.md` when:
+
 - Creating custom `ConfigurableResource` classes
 - Integrating with databases, APIs, or cloud services
 - Understanding resource scoping and lifecycle
 
 ### Load `references/automation.md` when:
+
 - Creating schedules with complex cron patterns
 - Building sensors with cursors and state management
 - Implementing partitions and backfills
@@ -436,18 +458,21 @@ dg.Definitions(
 - Automating dbt or other integration runs
 
 ### Load `references/testing.md` when:
+
 - Writing unit tests for assets
 - Mocking resources and dependencies
 - Using `dg.materialize()` for integration tests
 - Creating asset checks for data validation
 
 ### Load `references/etl-patterns.md` when:
+
 - Using dlt for embedded ETL
 - Using Sling for database replication
 - Loading data from files or APIs
 - Integrating external ETL tools
 
 ### Load `references/project-structure.md` when:
+
 - Setting up a new Dagster project
 - Configuring `Definitions` and code locations
 - Using `dg` CLI for scaffolding
@@ -480,6 +505,7 @@ my_project/
 ### Definitions Pattern (Modern)
 
 **Auto-Discovery (Simplest)**:
+
 ```python
 # src/my_project/definitions.py
 from dagster import Definitions
@@ -492,6 +518,7 @@ defs = Definitions.merge(
 ```
 
 **Combining Components with Pythonic Assets**:
+
 ```python
 # src/my_project/definitions.py
 from dagster import Definitions
@@ -512,6 +539,7 @@ defs = Definitions.merge(component_defs, pythonic_defs)
 ```
 
 **Traditional (Explicit)**:
+
 ```python
 # src/my_project/definitions.py
 from dagster import Definitions
@@ -584,14 +612,14 @@ def derived_asset() -> None:
 
 ## Anti-Patterns to Avoid
 
-| Anti-Pattern | Better Approach |
-| ------------ | --------------- |
-| Hardcoding credentials in assets | Use `ConfigurableResource` with env vars |
-| Giant assets that do everything | Split into focused, composable assets |
-| Ignoring asset return types | Use type annotations for clarity |
-| Skipping tests for assets | Test assets like regular Python functions |
-| Not using partitions for time-series | Use `DailyPartitionsDefinition` etc. |
-| Putting all assets in one file | Organize by domain in separate modules |
+| Anti-Pattern                         | Better Approach                           |
+| ------------------------------------ | ----------------------------------------- |
+| Hardcoding credentials in assets     | Use `ConfigurableResource` with env vars  |
+| Giant assets that do everything      | Split into focused, composable assets     |
+| Ignoring asset return types          | Use type annotations for clarity          |
+| Skipping tests for assets            | Test assets like regular Python functions |
+| Not using partitions for time-series | Use `DailyPartitionsDefinition` etc.      |
+| Putting all assets in one file       | Organize by domain in separate modules    |
 
 ---
 
@@ -644,7 +672,8 @@ dagster job execute -j my_job   # Execute a job
 dagster asset materialize -a my_asset  # Materialize an asset
 ```
 
-**Use `dg` CLI for projects created with `create-dagster`**. It provides auto-discovery, scaffolding, and modern workflow support.
+**Use `dg` CLI for projects created with `create-dagster`**. It provides auto-discovery,
+scaffolding, and modern workflow support.
 
 ---
 

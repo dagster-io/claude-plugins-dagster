@@ -1,5 +1,7 @@
 ---
-description: Default parameter dangers, keyword-only arguments, ThreadPoolExecutor patterns, speculative test infrastructure.
+description:
+  Default parameter dangers, keyword-only arguments, ThreadPoolExecutor patterns, speculative test
+  infrastructure.
 ---
 
 # API Design Reference
@@ -10,20 +12,22 @@ description: Default parameter dangers, keyword-only arguments, ThreadPoolExecut
 
 ## Default Parameter Values Are Dangerous
 
-> **Scope:** This rule applies to **function definitions** (`def foo(bar: bool = False)`),
-> NOT to **function calls** where you pass an argument named `default` (e.g.,
-> `click.confirm(default=True)`). Passing `default=True` to a function that accepts
-> a `default` parameter is perfectly valid—you're not creating a default parameter value,
-> you're explicitly providing a value.
+> **Scope:** This rule applies to **function definitions** (`def foo(bar: bool = False)`), NOT to
+> **function calls** where you pass an argument named `default` (e.g.,
+> `click.confirm(default=True)`). Passing `default=True` to a function that accepts a `default`
+> parameter is perfectly valid—you're not creating a default parameter value, you're explicitly
+> providing a value.
 
-**Avoid default parameter values unless absolutely necessary.** They are a significant source of bugs.
+**Avoid default parameter values unless absolutely necessary.** They are a significant source of
+bugs.
 
 **Why defaults are dangerous:**
 
 1. **Silent incorrect behavior** - Callers forget to pass a parameter and get unexpected results
 2. **Hidden coupling** - The default encodes an assumption that may not hold for all callers
 3. **Audit difficulty** - Hard to verify all call sites are using the right value
-4. **Refactoring hazard** - Adding a new parameter with a default doesn't trigger errors at existing call sites
+4. **Refactoring hazard** - Adding a new parameter with a default doesn't trigger errors at existing
+   call sites
 
 ```python
 # DANGEROUS: Default that might be wrong for some callers
@@ -58,7 +62,10 @@ def activate_worktree(ctx, repo, path, script, command_name) -> None:
 
 1. **Truly optional behavior** - Where the default is correct for 95%+ of callers
 2. **Backwards compatibility** - When adding a parameter to existing API (temporary)
-3. **Test helper functions** - Functions in `tests/test_utils/` that exist to reduce test boilerplate are explicitly exempt. These helpers often wrap complex constructors (like `format_plan_header_body`) with sensible defaults, and having many default parameters is their intended purpose—not a code smell
+3. **Test helper functions** - Functions in `tests/test_utils/` that exist to reduce test
+   boilerplate are explicitly exempt. These helpers often wrap complex constructors (like
+   `format_plan_header_body`) with sensible defaults, and having many default parameters is their
+   intended purpose—not a code smell
 
 **When reviewing code with defaults, ask:**
 
@@ -72,7 +79,8 @@ def activate_worktree(ctx, repo, path, script, command_name) -> None:
 
 **Functions with 5 or more parameters MUST use keyword-only arguments.**
 
-Use the `*` separator after the first positional parameter to enforce keyword-only at the language level. This improves call-site readability by forcing explicit parameter names.
+Use the `*` separator after the first positional parameter to enforce keyword-only at the language
+level. This improves call-site readability by forcing explicit parameter names.
 
 ```python
 # CORRECT: Keyword-only after first param
@@ -133,7 +141,8 @@ def create_worktree(
 
 ## ThreadPoolExecutor.submit() Pattern
 
-`ThreadPoolExecutor.submit()` passes arguments positionally to the callable. For functions with keyword-only parameters, wrap the call in a lambda:
+`ThreadPoolExecutor.submit()` passes arguments positionally to the callable. For functions with
+keyword-only parameters, wrap the call in a lambda:
 
 ```python
 # WRONG: submit() passes args positionally - fails with keyword-only functions
@@ -157,7 +166,8 @@ future = executor.submit(
 
 **Don't add parameters to fakes "just in case" they might be useful for testing.**
 
-Fakes should mirror production interfaces. Adding test-only configuration knobs that never get used creates dead code and false complexity.
+Fakes should mirror production interfaces. Adding test-only configuration knobs that never get used
+creates dead code and false complexity.
 
 ```python
 # WRONG: Test-only parameter that's never used in production
@@ -178,7 +188,9 @@ class FakeGitHub:
         ...
 ```
 
-**The test for this:** If grep shows a parameter is only ever passed in test files, and those tests are testing hypothetical scenarios rather than actual production behavior, delete both the parameter and the tests.
+**The test for this:** If grep shows a parameter is only ever passed in test files, and those tests
+are testing hypothetical scenarios rather than actual production behavior, delete both the parameter
+and the tests.
 
 ---
 

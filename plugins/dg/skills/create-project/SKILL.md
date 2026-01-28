@@ -1,6 +1,8 @@
 ---
 name: dg:create-project
-description: Create a new Dagster project with recommended structure. Use when user wants to initialize, scaffold, or create a new Dagster project.
+description:
+  Create a new Dagster project with recommended structure. Use when user wants to initialize,
+  scaffold, or create a new Dagster project.
 ---
 
 # Create Dagster Project Skill
@@ -10,6 +12,7 @@ This skill helps users create new Dagster projects through natural language requ
 ## When to Use This Skill
 
 Auto-invoke when users say:
+
 - "create a dagster project"
 - "initialize a dagster project"
 - "scaffold a new dagster project"
@@ -20,14 +23,14 @@ Auto-invoke when users say:
 
 ## When to Use This Skill vs. Others
 
-| If User Says... | Use This Skill/Command | Why |
-|----------------|------------------------|-----|
-| "create a dagster project" | `/dg:create-project` | Initialize new project |
-| "create a workspace" | `/dg:create-workspace` | Multi-project workspace needed |
-| "implement X pipeline" | `/dg:prototype` | Add to existing project |
-| "best practices" | `/dagster-conventions` | Learn patterns first |
-| "which integration" | `/dagster-integrations` | Integration discovery |
-| "review my code" | `/dignified-python` | Python code quality |
+| If User Says...            | Use This Skill/Command  | Why                            |
+| -------------------------- | ----------------------- | ------------------------------ |
+| "create a dagster project" | `/dg:create-project`    | Initialize new project         |
+| "create a workspace"       | `/dg:create-workspace`  | Multi-project workspace needed |
+| "implement X pipeline"     | `/dg:prototype`         | Add to existing project        |
+| "best practices"           | `/dagster-conventions`  | Learn patterns first           |
+| "which integration"        | `/dagster-integrations` | Integration discovery          |
+| "review my code"           | `/dignified-python`     | Python code quality            |
 
 ## How It Works
 
@@ -43,12 +46,14 @@ When this skill is invoked:
 ## Example Flows
 
 **User provides a name:**
+
 ```
 User: "Create a dagster project called my-pipeline"
 → Invoke: /dg:create-project my-pipeline
 ```
 
 **User doesn't provide a name:**
+
 ```
 User: "I want to create a new dagster project"
 → Ask: "What would you like to name your Dagster project?"
@@ -57,12 +62,14 @@ User: "I want to create a new dagster project"
 ```
 
 **User wants to create in current directory:**
+
 ```
 User: "Create a dagster project here"
 → Invoke: /dg:create-project .
 ```
 
 **User provides a path:**
+
 ```
 User: "Create a dagster project at ./my-projects/pipeline"
 → Invoke: /dg:create-project ./my-projects/pipeline
@@ -78,6 +85,7 @@ User: "Create a dagster project at ./my-projects/pipeline"
 ## Related Commands
 
 After creating a project, users may want to:
+
 - Use `/dg:prototype <requirements>` to build their first assets
 - Use `dg dev` to start the Dagster UI
 - Navigate to the project directory if they created it with a name

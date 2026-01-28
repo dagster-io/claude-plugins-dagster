@@ -5,6 +5,7 @@ Retrieve and display logs for the specified run ID.
 **Usage:** `/dg:logs <run-id> [level] [limit]`
 
 Parameters:
+
 - `$1` (required): Run ID
 - `$2` (optional): Log level filter (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 - `$3` (optional): Maximum number of log entries to return
@@ -30,6 +31,7 @@ If both level and limit are provided:
 ## Display
 
 Parse and display the logs in a readable format showing:
+
 1. **Timestamp** - When the log entry occurred
 2. **Level** - Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 3. **Step** - Which step generated the log (if applicable)

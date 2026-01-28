@@ -2,25 +2,26 @@
 
 ## Pattern Summary
 
-| Pattern | When to Use |
-| ------- | ----------- |
-| Basic `@dg.asset` | Simple one-to-one transformation |
-| `@multi_asset` | Single operation produces multiple related assets |
-| `@graph_asset` | Multiple steps needed to produce one asset |
-| `@graph_multi_asset` | Complex pipeline producing multiple assets |
-| Parameter-based dependency | Asset depends on another managed asset |
-| `deps=` dependency | Asset depends on external or non-Python asset |
-| Asset with metadata | Track runtime metrics (row counts, timestamps) |
-| Asset groups | Organize related assets visually |
-| Asset key prefixes | Namespace assets for multi-tenant or layered data |
-| Partitioned assets | Time-series or categorical data splits |
-| Asset with `code_version` | Track when asset logic changes |
+| Pattern                    | When to Use                                       |
+| -------------------------- | ------------------------------------------------- |
+| Basic `@dg.asset`          | Simple one-to-one transformation                  |
+| `@multi_asset`             | Single operation produces multiple related assets |
+| `@graph_asset`             | Multiple steps needed to produce one asset        |
+| `@graph_multi_asset`       | Complex pipeline producing multiple assets        |
+| Parameter-based dependency | Asset depends on another managed asset            |
+| `deps=` dependency         | Asset depends on external or non-Python asset     |
+| Asset with metadata        | Track runtime metrics (row counts, timestamps)    |
+| Asset groups               | Organize related assets visually                  |
+| Asset key prefixes         | Namespace assets for multi-tenant or layered data |
+| Partitioned assets         | Time-series or categorical data splits            |
+| Asset with `code_version`  | Track when asset logic changes                    |
 
 ---
 
 ## Launching Assets
 
-Once you've defined assets, you'll need to materialize (launch) them. Use the modern `dg launch` command for all asset execution.
+Once you've defined assets, you'll need to materialize (launch) them. Use the modern `dg launch`
+command for all asset execution.
 
 ### Quick Launch Examples
 
@@ -117,6 +118,7 @@ dg launch --assets downstream_asset
 ### Comprehensive Launch Documentation
 
 For detailed coverage of all launch features, see:
+
 - **`/dg:launch` command** - Complete guide to asset launching
 - Partition patterns (daily, static, multi-dimensional)
 - Configuration structure and patterns
@@ -142,6 +144,7 @@ def my_asset() -> None:
 ```
 
 **Key points**:
+
 - Function name becomes the asset key
 - Docstring becomes the description
 - Return type annotation is optional but recommended
@@ -168,6 +171,7 @@ def downstream_asset(upstream_asset: dict) -> list:
 ```
 
 **How it works**:
+
 - Parameter name must match the upstream asset's function name
 - Dagster automatically passes the materialized output
 - Creates a visual dependency in the asset graph
@@ -187,6 +191,7 @@ def processed_data() -> None:
 ```
 
 **Use `deps=` when**:
+
 - The upstream asset doesn't return a value (returns `None`)
 - The asset is external (file created by another process)
 - You need loose coupling between assets
@@ -229,6 +234,7 @@ def my_asset() -> None:
 ```
 
 **Best Practices for Metadata**:
+
 - **owners**: Specify team (`team:name`) or individuals for accountability
 - **tags**: Primary organizational mechanism—use liberally for filtering and grouping
 - **code_version**: Track when asset logic changes for lineage and debugging
@@ -262,16 +268,16 @@ def my_asset() -> dg.MaterializeResult:
 
 ### MetadataValue Types
 
-| Type | Usage |
-| ---- | ----- |
-| `MetadataValue.int(n)` | Integer values (row counts) |
-| `MetadataValue.float(n)` | Float values (percentages) |
-| `MetadataValue.text(s)` | Short text values |
-| `MetadataValue.json(obj)` | JSON-serializable objects |
-| `MetadataValue.md(s)` | Markdown text |
-| `MetadataValue.url(s)` | Clickable URLs |
-| `MetadataValue.path(s)` | File paths |
-| `MetadataValue.table(records)` | Tabular data |
+| Type                           | Usage                       |
+| ------------------------------ | --------------------------- |
+| `MetadataValue.int(n)`         | Integer values (row counts) |
+| `MetadataValue.float(n)`       | Float values (percentages)  |
+| `MetadataValue.text(s)`        | Short text values           |
+| `MetadataValue.json(obj)`      | JSON-serializable objects   |
+| `MetadataValue.md(s)`          | Markdown text               |
+| `MetadataValue.url(s)`         | Clickable URLs              |
+| `MetadataValue.path(s)`        | File paths                  |
+| `MetadataValue.table(records)` | Tabular data                |
 
 ---
 
@@ -294,6 +300,7 @@ def daily_revenue(raw_orders) -> None:
 ```
 
 **Best practices**:
+
 - Group by data layer: `raw`, `staging`, `analytics`, `mart`
 - Group by domain: `sales`, `marketing`, `finance`
 - Group by source: `postgres`, `api`, `files`
@@ -317,6 +324,7 @@ def orders_cleaned() -> None:
 ```
 
 **Use prefixes for**:
+
 - Multi-tenant architectures
 - Environment separation
 - Data layer organization (bronze/silver/gold)
@@ -431,6 +439,7 @@ def load_data():
 ```
 
 **Use when**:
+
 - One computation produces multiple logical assets
 - Assets are always created together
 - Shared setup is expensive
@@ -468,6 +477,7 @@ def complex_asset():
 ```
 
 **Use When**:
+
 - Single asset requires multiple distinct steps
 - You want to encapsulate complexity
 - Testing individual steps is important
@@ -497,6 +507,7 @@ def etl_pipeline():
 ```
 
 **Use When**:
+
 - Multiple assets require shared complex logic
 - Steps are expensive and should be shared
 - Better encapsulation than separate assets with deps
@@ -608,14 +619,14 @@ dg launch --job analytics_job
 
 ## Common Anti-Patterns
 
-| Anti-Pattern | Better Approach |
-| ------------ | --------------- |
-| `load_customers` (verb-based name) | `customers` (noun describing output) |
-| Giant asset doing everything | Split into focused, composable assets |
-| No type annotations | Add return type: `-> dict`, `-> None` |
-| No docstring | Add description in docstring or `description=` |
-| Ignoring `MaterializeResult` | Return metadata for observability |
-| Hardcoded paths | Use configuration or environment variables |
+| Anti-Pattern                       | Better Approach                                |
+| ---------------------------------- | ---------------------------------------------- |
+| `load_customers` (verb-based name) | `customers` (noun describing output)           |
+| Giant asset doing everything       | Split into focused, composable assets          |
+| No type annotations                | Add return type: `-> dict`, `-> None`          |
+| No docstring                       | Add description in docstring or `description=` |
+| Ignoring `MaterializeResult`       | Return metadata for observability              |
+| Hardcoded paths                    | Use configuration or environment variables     |
 
 ---
 

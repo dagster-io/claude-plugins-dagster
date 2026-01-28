@@ -1,6 +1,8 @@
 ---
 name: dg:create-workspace
-description: Create a new Dagster workspace for managing multiple projects. Use when user wants to initialize a workspace, manage multiple Dagster projects together, or set up a multi-project environment.
+description:
+  Create a new Dagster workspace for managing multiple projects. Use when user wants to initialize a
+  workspace, manage multiple Dagster projects together, or set up a multi-project environment.
 ---
 
 # Create Dagster Workspace Skill
@@ -10,6 +12,7 @@ This skill helps users create Dagster workspaces through natural language reques
 ## When to Use This Skill
 
 Auto-invoke when users say:
+
 - "create a dagster workspace"
 - "initialize a dagster workspace"
 - "set up a multi-project dagster environment"
@@ -20,14 +23,14 @@ Auto-invoke when users say:
 
 ## When to Use This Skill vs. Others
 
-| If User Says... | Use This Skill/Command | Why |
-|----------------|------------------------|-----|
-| "create a workspace" | `/dg:create-workspace` | Multi-project workspace needed |
-| "create a project" | `/dg:create-project` | Single project initialization |
-| "implement X pipeline" | `/dg:prototype` | Add to existing project |
-| "manage multiple projects" | `/dg:create-workspace` | Workspace for multiple projects |
-| "best practices" | `/dagster-conventions` | Learn patterns first |
-| "which integration" | `/dagster-integrations` | Integration discovery |
+| If User Says...            | Use This Skill/Command  | Why                             |
+| -------------------------- | ----------------------- | ------------------------------- |
+| "create a workspace"       | `/dg:create-workspace`  | Multi-project workspace needed  |
+| "create a project"         | `/dg:create-project`    | Single project initialization   |
+| "implement X pipeline"     | `/dg:prototype`         | Add to existing project         |
+| "manage multiple projects" | `/dg:create-workspace`  | Workspace for multiple projects |
+| "best practices"           | `/dagster-conventions`  | Learn patterns first            |
+| "which integration"        | `/dagster-integrations` | Integration discovery           |
 
 ## How It Works
 
@@ -43,12 +46,14 @@ When this skill is invoked:
 ## Example Flows
 
 **User provides a name:**
+
 ```
 User: "Create a dagster workspace called my-org"
 → Invoke: /dg:create-workspace my-org
 ```
 
 **User doesn't provide a name:**
+
 ```
 User: "I want to set up a workspace for multiple dagster projects"
 → Ask: "What would you like to name your Dagster workspace?"
@@ -57,12 +62,14 @@ User: "I want to set up a workspace for multiple dagster projects"
 ```
 
 **User wants to create in current directory:**
+
 ```
 User: "Create a dagster workspace here"
 → Invoke: /dg:create-workspace .
 ```
 
 **User provides a path:**
+
 ```
 User: "Create a dagster workspace at ./workspaces/analytics"
 → Invoke: /dg:create-workspace ./workspaces/analytics
@@ -78,6 +85,7 @@ User: "Create a dagster workspace at ./workspaces/analytics"
 ## Related Commands
 
 After creating a workspace, users may want to:
+
 - Use `/dg:create-project <name>` to add projects to the workspace
 - Use `dg dev` to start the Dagster UI for the workspace
 - Navigate to the workspace directory if they created it with a name

@@ -3,11 +3,14 @@
 
 # Type Annotations - Python 3.10
 
-This document provides complete, canonical type annotation guidance for Python 3.10. This is the baseline for modern Python type syntax.
+This document provides complete, canonical type annotation guidance for Python 3.10. This is the
+baseline for modern Python type syntax.
 
 ## Overview
 
-Python 3.10 introduced major improvements to type annotation syntax through PEP 604 (union types via `|`) and PEP 585 (generic types in standard collections). These features eliminated the need for most `typing` module imports and made type annotations more concise and readable.
+Python 3.10 introduced major improvements to type annotation syntax through PEP 604 (union types via
+`|`) and PEP 585 (generic types in standard collections). These features eliminated the need for
+most `typing` module imports and made type annotations more concise and readable.
 
 **What's new in 3.10:**
 

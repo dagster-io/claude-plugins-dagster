@@ -11,7 +11,6 @@ import re
 import sys
 from datetime import date
 from pathlib import Path
-from typing import Optional
 
 
 def validate_version(version: str) -> bool:
@@ -32,12 +31,12 @@ def update_plugin_version(plugin_path: Path, version: str) -> None:
 
     Preserves JSON formatting (2-space indent, trailing newline).
     """
-    with open(plugin_path) as f:
+    with plugin_path.open() as f:
         data = json.load(f)
 
     data["version"] = version
 
-    with open(plugin_path, "w") as f:
+    with plugin_path.open("w") as f:
         json.dump(data, f, indent=2)
         f.write("\n")
 
@@ -52,7 +51,7 @@ def update_changelog(repo_root: Path, version: str) -> None:
     """
     changelog_path = repo_root / "CHANGELOG.md"
 
-    with open(changelog_path) as f:
+    with changelog_path.open() as f:
         content = f.read()
 
     today = date.today().isoformat()
@@ -70,7 +69,7 @@ def update_changelog(repo_root: Path, version: str) -> None:
         r"## \[Unreleased\]",
         f"## [Unreleased]\n\n### Added\n\n### Changed\n\n### Deprecated\n\n### Removed\n\n### Fixed\n\n### Security\n\n## [{version}] - {today}",
         content,
-        count=1
+        count=1,
     )
 
     # Update comparison links at bottom
@@ -78,7 +77,7 @@ def update_changelog(repo_root: Path, version: str) -> None:
     content = re.sub(
         r"\[Unreleased\]: https://github\.com/dagster-io/claude-plugins-dagster/compare/v[\d.]+(?:-[a-zA-Z0-9.]+)?\.\.\.HEAD",
         f"[Unreleased]: https://github.com/dagster-io/claude-plugins-dagster/compare/v{version}...HEAD",
-        content
+        content,
     )
 
     # Add new version comparison link before the last existing one
@@ -89,13 +88,13 @@ def update_changelog(repo_root: Path, version: str) -> None:
         content = re.sub(
             last_version_pattern,
             f"[{version}]: https://github.com/dagster-io/claude-plugins-dagster/releases/tag/v{version}\n\\1",
-            content
+            content,
         )
     else:
         # If no version links exist yet, add one at the end
         content += f"\n[{version}]: https://github.com/dagster-io/claude-plugins-dagster/releases/tag/v{version}\n"
 
-    with open(changelog_path, "w") as f:
+    with changelog_path.open("w") as f:
         f.write(content)
 
 
@@ -104,8 +103,7 @@ def main() -> None:
         description="Bump version across all plugin.json files and CHANGELOG.md"
     )
     parser.add_argument(
-        "version",
-        help="Semantic version to bump to (e.g., 0.0.2, 1.0.0, 1.0.0-beta)"
+        "version", help="Semantic version to bump to (e.g., 0.0.2, 1.0.0, 1.0.0-beta)"
     )
 
     args = parser.parse_args()
@@ -114,7 +112,9 @@ def main() -> None:
     # Validate version format
     if not validate_version(version):
         print(f"Error: Invalid version format: {version}", file=sys.stderr)
-        print("Version must follow semantic versioning (X.Y.Z or X.Y.Z-prerelease)", file=sys.stderr)
+        print(
+            "Version must follow semantic versioning (X.Y.Z or X.Y.Z-prerelease)", file=sys.stderr
+        )
         sys.exit(1)
 
     # Get repository root (script is in scripts/release/ subdirectory)
@@ -139,19 +139,19 @@ def main() -> None:
 
     # Update CHANGELOG.md
     update_changelog(repo_root, version)
-    print(f"✓ Updated CHANGELOG.md")
+    print("✓ Updated CHANGELOG.md")
 
     print()
     print("Version bump complete!")
     print()
     print("Next steps:")
     print("  1. Review the changes:")
-    print(f"     git diff")
+    print("     git diff")
     print("  2. Commit the changes:")
     print(f'     git add -A && git commit -m "Bump version to {version}"')
     print("  3. Create and push a tag:")
     print(f'     git tag -a v{version} -m "Release {version}"')
-    print(f"     git push origin master --tags")
+    print("     git push origin master --tags")
     print("  4. Create a GitHub release manually or via workflow")
 
 

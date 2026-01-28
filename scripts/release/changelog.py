@@ -18,7 +18,7 @@ def extract_version_section(changelog_path: Path, version: str) -> str:
     Returns the content between the version header and the next version header,
     with empty category headers removed.
     """
-    with open(changelog_path) as f:
+    with changelog_path.open() as f:
         content = f.read()
 
     # Pattern to match version section
@@ -42,17 +42,12 @@ def extract_version_section(changelog_path: Path, version: str) -> str:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Extract changelog section for a specific version"
-    )
-    parser.add_argument(
-        "version",
-        help="Version to extract (e.g., 0.0.1, 1.0.0)"
-    )
+    parser = argparse.ArgumentParser(description="Extract changelog section for a specific version")
+    parser.add_argument("version", help="Version to extract (e.g., 0.0.1, 1.0.0)")
     parser.add_argument(
         "--changelog",
         default="CHANGELOG.md",
-        help="Path to CHANGELOG.md (default: CHANGELOG.md in repo root)"
+        help="Path to CHANGELOG.md (default: CHANGELOG.md in repo root)",
     )
 
     args = parser.parse_args()

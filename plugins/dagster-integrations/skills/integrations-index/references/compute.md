@@ -1,17 +1,21 @@
 # Compute Integrations
 
-Cloud platforms, container orchestration, and distributed processing frameworks for scalable computation.
+Cloud platforms, container orchestration, and distributed processing frameworks for scalable
+computation.
 
 ---
 
 ## Cloud Computing Services
 
 ### AWS
+
 **Package:** `dagster-aws` | **Support:** Dagster-supported
 
-Amazon Web Services integration covering compute services including Glue, EMR, Lambda, ECS, and more.
+Amazon Web Services integration covering compute services including Glue, EMR, Lambda, ECS, and
+more.
 
 **Use cases:**
+
 - Run serverless functions with Lambda
 - Execute Spark jobs on EMR clusters
 - Run ETL jobs with AWS Glue
@@ -20,6 +24,7 @@ Amazon Web Services integration covering compute services including Glue, EMR, L
 - Store data in S3 (see Storage category)
 
 **Quick start:**
+
 ```python
 from dagster_aws.s3 import S3Resource
 
@@ -38,11 +43,13 @@ def aws_lambda_job():
 ---
 
 ### Azure
+
 **Package:** `dagster-azure` | **Support:** Dagster-supported
 
 Microsoft Azure integration focusing on compute services like Databricks and Synapse.
 
 **Use cases:**
+
 - Run Databricks jobs on Azure infrastructure
 - Execute queries on Azure Synapse Analytics
 - Deploy containerized workloads
@@ -54,11 +61,13 @@ Microsoft Azure integration focusing on compute services like Databricks and Syn
 ---
 
 ### GCP (Google Cloud Platform)
+
 **Package:** `dagster-gcp` | **Support:** Dagster-supported
 
 Google Cloud Platform services including Dataproc for Spark and Cloud Run for containers.
 
 **Use cases:**
+
 - Run Spark jobs on Dataproc clusters
 - Deploy serverless containers on Cloud Run
 - Execute cloud functions
@@ -70,17 +79,21 @@ Google Cloud Platform services including Dataproc for Spark and Cloud Run for co
 ---
 
 ### Databricks
+
 **Package:** `dagster-databricks` | **Support:** Dagster-supported
 
-Unified analytics platform integration using PipesDatabricksClient to run Python code on Databricks clusters.
+Unified analytics platform integration using PipesDatabricksClient to run Python code on Databricks
+clusters.
 
 **Use cases:**
+
 - Execute notebooks on Databricks clusters
 - Run Spark jobs for large-scale data processing
 - Integrate ML workloads with Databricks ML
 - Use Delta Lake for reliable data storage
 
 **Quick start:**
+
 ```python
 from dagster_databricks import PipesDatabricksClient
 
@@ -109,17 +122,20 @@ def databricks_job(
 ## Distributed Processing
 
 ### Spark
+
 **Package:** `dagster-spark` | **Support:** Dagster-supported
 
 Apache Spark integration for distributed data processing across clusters (lower-level than PySpark).
 
 **Use cases:**
+
 - Manage Spark jobs and sessions
 - Submit Spark applications
 - Configure Spark clusters
 - Low-level Spark control
 
 **Quick start:**
+
 ```python
 from dagster_spark import spark_resource
 
@@ -141,17 +157,20 @@ def spark_job(context):
 ---
 
 ### Dask
+
 **Package:** `dagster-dask` | **Support:** Dagster-supported
 
 Parallel computing library with pandas-like API for larger-than-memory datasets.
 
 **Use cases:**
+
 - Scale pandas code to larger datasets
 - Parallel computation on single machine or cluster
 - Out-of-core processing
 - Alternative to Spark for Python users
 
 **Quick start:**
+
 ```python
 from dagster_dask import dask_resource
 import dask.dataframe as dd
@@ -173,17 +192,20 @@ def dask_computation(context):
 ---
 
 ### Ray
+
 **Package:** `dagster-ray` | **Support:** Community-supported
 
 Distributed computing framework for scaling Python workloads and ML training.
 
 **Use cases:**
+
 - Distributed ML training
 - Parallel hyperparameter tuning
 - Scale Python functions across clusters
 - Ray Serve for model serving
 
 **Quick start:**
+
 ```python
 from dagster_ray import ray_resource
 import ray
@@ -212,17 +234,20 @@ def distributed_training(context):
 ## Container Orchestration
 
 ### Docker
+
 **Package:** `dagster-docker` | **Support:** Dagster-supported
 
 Execute code in Docker containers using Dagster Pipes for isolated and reproducible environments.
 
 **Use cases:**
+
 - Run Python code in isolated environments
 - Use different package versions per asset
 - Execute non-Python code (R, Julia, etc.)
 - Reproducible computation environments
 
 **Quick start:**
+
 ```python
 from dagster_docker import PipesDockerClient
 
@@ -245,17 +270,20 @@ def docker_computation(
 ---
 
 ### Kubernetes
+
 **Package:** `dagster-k8s` | **Support:** Dagster-supported
 
 Execute code on Kubernetes pods using Pipes for scalable cloud-native execution.
 
 **Use cases:**
+
 - Run jobs on Kubernetes clusters
 - Scale computation horizontally
 - Use spot/preemptible instances
 - Cloud-native data processing
 
 **Quick start:**
+
 ```python
 from dagster_k8s import PipesK8sClient
 
@@ -279,17 +307,20 @@ def k8s_job(
 ---
 
 ### Celery
+
 **Package:** `dagster-celery` | **Support:** Dagster-supported
 
 Distributed task queue for executing Dagster ops across multiple workers.
 
 **Use cases:**
+
 - Distribute ops across worker nodes
 - Queue-based job execution
 - Scale computation horizontally
 - Existing Celery infrastructure
 
 **Quick start:**
+
 ```python
 from dagster_celery import celery_executor
 
@@ -310,22 +341,23 @@ defs = dg.Definitions(
 
 ## Compute Platform Selection
 
-| Platform | Best For | Scale | Deployment | Cost Model |
-|----------|----------|-------|------------|------------|
-| **AWS** | AWS ecosystem | Large | Cloud | Pay-per-use |
-| **Azure** | Microsoft ecosystem | Large | Cloud | Pay-per-use |
-| **GCP** | Google ecosystem | Large | Cloud | Pay-per-use |
-| **Databricks** | Unified analytics | Large | Cloud | Cluster-based |
-| **Spark** | Big data processing | Very Large | Self-hosted/Cloud | Infrastructure |
-| **Dask** | Python-native scaling | Medium-Large | Self-hosted/Cloud | Infrastructure |
-| **Ray** | ML/Python workloads | Large | Self-hosted/Cloud | Infrastructure |
-| **Docker** | Isolated execution | Any | Any | Infrastructure |
-| **K8s** | Cloud-native | Large | Cloud/Self-hosted | Infrastructure |
-| **Celery** | Distributed tasks | Medium | Self-hosted | Infrastructure |
+| Platform       | Best For              | Scale        | Deployment        | Cost Model     |
+| -------------- | --------------------- | ------------ | ----------------- | -------------- |
+| **AWS**        | AWS ecosystem         | Large        | Cloud             | Pay-per-use    |
+| **Azure**      | Microsoft ecosystem   | Large        | Cloud             | Pay-per-use    |
+| **GCP**        | Google ecosystem      | Large        | Cloud             | Pay-per-use    |
+| **Databricks** | Unified analytics     | Large        | Cloud             | Cluster-based  |
+| **Spark**      | Big data processing   | Very Large   | Self-hosted/Cloud | Infrastructure |
+| **Dask**       | Python-native scaling | Medium-Large | Self-hosted/Cloud | Infrastructure |
+| **Ray**        | ML/Python workloads   | Large        | Self-hosted/Cloud | Infrastructure |
+| **Docker**     | Isolated execution    | Any          | Any               | Infrastructure |
+| **K8s**        | Cloud-native          | Large        | Cloud/Self-hosted | Infrastructure |
+| **Celery**     | Distributed tasks     | Medium       | Self-hosted       | Infrastructure |
 
 ## Common Patterns
 
 ### Cloud Cluster Compute
+
 ```python
 # Databricks, EMR, Dataproc
 @dg.asset
@@ -344,6 +376,7 @@ def distributed_processing(
 ```
 
 ### Containerized Processing
+
 ```python
 # Docker/K8s
 @dg.asset
@@ -360,6 +393,7 @@ def containerized_job(
 ```
 
 ### Distributed Framework
+
 ```python
 # Spark/Dask/Ray
 @dg.asset

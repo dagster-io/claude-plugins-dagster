@@ -1,11 +1,12 @@
 # Prototype Dagster Implementation
 
-You are helping a developer prototype a new Dagster implementation following best practices. The implementation requirements and working directory have been provided:
-$ARGUMENTS
+You are helping a developer prototype a new Dagster implementation following best practices. The
+implementation requirements and working directory have been provided: $ARGUMENTS
 
 ## Overview
 
 This command guides you through building production-ready Dagster code with:
+
 - Best practices from `dagster-conventions` skill
 - Appropriate integrations from `dagster-integrations` skill
 - Validation and testing at every step
@@ -22,11 +23,13 @@ This command guides you through building production-ready Dagster code with:
    - Testing strategy
 
 2. **Reference available integrations**:
+
    ```bash
    uv run dg docs integrations --json
    ```
 
-   Also consult the `dagster-integrations` skill for finding appropriate integrations for the use case.
+   Also consult the `dagster-integrations` skill for finding appropriate integrations for the use
+   case.
 
 3. **Review current project structure**:
    ```bash
@@ -37,6 +40,7 @@ This command guides you through building production-ready Dagster code with:
 ### Step 2: Choose Implementation Approach
 
 **Use Components when**:
+
 - Implementing common patterns (dbt, Fivetran, Airbyte, dlt, Sling)
 - Need declarative YAML configuration
 - Want reusability across projects
@@ -44,12 +48,14 @@ This command guides you through building production-ready Dagster code with:
 - **For dbt**: Use remote Git repository configuration to avoid cloning projects locally
 
 **Use Pythonic Assets when**:
+
 - Custom business logic required
 - Complex transformations
 - One-off implementations
 - Need fine-grained control
 
 **Use Both**:
+
 - Mix Components for standard patterns (e.g., dbt transformations)
 - Use Pythonic assets for custom logic
 - Merge definitions as shown in `dagster-conventions`
@@ -59,11 +65,13 @@ This command guides you through building production-ready Dagster code with:
 #### For Component-Based Implementation
 
 1. **Scaffold the component** (if creating custom):
+
    ```bash
    uv run dg scaffold component ComponentName
    ```
 
 2. **Create component definitions**:
+
    ```bash
    uv run dg scaffold defs my_module.components.ComponentName my_component
    ```
@@ -75,6 +83,7 @@ This command guides you through building production-ready Dagster code with:
    - **For dbt components**: Prefer `repo_url` + `repo_relative_path` over `project_dir`
 
 4. **Validate the component loads**:
+
    ```bash
    uv run dg check defs
    uv run dg list defs
@@ -82,7 +91,8 @@ This command guides you through building production-ready Dagster code with:
 
 5. **Modern Component Pattern with Dataclass** (for custom components):
 
-When creating custom components, use the `@dataclass` decorator with `Resolvable` for automatic YAML schema generation:
+When creating custom components, use the `@dataclass` decorator with `Resolvable` for automatic YAML
+schema generation:
 
 ```python
 from dataclasses import dataclass, field
@@ -145,6 +155,7 @@ attributes:
 ```
 
 **Key benefits of the dataclass pattern:**
+
 - Fields automatically generate YAML schema via `Resolvable`
 - Type hints provide validation
 - Default values make fields optional
@@ -154,6 +165,7 @@ attributes:
 #### For Pythonic Asset Implementation
 
 1. **Scaffold asset file**:
+
    ```bash
    uv run dg scaffold defs dagster.asset assets/<domain_name>.py
    ```
@@ -277,6 +289,7 @@ attributes:
    - **Type hints**: Specify return types for better IDE support and validation
 
 4. **Create resources** (`resources.py`):
+
    ```python
    from dagster import ConfigurableResource, EnvVar
 
@@ -289,6 +302,7 @@ attributes:
    ```
 
 5. **Register in definitions** (`definitions.py`):
+
    ```python
    from dagster import Definitions
    from dagster_dg import load_defs
@@ -310,11 +324,14 @@ attributes:
 
 ## Critical: Design Asset Keys for Multi-Component Pipelines
 
-When building multi-component pipelines (e.g., Fivetran → dbt → Hightouch), **asset keys must be designed so downstream components can reference them naturally**. This eliminates the need for per-asset configuration and makes your pipeline maintainable.
+When building multi-component pipelines (e.g., Fivetran → dbt → Hightouch), **asset keys must be
+designed so downstream components can reference them naturally**. This eliminates the need for
+per-asset configuration and makes your pipeline maintainable.
 
 ### Key Principle: Upstream Defines, Downstream Consumes
 
-The upstream component should generate asset keys that downstream components naturally expect. This "configure once, apply to all" approach prevents configuration burden downstream.
+The upstream component should generate asset keys that downstream components naturally expect. This
+"configure once, apply to all" approach prevents configuration burden downstream.
 
 ### Common Downstream Integration Patterns
 
@@ -332,13 +349,14 @@ Use **flat, 2-level keys** like `["source_name", "table"]`:
 ```
 
 **Why flat keys?** dbt sources expect 2-level structure:
+
 ```yaml
 # sources.yml - works naturally with flat keys
 sources:
   - name: fivetran_raw
     tables:
-      - name: customers  # Matches ["fivetran_raw", "customers"]
-      - name: orders     # Matches ["fivetran_raw", "orders"]
+      - name: customers # Matches ["fivetran_raw", "customers"]
+      - name: orders # Matches ["fivetran_raw", "orders"]
 ```
 
 #### If custom Dagster assets will consume:
@@ -369,12 +387,14 @@ Use simple model names from dbt (typically single-level keys):
 ### Asset Key Anti-Patterns
 
 ❌ **Too deeply nested:**
+
 ```python
 ["company", "team", "project", "environment", "schema", "table"]
 # Hard for downstream to reference, requires complex mapping
 ```
 
 ❌ **Inconsistent structure:**
+
 ```python
 ["raw", "customers"]           # 2 levels
 ["processed", "finance", "revenue"]  # 3 levels
@@ -382,6 +402,7 @@ Use simple model names from dbt (typically single-level keys):
 ```
 
 ❌ **Generic names:**
+
 ```python
 ["data", "table1"]
 ["output", "result"]
@@ -389,6 +410,7 @@ Use simple model names from dbt (typically single-level keys):
 ```
 
 ✅ **Good patterns:**
+
 ```python
 ["source_system", "entity"]    # ["fivetran_raw", "customers"]
 ["integration", "object"]      # ["salesforce", "accounts"]
@@ -420,21 +442,25 @@ for asset in assets:
 ```
 
 **What to verify:**
+
 - ✅ Downstream assets list upstream assets in their `deps` array
 - ✅ No missing dependencies (especially dbt models depending on sources)
 - ✅ Keys are simple and descriptive (typically 2 levels)
 - ✅ No duplicate keys with different structures
 
 **Common issues:**
+
 - **dbt models not depending on sources**: SQL must use `{{ source('source_name', 'table') }}`
 - **Nested keys don't match dbt expectations**: Consider flattening (see advanced pattern below)
 - **Reverse ETL can't find models**: Use simple model names that match dbt output
 
 ### Advanced: Override get_asset_spec() for Key Transformation
 
-When subclassing existing integration components (like Fivetran, Sling), you can override `get_asset_spec()` to transform asset keys for better downstream compatibility.
+When subclassing existing integration components (like Fivetran, Sling), you can override
+`get_asset_spec()` to transform asset keys for better downstream compatibility.
 
 **When to use this pattern:**
+
 - Subclassing integration components that generate nested keys
 - Need to flatten keys for dbt compatibility
 - Want to apply consistent key structure across all assets from a component
@@ -442,7 +468,8 @@ When subclassing existing integration components (like Fivetran, Sling), you can
 
 **Example: Flatten Fivetran keys for dbt**
 
-Problem: Fivetran creates `["fivetran", "connector_id", "schema", "table"]` but dbt expects `["fivetran_raw", "table"]`.
+Problem: Fivetran creates `["fivetran", "connector_id", "schema", "table"]` but dbt expects
+`["fivetran_raw", "table"]`.
 
 Solution:
 
@@ -474,16 +501,18 @@ class CustomFivetranComponent(FivetranAccountComponent):
 sources:
   - name: fivetran_raw
     tables:
-      - name: customers  # Matches ["fivetran_raw", "customers"]
-      - name: orders     # Matches ["fivetran_raw", "orders"]
+      - name: customers # Matches ["fivetran_raw", "customers"]
+      - name: orders # Matches ["fivetran_raw", "orders"]
 ```
 
 **When NOT to override:**
+
 - Using component directly (not subclassing) → Can't override
 - Default keys already work for your pipeline → Keep it simple
 - Only one or two assets need different keys → Configure individually instead
 
 **Other use cases:**
+
 - **Sling**: Flatten `["sling", "replication_name", "stream"]` → `["raw", "stream"]`
 - **Custom components**: Apply consistent prefixing or namespacing
 - **Multi-environment**: Add environment suffix like `_staging` or `_prod`
@@ -522,7 +551,8 @@ my_schedule = dg.ScheduleDefinition(
 
 #### Asset Selection-Based Scheduling (Recommended for Scale)
 
-For larger projects, use **asset selection syntax** instead of hardcoded asset keys. This makes schedules maintainable as your project grows:
+For larger projects, use **asset selection syntax** instead of hardcoded asset keys. This makes
+schedules maintainable as your project grows:
 
 ```python
 from dataclasses import dataclass
@@ -560,7 +590,7 @@ class ScheduledJobComponent(Component, Resolvable):
 type: my_project.components.ScheduledJobComponent
 attributes:
   job_name: "daily_finance_job"
-  cron_schedule: "0 6 * * *"  # 6 AM UTC daily
+  cron_schedule: "0 6 * * *" # 6 AM UTC daily
   asset_selection: "tag:schedule=daily tag:domain=finance"
 
 ---
@@ -568,7 +598,7 @@ attributes:
 type: my_project.components.ScheduledJobComponent
 attributes:
   job_name: "hourly_ops_job"
-  cron_schedule: "0 * * * *"  # Every hour
+  cron_schedule: "0 * * * *" # Every hour
   asset_selection: "tag:priority=critical"
 
 ---
@@ -576,7 +606,7 @@ attributes:
 type: my_project.components.ScheduledJobComponent
 attributes:
   job_name: "weekly_analytics_job"
-  cron_schedule: "0 8 * * 1"  # Monday 8 AM UTC
+  cron_schedule: "0 8 * * 1" # Monday 8 AM UTC
   asset_selection: "group:sales_analytics"
 
 ---
@@ -584,11 +614,12 @@ attributes:
 type: my_project.components.ScheduledJobComponent
 attributes:
   job_name: "dbt_refresh_job"
-  cron_schedule: "0 4 * * *"  # 4 AM UTC daily
+  cron_schedule: "0 4 * * *" # 4 AM UTC daily
   asset_selection: "kind:dbt"
 ```
 
 **Asset selection patterns:**
+
 - `tag:key=value` - Assets with specific tag
 - `group:name` - Assets in a group
 - `kind:type` - Assets of a kind (dbt, python, fivetran, etc.)
@@ -597,6 +628,7 @@ attributes:
 - Multiple conditions with spaces (AND) or `|` (OR)
 
 **Benefits:**
+
 - No hardcoded asset keys → easier maintenance
 - Automatically includes new assets matching criteria
 - Self-documenting: selection string shows what's scheduled
@@ -613,6 +645,7 @@ uv run dg scaffold defs dagster.sensor sensors.py
 **Always include tests** following `dagster-conventions` testing patterns:
 
 1. **Create test file** (`tests/test_<asset_name>.py`):
+
    ```python
    import dagster as dg
    from my_project.defs.assets import customers, customer_metrics
@@ -644,6 +677,7 @@ uv run dg scaffold defs dagster.sensor sensors.py
    ```
 
 2. **Add asset checks** for data quality:
+
    ```python
    @dg.asset_check(asset=customers)
    def customers_not_empty(customers):
@@ -664,33 +698,39 @@ uv run dg scaffold defs dagster.sensor sensors.py
 Run comprehensive validation checks:
 
 1. **Validate definitions load**:
+
    ```bash
    uv run dg check defs
    ```
 
 2. **List all definitions** to verify assets are registered:
+
    ```bash
    uv run dg list defs
    ```
 
 3. **Check components** (if using Components):
+
    ```bash
    uv run dg list components
    ```
 
 4. **Test asset materialization** in dev mode:
+
    ```bash
    uv run dg launch --assets <asset_name>
    ```
 
 5. **Run the test suite**:
+
    ```bash
    pytest tests/ -v
    ```
 
 6. **Verify asset key alignment and dependencies**:
 
-This is CRITICAL for multi-component pipelines. Verify that downstream assets properly depend on upstream assets:
+This is CRITICAL for multi-component pipelines. Verify that downstream assets properly depend on
+upstream assets:
 
 ```bash
 # Visualize asset dependencies
@@ -713,6 +753,7 @@ for asset in assets:
 ```
 
 **What to verify:**
+
 - ✅ Downstream assets list upstream assets in their `deps` array
 - ✅ No missing dependencies (especially dbt models depending on sources)
 - ✅ Asset keys are simple and descriptive (typically 2 levels: `["category", "name"]`)
@@ -720,14 +761,15 @@ for asset in assets:
 
 **Common issues and fixes:**
 
-| Issue | Problem | Cause | Fix |
-|-------|---------|-------|-----|
-| **dbt models missing dependencies** | Staging models show no upstream deps | SQL doesn't use `{{ source('...') }}` | Add source references in SQL |
-| **Asset keys don't match expectations** | Fivetran creates `["fivetran", "raw", "table"]` but dbt expects `["fivetran_raw", "table"]` | Default component keys too nested | Override `get_asset_spec()` to flatten (see Asset Key Design section) |
-| **Reverse ETL missing deps** | Hightouch/Census can't find dbt models | Use simple model names or configure deps explicitly |
-| **Duplicate keys** | Multiple components creating same key | Check key generation logic, ensure unique prefixes |
+| Issue                                   | Problem                                                                                     | Cause                                               | Fix                                                                   |
+| --------------------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------------------------- |
+| **dbt models missing dependencies**     | Staging models show no upstream deps                                                        | SQL doesn't use `{{ source('...') }}`               | Add source references in SQL                                          |
+| **Asset keys don't match expectations** | Fivetran creates `["fivetran", "raw", "table"]` but dbt expects `["fivetran_raw", "table"]` | Default component keys too nested                   | Override `get_asset_spec()` to flatten (see Asset Key Design section) |
+| **Reverse ETL missing deps**            | Hightouch/Census can't find dbt models                                                      | Use simple model names or configure deps explicitly |
+| **Duplicate keys**                      | Multiple components creating same key                                                       | Check key generation logic, ensure unique prefixes  |
 
-**If dependencies are missing**, refer back to the "Critical: Design Asset Keys for Multi-Component Pipelines" section above for guidance on fixing key alignment.
+**If dependencies are missing**, refer back to the "Critical: Design Asset Keys for Multi-Component
+Pipelines" section above for guidance on fixing key alignment.
 
 ### Step 7: Documentation & Next Steps
 
@@ -747,7 +789,7 @@ for asset in assets:
 
 Throughout implementation, follow these principles from `dagster-conventions`:
 
-- **Think in Assets**: Focus on *what* to produce, not *how* to execute
+- **Think in Assets**: Focus on _what_ to produce, not _how_ to execute
 - **Environment Separation**: Use `ConfigurableResource` and `EnvVar` for configuration
 - **Testing First**: Write tests alongside assets
 - **Clear Naming**: Use nouns for assets (`customers`, not `load_customers`)
@@ -761,8 +803,10 @@ Always cross-reference these resources:
 
 - **Dagster API Reference**: https://docs.dagster.io/llms.txt for titles and descriptions
 - **Full API Details**: https://docs.dagster.io/llms-full.txt for complete API information
-- **Component Creation**: https://docs.dagster.io/guides/build/components/creating-new-components/creating-and-registering-a-component
-- **Component Customization**: https://docs.dagster.io/guides/build/components/creating-new-components/component-customization
+- **Component Creation**:
+  https://docs.dagster.io/guides/build/components/creating-new-components/creating-and-registering-a-component
+- **Component Customization**:
+  https://docs.dagster.io/guides/build/components/creating-new-components/component-customization
 
 ## Example Complete Implementation
 
@@ -795,6 +839,7 @@ my_project/
 ```
 
 **Key patterns integrated:**
+
 - **Dataclass components** with auto-generated YAML schema
 - **Multi-asset chains** (raw → cleaned → aggregated → enriched)
 - **Asset key design** for dbt/downstream integration
@@ -806,18 +851,21 @@ my_project/
 Before considering the prototype complete, ensure:
 
 **Core Functionality:**
+
 - [ ] All definitions load successfully (`dg check defs`)
 - [ ] Assets appear in `dg list defs` output
 - [ ] Tests pass (`pytest tests/`)
 - [ ] At least one asset can be materialized (`dg launch --assets <name>`)
 
 **Asset Quality:**
+
 - [ ] All assets include `kinds` parameter (e.g., `kinds={"python", "snowflake"}`)
 - [ ] Assets have proper metadata (owners, tags, groups)
 - [ ] Asset names are descriptive nouns (data outputs, not actions)
 - [ ] Resources use environment variables appropriately (`EnvVar`)
 
 **Multi-Component Integration** (if using multiple components):
+
 - [ ] Asset keys designed for downstream integration (see "Asset Key Design" section)
 - [ ] Dependencies verified with JSON command (Step 6, item 6)
 - [ ] Downstream assets list upstream assets in their `deps` array
@@ -825,14 +873,17 @@ Before considering the prototype complete, ensure:
 - [ ] No missing dependencies between components
 
 **Components** (if using custom components):
+
 - [ ] Dataclass pattern with `@dataclass` + `Resolvable` for YAML schema generation
 - [ ] All asset examples include `kinds` parameter
 
 **Automation** (if using):
+
 - [ ] Schedules/jobs use asset selection syntax (not hardcoded keys) for scalability
 - [ ] Selection patterns tested with `dg list assets --job <job_name>`
 
 **Documentation:**
+
 - [ ] Documentation is clear and complete
 - [ ] Appropriate integrations from `dagster-integrations` are used
 - [ ] Best practices from `dagster-conventions` are followed
@@ -842,17 +893,20 @@ Before considering the prototype complete, ensure:
 For more specialized patterns and workflows, consider these complementary resources:
 
 **Reusable Skills:**
-- **dagster-conventions** - Comprehensive Dagster development conventions and best practices
-- **dagster-integrations** - Index of 82+ Dagster integrations across cloud platforms, data warehouses, ETL tools, AI/ML, and more
 
-**Composition Patterns:**
-These skills can be combined with `/dg:prototype` for complete workflows:
+- **dagster-conventions** - Comprehensive Dagster development conventions and best practices
+- **dagster-integrations** - Index of 82+ Dagster integrations across cloud platforms, data
+  warehouses, ETL tools, AI/ML, and more
+
+**Composition Patterns:** These skills can be combined with `/dg:prototype` for complete workflows:
+
 - Initialize projects with proper structure
 - Leverage existing integration components
 - Create custom components with advanced patterns
 - Implement flexible scheduling strategies
 
 **Cross-References in This Guide:**
+
 - For **asset key design**, see: "Critical: Design Asset Keys for Multi-Component Pipelines" section
 - For **dependency verification**, see: Step 6, item 6 with JSON validation command
 - For **dataclass components**, see: Step 3, item 5 "Modern Component Pattern with Dataclass"

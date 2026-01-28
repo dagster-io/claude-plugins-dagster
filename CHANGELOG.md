@@ -2,12 +2,13 @@
 
 All notable changes to the Dagster Claude Plugins will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
+adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
 ### Added
+
 - **dg**: `/dg:list` command and skill for discovering and inspecting Dagster definitions
   - Complete documentation for `dg list` CLI command group
   - `dg list defs` - List all registered definitions (assets, jobs, schedules, sensors, resources)
@@ -34,6 +35,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **all-plugins**: Reformatted all markdown documentation files to meet linting standards
+  - Fixed trailing whitespace and end-of-file formatting
+  - Applied consistent markdown formatting with Prettier
+  - Updated Python release scripts to use `Path.open()` per dignified-python standards
+
 ### Deprecated
 
 ### Removed
@@ -53,6 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+
 - **dg**: Fixed `dg launch` documentation to use comma-separated asset syntax
   - Updated SKILL.md and launch.md to show correct syntax: `--assets asset1,asset2,asset3`
   - Previous incorrect examples showed space-separated: `--assets asset1 asset2 asset3`
@@ -64,11 +71,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.4] - 2026-01-28
 
 ### Added
+
 - **dagster-integrations**: Added comprehensive audit summary document (AUDIT_SUMMARY.md)
   - Documents all 82+ integration verifications
   - Lists critical fixes applied and remaining work
 
 ### Changed
+
 - **dagster-integrations**: Updated storage.md integration examples
   - Improved Postgres section with ConfigurableResource pattern and instance storage clarification
   - Updated Delta Lake to use correct `DeltaTableResource` API
@@ -79,14 +88,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 ### Removed
+
 - **dagster-integrations**: Removed fabricated integrations from storage.md
   - Removed MongoDB section (dagster-mongo package doesn't exist)
   - Removed Atlan section (Dagster+ cloud CLI feature, not a Python library)
   - Removed Secoda section (no library integration exists)
 
 ### Fixed
+
 - **dagster-integrations**: Fixed critical PostgresResource hallucinations across multiple files
-  - storage.md: Replaced fabricated dagster-postgres resource API with custom ConfigurableResource pattern
+  - storage.md: Replaced fabricated dagster-postgres resource API with custom ConfigurableResource
+    pattern
   - Fixed 5 support level misclassifications:
     - dagster-looker: Community-supported → Dagster-supported
     - dagster-sigma: Community-supported → Dagster-supported
@@ -108,6 +120,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
 - **dg**: Simplified `/dg:launch` skill documentation
   - Clarified that `.env` files are automatically loaded by Dagster
   - Updated partition range syntax to use `...` instead of `:` (e.g., `2024-01-01...2024-01-31`)
@@ -130,6 +143,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.2] - 2026-01-26
 
 ### Added
+
 - **dg**: `/dg:launch` command and skill for comprehensive asset launching
   - Complete documentation for `dg launch` CLI command
   - Asset selection patterns (tags, groups, kinds, wildcards)
@@ -158,6 +172,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.1] - 2026-01-26
 
 ### Added
+
 - Initial release of Dagster Claude Plugins marketplace
 - **dg**: CLI commands for Dagster development
   - `/dg:create-project` - Scaffold new Dagster projects

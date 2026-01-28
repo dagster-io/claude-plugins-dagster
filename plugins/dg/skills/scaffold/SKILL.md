@@ -1,15 +1,21 @@
 ---
 name: dg:scaffold
-description: Scaffold Dagster components, assets, schedules, sensors, and integrations. Use when user wants to create, scaffold, generate, or add components, assets, integrations (dbt, Fivetran, dlt, Sling), schedules, sensors, or custom component types.
+description:
+  Scaffold Dagster components, assets, schedules, sensors, and integrations. Use when user wants to
+  create, scaffold, generate, or add components, assets, integrations (dbt, Fivetran, dlt, Sling),
+  schedules, sensors, or custom component types.
 ---
 
 # Scaffold Dagster Components and Code Skill
 
-This skill helps users scaffold Dagster components, assets, schedules, sensors, and integrations through natural language requests, providing comprehensive guidance on component discovery, parameter configuration, and format selection.
+This skill helps users scaffold Dagster components, assets, schedules, sensors, and integrations
+through natural language requests, providing comprehensive guidance on component discovery,
+parameter configuration, and format selection.
 
 ## When to Use This Skill
 
 Auto-invoke when users say:
+
 - "create an asset called customers"
 - "scaffold a dbt project"
 - "add a Fivetran connector"
@@ -27,17 +33,17 @@ Auto-invoke when users say:
 
 ## When to Use This Skill vs. Others
 
-| If User Says... | Use This Skill/Command | Why |
-|----------------|------------------------|-----|
-| "create an asset" | `/dg:scaffold` | Scaffolding new component |
-| "scaffold a dbt project" | `/dg:scaffold` | Integration scaffolding |
-| "add a Fivetran connector" | `/dg:scaffold` | Component creation |
-| "show available components" | `/dg:list` | Discovery, not creation |
-| "list my assets" | `/dg:list` | Inspection, not creation |
-| "launch my assets" | `/dg:launch` | Execution, not creation |
-| "prototype a pipeline" | `/dg:prototype` | Full implementation, not just scaffold |
-| "create a project" | `/dg:create-project` | Project initialization |
-| "best practices" | `/dagster-conventions` | Learning patterns |
+| If User Says...             | Use This Skill/Command | Why                                    |
+| --------------------------- | ---------------------- | -------------------------------------- |
+| "create an asset"           | `/dg:scaffold`         | Scaffolding new component              |
+| "scaffold a dbt project"    | `/dg:scaffold`         | Integration scaffolding                |
+| "add a Fivetran connector"  | `/dg:scaffold`         | Component creation                     |
+| "show available components" | `/dg:list`             | Discovery, not creation                |
+| "list my assets"            | `/dg:list`             | Inspection, not creation               |
+| "launch my assets"          | `/dg:launch`           | Execution, not creation                |
+| "prototype a pipeline"      | `/dg:prototype`        | Full implementation, not just scaffold |
+| "create a project"          | `/dg:create-project`   | Project initialization                 |
+| "best practices"            | `/dagster-conventions` | Learning patterns                      |
 
 ## How It Works
 
@@ -314,16 +320,19 @@ User: "Create assets for customers, orders, and products"
 ### Core Dagster Components
 
 **Assets:**
+
 ```bash
 dg scaffold defs dagster.asset my_asset --format python
 ```
 
 **Schedules:**
+
 ```bash
 dg scaffold defs dagster.schedule daily_job --format python
 ```
 
 **Sensors:**
+
 ```bash
 dg scaffold defs dagster.sensor file_watcher --format python
 ```
@@ -331,6 +340,7 @@ dg scaffold defs dagster.sensor file_watcher --format python
 ### Integration Components
 
 **dbt:**
+
 ```bash
 dg scaffold defs dagster_dbt.DbtProjectComponent dbt_project --json-params '{
   "project_dir": "./dbt_project"
@@ -338,6 +348,7 @@ dg scaffold defs dagster_dbt.DbtProjectComponent dbt_project --json-params '{
 ```
 
 **Fivetran:**
+
 ```bash
 dg scaffold defs fivetran.FivetranComponent connector_name --json-params '{
   "connector_id": "abc123",
@@ -346,6 +357,7 @@ dg scaffold defs fivetran.FivetranComponent connector_name --json-params '{
 ```
 
 **dlt:**
+
 ```bash
 dg scaffold defs dagster_dlt.DltResource pipeline_name --json-params '{
   "pipeline_name": "my_pipeline"
@@ -353,6 +365,7 @@ dg scaffold defs dagster_dlt.DltResource pipeline_name --json-params '{
 ```
 
 **Sling:**
+
 ```bash
 dg scaffold defs sling.SlingReplicationComponent replication_name --json-params '{
   "source_connection": "SOURCE",
@@ -373,6 +386,7 @@ dg scaffold defs fivetran.FivetranComponent my_connector --json-params '{
 ```
 
 **When to use:**
+
 - Multiple parameters
 - Nested structures
 - Automation/scripting
@@ -387,6 +401,7 @@ dg scaffold defs my_component.MyType instance \
 ```
 
 **When to use:**
+
 - Few simple parameters
 - Interactive use
 - Clear parameter names
@@ -402,6 +417,7 @@ dg scaffold defs dagster.asset my_asset --format yaml
 ```
 
 **Creates:** `defs/my_asset/defs.yaml`
+
 ```yaml
 component_type: dagster.asset
 params:
@@ -409,6 +425,7 @@ params:
 ```
 
 **Best for:**
+
 - Configuration-driven workflows
 - Consistency across team
 - Easier for non-Python users
@@ -420,6 +437,7 @@ dg scaffold defs dagster.asset my_asset --format python
 ```
 
 **Creates:** `defs/my_asset/defs.py`
+
 ```python
 import dagster as dg
 
@@ -429,6 +447,7 @@ def my_asset():
 ```
 
 **Best for:**
+
 - Custom logic needed
 - Python-first workflows
 - Complex asset definitions
@@ -507,6 +526,7 @@ When responding to scaffold requests, prioritize:
 ### Discovery Before Scaffolding
 
 Always encourage discovery first:
+
 ```bash
 # 1. Discover
 dg list components --package dagster_dbt
@@ -518,6 +538,7 @@ dg scaffold defs dagster_dbt.DbtProjectComponent my_dbt
 ### Organized Structure
 
 Guide toward maintainable organization:
+
 ```
 defs/
 ├── raw/              # Data ingestion
@@ -529,6 +550,7 @@ defs/
 ### Complete Setup Workflow
 
 Provide full context:
+
 ```bash
 # 1. Scaffold component
 dg scaffold defs fivetran.FivetranComponent salesforce --json-params '{...}'
@@ -548,20 +570,25 @@ dg launch --assets salesforce
 ## Related Commands and Skills
 
 ### Discovery Phase
+
 - `/dg:list` - Discover available components before scaffolding
 
 ### Scaffolding Phase (This Skill)
+
 - `/dg:scaffold` - Create components and code
 
 ### Validation Phase
+
 - `/dg:list` - Verify scaffolded components appear
 - `/dg:launch` - Test scaffolded assets
 
 ### Implementation Phase
+
 - `/dg:prototype` - Full implementation with custom logic
 - `/dagster-conventions` - Learn patterns for implementing assets
 
 ### Learning Phase
+
 - `/dagster-integrations` - Understand integration patterns
 - `/dignified-python` - Python code quality
 

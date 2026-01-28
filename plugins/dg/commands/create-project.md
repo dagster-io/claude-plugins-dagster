@@ -1,10 +1,12 @@
 # Create a new Dagster project
 
-Scaffold a new Dagster project with the recommended structure including assets, components, and tests.
+Scaffold a new Dagster project with the recommended structure including assets, components, and
+tests.
 
 **Usage:** `/dg:create-project <name>`
 
 Parameters:
+
 - `$1` (required): Project name or path. Use `.` to create in the current directory.
 
 ## Execution
@@ -14,6 +16,7 @@ Run the `uvx create-dagster project` command with the provided path:
     yes | uvx create-dagster project $1
 
 The command will:
+
 - Create a new directory (unless using `.`)
 - Generate project structure with src/, tests/, and configuration files
 - Prompt to run `uv sync` to install dependencies
@@ -47,11 +50,13 @@ After successful execution, inform the user about:
 ## Error Handling
 
 If the directory already exists, `create-dagster` will show an error. Inform the user to:
+
 - Choose a different project name
 - Remove the existing directory if intentional
 - Use `.` if they want to scaffold into an existing empty directory
 
 If the command fails, check:
+
 - Current directory permissions
 - Valid project name (avoid special characters)
 - Sufficient disk space

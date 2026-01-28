@@ -1,15 +1,21 @@
 ---
 name: dg:list
-description: List and discover Dagster definitions, components, environment variables, and project structure. Use when user wants to see, list, show, inspect, or discover assets, jobs, schedules, sensors, resources, components, or environment variables.
+description:
+  List and discover Dagster definitions, components, environment variables, and project structure.
+  Use when user wants to see, list, show, inspect, or discover assets, jobs, schedules, sensors,
+  resources, components, or environment variables.
 ---
 
 # List Dagster Definitions and Components Skill
 
-This skill helps users discover and inspect Dagster definitions, components, and project structure through natural language requests, providing comprehensive guidance on listing assets, finding components, and understanding their environment.
+This skill helps users discover and inspect Dagster definitions, components, and project structure
+through natural language requests, providing comprehensive guidance on listing assets, finding
+components, and understanding their environment.
 
 ## When to Use This Skill
 
 Auto-invoke when users say:
+
 - "show me my assets"
 - "list my assets"
 - "what assets do I have"
@@ -30,17 +36,17 @@ Auto-invoke when users say:
 
 ## When to Use This Skill vs. Others
 
-| If User Says... | Use This Skill/Command | Why |
-|----------------|------------------------|-----|
-| "show me my assets" | `/dg:list` | Discovery/inspection needed |
-| "list dbt assets" | `/dg:list` | Filter and display definitions |
-| "what components can I scaffold" | `/dg:list` | Component discovery |
-| "show environment variables" | `/dg:list` | Env var inspection |
-| "launch my assets" | `/dg:launch` | Execution, not listing |
-| "create an asset" | `/dg:scaffold` | Creation, not discovery |
-| "prototype a pipeline" | `/dg:prototype` | Building new, not listing existing |
-| "best practices for assets" | `/dagster-conventions` | Learning patterns |
-| "how do integrations work" | `/dagster-integrations` | Integration guidance |
+| If User Says...                  | Use This Skill/Command  | Why                                |
+| -------------------------------- | ----------------------- | ---------------------------------- |
+| "show me my assets"              | `/dg:list`              | Discovery/inspection needed        |
+| "list dbt assets"                | `/dg:list`              | Filter and display definitions     |
+| "what components can I scaffold" | `/dg:list`              | Component discovery                |
+| "show environment variables"     | `/dg:list`              | Env var inspection                 |
+| "launch my assets"               | `/dg:launch`            | Execution, not listing             |
+| "create an asset"                | `/dg:scaffold`          | Creation, not discovery            |
+| "prototype a pipeline"           | `/dg:prototype`         | Building new, not listing existing |
+| "best practices for assets"      | `/dagster-conventions`  | Learning patterns                  |
+| "how do integrations work"       | `/dagster-integrations` | Integration guidance               |
 
 ## How It Works
 
@@ -251,6 +257,7 @@ User: "I want to scaffold a dbt project"
 When users ask for filtered assets, explain the selection syntax:
 
 ### By Name
+
 ```bash
 # Single asset
 dg list defs --assets customers
@@ -264,6 +271,7 @@ dg list defs --assets "*_raw"
 ```
 
 ### By Tag
+
 ```bash
 # Single tag
 dg list defs --assets "tag:priority=high"
@@ -273,22 +281,26 @@ dg list defs --assets "tag:schedule=daily tag:domain=finance"
 ```
 
 ### By Group
+
 ```bash
 dg list defs --assets "group:sales_analytics"
 ```
 
 ### By Kind
+
 ```bash
 dg list defs --assets "kind:dbt"
 dg list defs --assets "kind:python"
 ```
 
 ### By Owner
+
 ```bash
 dg list defs --assets "owner:team@company.com"
 ```
 
 ### Combined
+
 ```bash
 # High-priority dbt assets
 dg list defs --assets "tag:priority=high kind:dbt"
@@ -297,6 +309,7 @@ dg list defs --assets "tag:priority=high kind:dbt"
 ## Common Use Case Patterns
 
 ### Pre-Launch Validation
+
 ```
 User: "I want to make sure my assets are defined before launching"
 → Provide workflow:
@@ -314,6 +327,7 @@ User: "I want to make sure my assets are defined before launching"
 ```
 
 ### Integration Discovery
+
 ```
 User: "What integrations do I have installed?"
 → Provide commands:
@@ -330,6 +344,7 @@ User: "What integrations do I have installed?"
 ```
 
 ### Asset Inventory
+
 ```
 User: "Generate an asset report"
 → Provide JSON workflow:
@@ -341,6 +356,7 @@ User: "Generate an asset report"
 ```
 
 ### Environment Audit
+
 ```
 User: "Check if all my environment variables are set"
 → Provide command:
@@ -374,7 +390,9 @@ When responding to list requests, prioritize:
 ## Common Patterns to Emphasize
 
 ### Discovery Before Action
+
 Always encourage discovery before other operations:
+
 ```bash
 # Before scaffolding
 dg list components  # See what's available
@@ -387,7 +405,9 @@ dg list envs  # See what's needed
 ```
 
 ### Filter Hierarchy
+
 Guide users toward maintainable filters:
+
 ```bash
 # Most maintainable (scales well)
 dg list defs --assets "tag:domain=sales"
@@ -402,7 +422,9 @@ dg list defs
 ```
 
 ### JSON for Automation
+
 Encourage JSON output for programmatic use:
+
 ```bash
 # Export for processing
 dg list defs --json
@@ -417,14 +439,17 @@ dg list defs --json > inventory.json
 ## Related Commands and Skills
 
 ### Discovery Phase (This Skill)
+
 - `/dg:list` - Discover what exists
 
 ### Action Phase
+
 - `/dg:scaffold` - Create based on what you discovered
 - `/dg:launch` - Launch based on what you listed
 - `/dg:prototype` - Build new assets
 
 ### Learning Phase
+
 - `/dagster-conventions` - Learn patterns and best practices
 - `/dagster-integrations` - Understand integrations
 

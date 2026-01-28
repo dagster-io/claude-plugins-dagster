@@ -1,28 +1,28 @@
 ---
 name: dignified-python
-description: Python coding standards with automatic version detection.
-  Use when writing, reviewing, or refactoring Python to ensure adherence to LBYL exception
-  handling patterns, modern type syntax (list[str], str | None), pathlib operations,
-  ABC-based interfaces, absolute imports, and explicit error boundaries at CLI level.
-  Also provides production-tested code smell patterns from Dagster Labs for API design,
-  parameter complexity, and code organization. Essential for maintaining erk's dignified
-  Python standards.
+description:
+  Python coding standards with automatic version detection. Use when writing, reviewing, or
+  refactoring Python to ensure adherence to LBYL exception handling patterns, modern type syntax
+  (list[str], str | None), pathlib operations, ABC-based interfaces, absolute imports, and explicit
+  error boundaries at CLI level. Also provides production-tested code smell patterns from Dagster
+  Labs for API design, parameter complexity, and code organization. Essential for maintaining erk's
+  dignified Python standards.
 ---
 
 # Dignified Python Coding Standards
 
 ## When to Use This Skill vs. Others
 
-| If User Says... | Use This Skill/Command | Why |
-|----------------|------------------------|-----|
-| "make this pythonic" | `/dignified-python` | Python code review needed |
-| "is this good python" | `/dignified-python` | Code quality assessment |
-| "LBYL vs EAFP" | `/dignified-python` | Exception handling patterns |
-| "type hints" | `/dignified-python` | Modern typing guidance |
-| "pathlib vs os.path" | `/dignified-python` | Path handling patterns |
-| "best practices for dagster" | `/dagster-conventions` | Dagster-specific patterns |
-| "implement X pipeline" | `/dg:prototype` | Ready to build, not just review |
-| "which integration to use" | `/dagster-integrations` | Integration discovery |
+| If User Says...              | Use This Skill/Command  | Why                             |
+| ---------------------------- | ----------------------- | ------------------------------- |
+| "make this pythonic"         | `/dignified-python`     | Python code review needed       |
+| "is this good python"        | `/dignified-python`     | Code quality assessment         |
+| "LBYL vs EAFP"               | `/dignified-python`     | Exception handling patterns     |
+| "type hints"                 | `/dignified-python`     | Modern typing guidance          |
+| "pathlib vs os.path"         | `/dignified-python`     | Path handling patterns          |
+| "best practices for dagster" | `/dagster-conventions`  | Dagster-specific patterns       |
+| "implement X pipeline"       | `/dg:prototype`         | Ready to build, not just review |
+| "which integration to use"   | `/dagster-integrations` | Integration discovery           |
 
 ## Core Knowledge (ALWAYS Loaded)
 
@@ -46,7 +46,8 @@ description: Python coding standards with automatic version detection.
 
 ## Conditional Loading (Load Based on Task Patterns)
 
-Core files above cover 80%+ of Python code patterns. Only load these additional files when you detect specific patterns:
+Core files above cover 80%+ of Python code patterns. Only load these additional files when you
+detect specific patterns:
 
 Pattern detection examples:
 
@@ -55,7 +56,8 @@ Pattern detection examples:
 
 ## When to Read Each Reference Document
 
-The `references/` directory contains detailed guidance for specialized topics. Load these on-demand when you encounter relevant patterns:
+The `references/` directory contains detailed guidance for specialized topics. Load these on-demand
+when you encounter relevant patterns:
 
 ### `references/exception-handling.md`
 
@@ -113,7 +115,8 @@ The `references/` directory contains detailed guidance for specialized topics. L
 ## How to Use This Skill
 
 1. **Core knowledge** is loaded automatically (LBYL, pathlib, basic imports, anti-patterns)
-2. **Version detection** happens once - identify the minimum Python version and load the appropriate version file
+2. **Version detection** happens once - identify the minimum Python version and load the appropriate
+   version file
 3. **Reference documents** are loaded on-demand based on the triggers above
 4. **Additional patterns** may require extra loading (CLI patterns, subprocess)
 5. **Each file is self-contained** with complete guidance for its domain

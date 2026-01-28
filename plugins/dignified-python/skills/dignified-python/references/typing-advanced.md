@@ -1,5 +1,6 @@
 ---
-description: Advanced typing patterns including cast() with assertions, Literal types for programmatic strings.
+description:
+  Advanced typing patterns including cast() with assertions, Literal types for programmatic strings.
 ---
 
 # Advanced Typing Reference
@@ -14,7 +15,9 @@ description: Advanced typing patterns including cast() with assertions, Literal 
 
 **ALWAYS verify `cast()` with a runtime assertion, unless there's a documented reason not to.**
 
-`typing.cast()` is a compile-time only construct—it tells the type checker to trust you but performs no runtime verification. If your assumption is wrong, you'll get silent misbehavior instead of a clear error.
+`typing.cast()` is a compile-time only construct—it tells the type checker to trust you but performs
+no runtime verification. If your assumption is wrong, you'll get silent misbehavior instead of a
+clear error.
 
 ### Required Pattern
 
@@ -67,7 +70,8 @@ Skip the assertion only in these narrow cases:
 
 ### Why This Matters
 
-- **Silent bugs are worse than loud bugs**: An assertion failure gives you a stack trace and clear error message
+- **Silent bugs are worse than loud bugs**: An assertion failure gives you a stack trace and clear
+  error message
 - **Documentation**: The assertion documents your assumption for future readers
 - **Defense in depth**: Third-party libraries can change behavior between versions
 
@@ -77,7 +81,8 @@ Skip the assertion only in these narrow cases:
 
 **Use `Literal` types for strings that have programmatic meaning.**
 
-When strings represent a fixed set of valid values (error codes, status values, command types), model them in the type system using `Literal`.
+When strings represent a fixed set of valid values (error codes, status values, command types),
+model them in the type system using `Literal`.
 
 ### Why This Matters
 

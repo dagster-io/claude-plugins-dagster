@@ -1,12 +1,16 @@
 # Scaffold Dagster Components and Code
 
-This command guides you through creating Dagster components, assets, schedules, sensors, and integrations using the `dg scaffold` command group.
+This command guides you through creating Dagster components, assets, schedules, sensors, and
+integrations using the `dg scaffold` command group.
 
 ## Overview
 
-The `dg scaffold` command group provides tools for generating Dagster code and component instances. These commands create boilerplate code, configuration files, and directory structures following Dagster best practices.
+The `dg scaffold` command group provides tools for generating Dagster code and component instances.
+These commands create boilerplate code, configuration files, and directory structures following
+Dagster best practices.
 
 **Key Benefits:**
+
 - Rapidly create component instances (assets, schedules, sensors, integrations)
 - Dynamically discover available component types from your Python environment
 - Support for both YAML and Python configuration formats
@@ -14,8 +18,9 @@ The `dg scaffold` command group provides tools for generating Dagster code and c
 - Scaffolds follow project conventions automatically
 - Integrate with dbt, Fivetran, dlt, Sling, and other tools
 
-**What makes `scaffold defs` special:**
-The `dg scaffold defs` subcommands are **dynamically generated** based on available component types in your Python environment. This means the available commands depend on which Dagster packages you have installed.
+**What makes `scaffold defs` special:** The `dg scaffold defs` subcommands are **dynamically
+generated** based on available component types in your Python environment. This means the available
+commands depend on which Dagster packages you have installed.
 
 ---
 
@@ -60,9 +65,11 @@ The `dg scaffold` command group includes several subcommands for different scaff
 
 ### `dg scaffold defs <COMPONENT_TYPE>`
 
-Scaffold a component instance. The available subcommands are **dynamically generated** based on component types in your Python environment.
+Scaffold a component instance. The available subcommands are **dynamically generated** based on
+component types in your Python environment.
 
-**Important:** You must first discover available component types using `dg list components` before scaffolding.
+**Important:** You must first discover available component types using `dg list components` before
+scaffolding.
 
 #### Basic Usage
 
@@ -79,6 +86,7 @@ dg scaffold defs dagster.asset sales/customers
 #### Common Component Types
 
 **Dagster Core Components:**
+
 ```bash
 # Asset
 dg scaffold defs dagster.asset my_asset
@@ -91,6 +99,7 @@ dg scaffold defs dagster.sensor file_watcher
 ```
 
 **dbt Integration:**
+
 ```bash
 # dbt project component
 dg scaffold defs dagster_dbt.DbtProjectComponent my_dbt
@@ -99,6 +108,7 @@ dg scaffold defs dagster_dbt.DbtProjectComponent my_dbt
 ```
 
 **Fivetran Integration:**
+
 ```bash
 # Fivetran connector
 dg scaffold defs fivetran.FivetranComponent my_connector --json-params '{
@@ -108,12 +118,14 @@ dg scaffold defs fivetran.FivetranComponent my_connector --json-params '{
 ```
 
 **dlt Integration:**
+
 ```bash
 # dlt resource
 dg scaffold defs dagster_dlt.DltResource my_pipeline
 ```
 
 **Sling Integration:**
+
 ```bash
 # Sling replication
 dg scaffold defs sling.SlingReplicationComponent my_replication --json-params '{
@@ -128,12 +140,14 @@ dg scaffold defs sling.SlingReplicationComponent my_replication --json-params '{
 The `scaffold defs` command has special discovery behavior:
 
 **1. Exact match:**
+
 ```bash
 # Full typename (exact match)
 dg scaffold defs dagster.asset my_asset
 ```
 
 **2. Partial match with disambiguation:**
+
 ```bash
 # Partial match - prompts for selection
 dg scaffold defs dbt my_project
@@ -147,6 +161,7 @@ dg scaffold defs dbt my_project
 ```
 
 **3. Short name aliases:**
+
 ```bash
 # Some components have short aliases
 dg scaffold defs asset my_asset       # Same as dagster.asset
@@ -155,6 +170,7 @@ dg scaffold defs sensor my_sensor     # Same as dagster.sensor
 ```
 
 **4. Python reference resolution:**
+
 ```bash
 # Can reference any Python object
 dg scaffold defs my_package.MyCustomComponent instance_name
@@ -165,11 +181,13 @@ dg scaffold defs my_package.MyCustomComponent instance_name
 Components can be scaffolded in YAML or Python format:
 
 **YAML format (default for components):**
+
 ```bash
 dg scaffold defs dagster.asset my_asset --format yaml
 ```
 
 Creates `my_asset/defs.yaml`:
+
 ```yaml
 component_type: dagster.asset
 params:
@@ -177,11 +195,13 @@ params:
 ```
 
 **Python format:**
+
 ```bash
 dg scaffold defs dagster.asset my_asset --format python
 ```
 
 Creates `my_asset/defs.py`:
+
 ```python
 import dagster as dg
 
@@ -195,6 +215,7 @@ def my_asset():
 Components can accept scaffold parameters in two ways:
 
 **Option 1: JSON parameters (recommended for complex configs):**
+
 ```bash
 dg scaffold defs fivetran.FivetranComponent my_connector --json-params '{
   "connector_id": "abc123",
@@ -204,6 +225,7 @@ dg scaffold defs fivetran.FivetranComponent my_connector --json-params '{
 ```
 
 **Option 2: Individual flags:**
+
 ```bash
 # Each parameter as a flag (dynamically generated from component schema)
 dg scaffold defs my_component.MyType instance \
@@ -235,14 +257,17 @@ my_project/
 
 ### `dg scaffold defs inline-component`
 
-Scaffold an inline Python component within your project. Inline components are custom component types defined directly in your project (not as separate packages).
+Scaffold an inline Python component within your project. Inline components are custom component
+types defined directly in your project (not as separate packages).
 
 **Basic usage:**
+
 ```bash
 dg scaffold defs inline-component <PATH> --typename <NAME> [--superclass <CLASS>]
 ```
 
 **Arguments:**
+
 - `PATH` - Path for the component (relative to defs directory)
 - `--typename` - Component typename (required)
 - `--superclass` - Superclass for component (optional, defaults to `dg.Component`)
@@ -250,11 +275,13 @@ dg scaffold defs inline-component <PATH> --typename <NAME> [--superclass <CLASS>
 **Examples:**
 
 **Simple inline component:**
+
 ```bash
 dg scaffold defs inline-component my_component --typename MyComponent
 ```
 
 Creates:
+
 - `defs/my_component/my_component.py` - Component class definition
 - `defs/my_component/defs.yaml` - Component instance configuration
 
@@ -271,6 +298,7 @@ class MyComponent(dg.Component):
 ```
 
 **Component with custom superclass:**
+
 ```bash
 dg scaffold defs inline-component data_loader \
   --typename DataLoaderComponent \
@@ -278,6 +306,7 @@ dg scaffold defs inline-component data_loader \
 ```
 
 **Use cases:**
+
 - Creating project-specific component types
 - Encapsulating common patterns
 - Building reusable abstractions within a project
@@ -285,14 +314,17 @@ dg scaffold defs inline-component data_loader \
 
 ### `dg scaffold component <NAME>`
 
-Create a reusable component type as a library module. This scaffolds a full component type structure that can be used across projects or published as a package.
+Create a reusable component type as a library module. This scaffolds a full component type structure
+that can be used across projects or published as a package.
 
 **Basic usage:**
+
 ```bash
 dg scaffold component <NAME>
 ```
 
 **Creates structure:**
+
 ```
 <project>/
 └── lib/
@@ -303,6 +335,7 @@ dg scaffold component <NAME>
 ```
 
 **Example:**
+
 ```bash
 # Create custom component type
 dg scaffold component api_poller
@@ -312,6 +345,7 @@ dg scaffold defs my_project.lib.api_poller.ApiPollerComponent my_api
 ```
 
 **Use cases:**
+
 - Building reusable component types for your organization
 - Creating component libraries
 - Developing Dagster integrations
@@ -321,19 +355,22 @@ dg scaffold defs my_project.lib.api_poller.ApiPollerComponent my_api
 
 Scaffold a Dockerfile for building Dagster projects or workspaces.
 
-**Status:** Maintained for backward compatibility.
-**Recommendation:** Use `dg plus deploy configure` instead for complete deployment setup.
+**Status:** Maintained for backward compatibility. **Recommendation:** Use
+`dg plus deploy configure` instead for complete deployment setup.
 
 **Basic usage:**
+
 ```bash
 dg scaffold build-artifacts [--python-version <version>] [-y]
 ```
 
 **Options:**
+
 - `--python-version` - Python version (3.9, 3.10, 3.11, 3.12, 3.13)
 - `-y, --yes` - Skip confirmation prompt
 
 **Example:**
+
 ```bash
 dg scaffold build-artifacts --python-version 3.11 -y
 ```
@@ -341,6 +378,7 @@ dg scaffold build-artifacts --python-version 3.11 -y
 Creates `Dockerfile` in project root.
 
 **Modern alternative:**
+
 ```bash
 # Use dg plus deploy configure instead
 dg plus deploy configure serverless
@@ -351,10 +389,11 @@ dg plus deploy configure hybrid
 
 Scaffold a GitHub Actions workflow for Dagster project CI/CD.
 
-**Status:** Maintained for backward compatibility.
-**Recommendation:** Use `dg plus deploy configure --git-provider github` instead.
+**Status:** Maintained for backward compatibility. **Recommendation:** Use
+`dg plus deploy configure --git-provider github` instead.
 
 **Basic usage:**
+
 ```bash
 dg scaffold github-actions
 ```
@@ -362,6 +401,7 @@ dg scaffold github-actions
 Creates `.github/workflows/dagster.yml`.
 
 **Modern alternative:**
+
 ```bash
 # Use dg plus deploy configure instead
 dg plus deploy configure serverless --git-provider github
@@ -375,6 +415,7 @@ dg plus deploy configure hybrid --git-provider github
 ### `dg scaffold defs` Options
 
 **`--format <yaml|python>`**
+
 - Format of component configuration
 - Choices: `yaml` (default for components), `python`
 - Only applicable for component types
@@ -388,6 +429,7 @@ dg scaffold defs dagster.asset my_asset --format python
 ```
 
 **`--json-params <json>`**
+
 - JSON string of scaffold parameters
 - Mutually exclusive with individual parameter flags
 - Required format: Valid JSON object
@@ -400,6 +442,7 @@ dg scaffold defs fivetran.FivetranComponent my_connector --json-params '{
 ```
 
 **Component-specific parameters:**
+
 - Dynamically generated from component schema
 - Displayed in `dg scaffold defs <type> --help`
 - Can be passed as individual flags
@@ -414,10 +457,12 @@ dg scaffold defs my_component.MyType instance \
 ### `dg scaffold defs inline-component` Options
 
 **`--typename <name>` (required)**
+
 - Component typename
 - Used for class name and registration
 
 **`--superclass <class>` (optional)**
+
 - Superclass for the component
 - Defaults to `dg.Component` if not specified
 - Can reference custom base classes
@@ -431,11 +476,13 @@ dg scaffold defs inline-component my_comp \
 ### `dg scaffold build-artifacts` Options
 
 **`--python-version <version>`**
+
 - Python version for Docker image
 - Choices: 3.9, 3.10, 3.11, 3.12, 3.13
 - Defaults to current Python version
 
 **`-y, --yes`**
+
 - Skip confirmation prompt
 - Useful for automation
 
@@ -446,6 +493,7 @@ dg scaffold defs inline-component my_comp \
 ### Creating Assets
 
 **Basic asset scaffolding:**
+
 ```bash
 # Scaffold asset
 dg scaffold defs dagster.asset sales/customers --format python
@@ -455,6 +503,7 @@ dg scaffold defs dagster.asset sales/customers --format python
 ```
 
 Generated Python asset:
+
 ```python
 import dagster as dg
 
@@ -465,6 +514,7 @@ def customers():
 ```
 
 **Asset with configuration:**
+
 ```bash
 # Scaffold with YAML config
 dg scaffold defs dagster.asset sales/customers --format yaml
@@ -474,6 +524,7 @@ dg scaffold defs dagster.asset sales/customers --format yaml
 ```
 
 Generated YAML config:
+
 ```yaml
 component_type: dagster.asset
 params:
@@ -484,6 +535,7 @@ params:
 ### Integrating with dbt
 
 **Scaffold dbt project component:**
+
 ```bash
 # Scaffold dbt integration
 dg scaffold defs dagster_dbt.DbtProjectComponent dbt_project --json-params '{
@@ -493,6 +545,7 @@ dg scaffold defs dagster_dbt.DbtProjectComponent dbt_project --json-params '{
 ```
 
 **Directory structure:**
+
 ```
 my_project/
 ├── defs/
@@ -505,6 +558,7 @@ my_project/
 ```
 
 **Generated configuration:**
+
 ```yaml
 component_type: dagster_dbt.DbtProjectComponent
 params:
@@ -515,6 +569,7 @@ params:
 ### Integrating with Fivetran
 
 **Scaffold Fivetran connector:**
+
 ```bash
 # Get connector_id and destination_id from Fivetran UI
 dg scaffold defs fivetran.FivetranComponent salesforce --json-params '{
@@ -525,6 +580,7 @@ dg scaffold defs fivetran.FivetranComponent salesforce --json-params '{
 ```
 
 **Generated configuration:**
+
 ```yaml
 component_type: fivetran.FivetranComponent
 params:
@@ -534,6 +590,7 @@ params:
 ```
 
 **Required environment variables:**
+
 ```bash
 # Add to .env
 FIVETRAN_API_KEY=your_api_key
@@ -546,6 +603,7 @@ dg list envs
 ### Integrating with dlt
 
 **Scaffold dlt resource:**
+
 ```bash
 dg scaffold defs dagster_dlt.DltResource github_pipeline --json-params '{
   "pipeline_name": "github_to_snowflake",
@@ -556,6 +614,7 @@ dg scaffold defs dagster_dlt.DltResource github_pipeline --json-params '{
 ### Integrating with Sling
 
 **Scaffold Sling replication:**
+
 ```bash
 dg scaffold defs sling.SlingReplicationComponent postgres_to_snowflake --json-params '{
   "source_connection": "POSTGRES",
@@ -572,11 +631,13 @@ dg scaffold defs sling.SlingReplicationComponent postgres_to_snowflake --json-pa
 ### Creating Schedules
 
 **Scaffold schedule:**
+
 ```bash
 dg scaffold defs dagster.schedule daily_refresh --format python
 ```
 
 Generated schedule:
+
 ```python
 import dagster as dg
 
@@ -591,11 +652,13 @@ def daily_refresh():
 ### Creating Sensors
 
 **Scaffold sensor:**
+
 ```bash
 dg scaffold defs dagster.sensor file_watcher --format python
 ```
 
 Generated sensor:
+
 ```python
 import dagster as dg
 
@@ -608,6 +671,7 @@ def file_watcher(context):
 ### Creating Custom Components
 
 **Inline component for project:**
+
 ```bash
 # Create inline component
 dg scaffold defs inline-component api_loader --typename ApiLoaderComponent
@@ -620,6 +684,7 @@ dg scaffold defs inline-component api_loader --typename ApiLoaderComponent
 ```
 
 **Reusable component library:**
+
 ```bash
 # Create component type
 dg scaffold component api_poller
@@ -634,6 +699,7 @@ dg scaffold defs my_project.lib.api_poller.ApiPollerComponent slack_api
 ### Project Initialization Workflows
 
 **New project with integrations:**
+
 ```bash
 # Initialize project
 dg create project my_analytics
@@ -667,6 +733,7 @@ dg list defs
 When you provide a partial component name, `dg scaffold` helps you find the right component:
 
 **Example:**
+
 ```bash
 $ dg scaffold defs dbt my_project
 
@@ -682,6 +749,7 @@ Scaffolding dagster_dbt.DbtProjectComponent at defs/my_project/
 ```
 
 **Workflow:**
+
 1. Provide partial match (e.g., "dbt")
 2. System searches for matching component types
 3. If multiple matches, presents interactive menu
@@ -691,6 +759,7 @@ Scaffolding dagster_dbt.DbtProjectComponent at defs/my_project/
 ### Discovery-First Workflow
 
 **Recommended workflow:**
+
 ```bash
 # 1. Discover available components
 dg list components
@@ -708,6 +777,7 @@ dg scaffold defs dagster_dbt.DbtProjectComponent my_dbt --json-params '{...}'
 ### Parameter Strategies
 
 **Complex parameters with JSON:**
+
 ```bash
 # Good for: Nested structures, many parameters, automation
 dg scaffold defs sling.SlingReplicationComponent replication --json-params '{
@@ -722,6 +792,7 @@ dg scaffold defs sling.SlingReplicationComponent replication --json-params '{
 ```
 
 **Individual flags for simple parameters:**
+
 ```bash
 # Good for: Few parameters, interactive use
 dg scaffold defs my_component.MyType instance \
@@ -731,6 +802,7 @@ dg scaffold defs my_component.MyType instance \
 ```
 
 **Parameters from file:**
+
 ```bash
 # Store parameters in file
 cat > params.json <<EOF
@@ -748,6 +820,7 @@ dg scaffold defs fivetran.FivetranComponent my_connector --json-params "$(cat pa
 ### Scaffolding Patterns
 
 **Convention: Group by domain:**
+
 ```
 defs/
 ├── sales/           # Sales domain
@@ -764,6 +837,7 @@ defs/
 ```
 
 **Convention: Group by layer:**
+
 ```
 defs/
 ├── raw/            # Raw data ingestion
@@ -781,13 +855,12 @@ defs/
 **VSCode snippet for scaffolding:**
 
 Add to `.vscode/dagster.code-snippets`:
+
 ```json
 {
   "Scaffold Dagster Asset": {
     "prefix": "dg-scaffold-asset",
-    "body": [
-      "dg scaffold defs dagster.asset ${1:path}/${2:name} --format python"
-    ],
+    "body": ["dg scaffold defs dagster.asset ${1:path}/${2:name} --format python"],
     "description": "Scaffold a Dagster asset"
   },
   "Scaffold dbt Project": {
@@ -803,6 +876,7 @@ Add to `.vscode/dagster.code-snippets`:
 ### Automation and Scripting
 
 **Bulk scaffolding:**
+
 ```bash
 #!/bin/bash
 # Scaffold multiple assets from list
@@ -824,6 +898,7 @@ echo "Scaffolded ${#assets[@]} assets"
 ```
 
 **Templated scaffolding:**
+
 ```bash
 #!/bin/bash
 # Scaffold with templated parameters
@@ -842,6 +917,7 @@ echo "Scaffolded Fivetran component: $name"
 ```
 
 **CI/CD scaffolding validation:**
+
 ```bash
 #!/bin/bash
 # Validate scaffolded components in CI
@@ -866,6 +942,7 @@ fi
 ### Success Output
 
 **Scaffolding asset:**
+
 ```bash
 $ dg scaffold defs dagster.asset sales/customers --format python
 
@@ -874,6 +951,7 @@ Created: defs/sales/customers/defs.py
 ```
 
 **Scaffolding component with config:**
+
 ```bash
 $ dg scaffold defs fivetran.FivetranComponent salesforce --json-params '{...}'
 
@@ -884,6 +962,7 @@ Created: defs/salesforce/defs.yaml
 ### Directory Structure Results
 
 **After scaffolding assets:**
+
 ```
 my_project/
 ├── defs/
@@ -898,6 +977,7 @@ my_project/
 ```
 
 **After scaffolding integrations:**
+
 ```
 my_project/
 ├── defs/
@@ -915,6 +995,7 @@ my_project/
 After scaffolding, complete these steps:
 
 **1. Edit generated files:**
+
 ```bash
 # Edit asset logic
 vim defs/sales/customers/defs.py
@@ -924,6 +1005,7 @@ vim defs/fivetran_salesforce/defs.yaml
 ```
 
 **2. Configure environment variables:**
+
 ```bash
 # Add required variables to .env
 echo "FIVETRAN_API_KEY=your_key" >> .env
@@ -934,6 +1016,7 @@ dg list envs
 ```
 
 **3. Validate definitions:**
+
 ```bash
 # Check definitions load
 dg list defs
@@ -943,6 +1026,7 @@ dg list defs --assets "customers"
 ```
 
 **4. Test execution:**
+
 ```bash
 # Launch asset
 dg launch --assets customers
@@ -1061,6 +1145,7 @@ cd my_project
 ### Debug Mode
 
 **Get help for specific component:**
+
 ```bash
 # Show component-specific help
 dg scaffold defs dagster.asset --help
@@ -1071,6 +1156,7 @@ dg scaffold defs my_component.MyType --help
 ```
 
 **Verify component discovery:**
+
 ```bash
 # What components are available?
 dg list components
@@ -1083,6 +1169,7 @@ dg list registry-modules
 ```
 
 **Check generated files:**
+
 ```bash
 # View generated file
 cat defs/my_asset/defs.py
@@ -1097,6 +1184,7 @@ dg list defs
 ### Testing Scaffolded Components
 
 **Validation workflow:**
+
 ```bash
 # 1. Scaffold component
 dg scaffold defs dagster.asset test_asset --format python

@@ -2,16 +2,17 @@
 
 ## Pattern Summary
 
-| Pattern | When to Use |
-| ------- | ----------- |
-| Built-in resource | Database/service with Dagster integration (DuckDB, Snowflake, etc.) |
-| Custom `ConfigurableResource` | Custom API clients, services, or shared logic |
-| `EnvVar` configuration | Secrets, environment-specific values |
-| Environment-based resources | Different resources per environment (dev/staging/prod) |
-| Resource with methods | Complex services with multiple operations |
-| Nested resources | Resources that depend on other resources |
+| Pattern                       | When to Use                                                         |
+| ----------------------------- | ------------------------------------------------------------------- |
+| Built-in resource             | Database/service with Dagster integration (DuckDB, Snowflake, etc.) |
+| Custom `ConfigurableResource` | Custom API clients, services, or shared logic                       |
+| `EnvVar` configuration        | Secrets, environment-specific values                                |
+| Environment-based resources   | Different resources per environment (dev/staging/prod)              |
+| Resource with methods         | Complex services with multiple operations                           |
+| Nested resources              | Resources that depend on other resources                            |
 
-**Best Practice**: Always use `EnvVar` for secrets and environment-specific configuration. Never hardcode credentials.
+**Best Practice**: Always use `EnvVar` for secrets and environment-specific configuration. Never
+hardcode credentials.
 
 ---
 
@@ -53,15 +54,15 @@ def processed_data(database: DuckDBResource) -> None:
 
 ### Common Built-in Resources
 
-| Package | Resource | Use Case |
-| ------- | -------- | -------- |
-| `dagster_duckdb` | `DuckDBResource` | Local/embedded analytics |
-| `dagster_snowflake` | `SnowflakeResource` | Snowflake data warehouse |
-| `dagster_gcp` | `BigQueryResource` | Google BigQuery |
-| `dagster_aws` | `S3Resource` | AWS S3 storage |
-| `dagster_dbt` | `DbtCliResource` | dbt transformations |
-| `dagster_dlt` | `DagsterDltResource` | dlt pipelines |
-| `dagster_sling` | `SlingResource` | Database replication |
+| Package             | Resource             | Use Case                 |
+| ------------------- | -------------------- | ------------------------ |
+| `dagster_duckdb`    | `DuckDBResource`     | Local/embedded analytics |
+| `dagster_snowflake` | `SnowflakeResource`  | Snowflake data warehouse |
+| `dagster_gcp`       | `BigQueryResource`   | Google BigQuery          |
+| `dagster_aws`       | `S3Resource`         | AWS S3 storage           |
+| `dagster_dbt`       | `DbtCliResource`     | dbt transformations      |
+| `dagster_dlt`       | `DagsterDltResource` | dlt pipelines            |
+| `dagster_sling`     | `SlingResource`      | Database replication     |
 
 ---
 
@@ -78,7 +79,7 @@ import requests
 class NASAResource(dg.ConfigurableResource):
     api_key: str
     base_url: str = "https://api.nasa.gov"
-    
+
     def get_near_earth_asteroids(self, start_date: str, end_date: str) -> list:
         url = f"{self.base_url}/neo/rest/v1/feed"
         params = {
@@ -97,16 +98,16 @@ class NASAResource(dg.ConfigurableResource):
 class DatabaseClient(dg.ConfigurableResource):
     connection_string: str
     schema: str = "public"
-    
+
     def query(self, sql: str) -> list[dict]:
         """Execute a query and return results."""
         # Implementation
         pass
-    
+
     def execute(self, sql: str) -> None:
         """Execute a statement without returning results."""
         pass
-    
+
     def table_exists(self, table_name: str) -> bool:
         """Check if a table exists."""
         pass
@@ -140,14 +141,15 @@ def resources():
 
 ### EnvVar vs os.getenv
 
-| Feature | `dg.EnvVar` | `os.getenv` |
-| ------- | ----------- | ----------- |
-| When evaluated | At run start | At code location load |
-| Dynamic updates | Yes | No (requires restart) |
-| UI visibility | Shown in resource config | Not visible |
-| Best for | Production secrets | Development defaults |
+| Feature         | `dg.EnvVar`              | `os.getenv`           |
+| --------------- | ------------------------ | --------------------- |
+| When evaluated  | At run start             | At code location load |
+| Dynamic updates | Yes                      | No (requires restart) |
+| UI visibility   | Shown in resource config | Not visible           |
+| Best for        | Production secrets       | Development defaults  |
 
-**Recommendation**: Always use `dg.EnvVar` for production deployments. It provides better observability and dynamic configuration.
+**Recommendation**: Always use `dg.EnvVar` for production deployments. It provides better
+observability and dynamic configuration.
 
 ---
 
@@ -191,7 +193,8 @@ defs = dg.Definitions(
 
 ## Environment-Based Resource Configuration
 
-**Goal**: Run the same code across dev, staging, and production with different resource implementations.
+**Goal**: Run the same code across dev, staging, and production with different resource
+implementations.
 
 ### Pattern 1: Environment Variable Selection
 
@@ -255,6 +258,7 @@ def resources():
 ```
 
 **Environment Files**:
+
 ```bash
 # .env.dev
 SNOWFLAKE_ACCOUNT=myaccount
@@ -330,7 +334,8 @@ defs = dg.Definitions(
 1. **Single Codebase**: Same code runs in all environments
 2. **Configuration Externalization**: All environment-specific values in env vars
 3. **Secrets Management**: Use `EnvVar` for all secrets (never commit .env files)
-4. **Development Simplicity**: Dev environment should work with minimal setup (in-memory DBs, local files)
+4. **Development Simplicity**: Dev environment should work with minimal setup (in-memory DBs, local
+   files)
 5. **Production Safety**: Validate required env vars on startup
 6. **Testing Flexibility**: Easy to mock resources for tests
 
@@ -381,6 +386,7 @@ def resources():
 ```
 
 **Running in Different Environments**:
+
 ```bash
 # Development (default)
 dg dev
@@ -464,10 +470,10 @@ For resources that don't use context managers:
 ```python
 class MyResource(dg.ConfigurableResource):
     connection_string: str
-    
+
     def connect(self):
         return create_connection(self.connection_string)
-    
+
     def close(self, conn):
         conn.close()
 
@@ -490,7 +496,7 @@ Resources that depend on other resources:
 ```python
 class AuthResource(dg.ConfigurableResource):
     api_key: str
-    
+
     def get_token(self) -> str:
         # Authentication logic
         return f"Bearer {self.api_key}"
@@ -498,7 +504,7 @@ class AuthResource(dg.ConfigurableResource):
 class DataAPIResource(dg.ConfigurableResource):
     auth: AuthResource
     base_url: str
-    
+
     def fetch_data(self, endpoint: str) -> dict:
         headers = {"Authorization": self.auth.get_token()}
         response = requests.get(f"{self.base_url}/{endpoint}", headers=headers)
@@ -531,7 +537,7 @@ def test_asset_with_mocked_resource():
         return_value=Mock(execute=Mock(return_value=[{"id": 1}]))
     )
     mocked_database.get_connection.return_value.__exit__ = Mock(return_value=None)
-    
+
     result = dg.materialize(
         assets=[my_asset],
         resources={"database": mocked_database},
@@ -544,7 +550,7 @@ def test_asset_with_mocked_resource():
 ```python
 class TestDatabaseResource(dg.ConfigurableResource):
     """In-memory database for testing."""
-    
+
     def get_connection(self):
         return sqlite3.connect(":memory:")
 
@@ -570,7 +576,7 @@ class RobustAPIResource(dg.ConfigurableResource):
     api_key: str
     max_retries: int = 3
     retry_delay: float = 1.0
-    
+
     def _request_with_retry(self, url: str, params: dict) -> dict:
         for attempt in range(self.max_retries):
             try:
@@ -590,7 +596,7 @@ from functools import lru_cache
 
 class CachedAPIResource(dg.ConfigurableResource):
     api_key: str
-    
+
     @lru_cache(maxsize=100)
     def get_reference_data(self, key: str) -> dict:
         """Cached lookup for reference data."""
@@ -602,13 +608,13 @@ class CachedAPIResource(dg.ConfigurableResource):
 
 ## Anti-Patterns to Avoid
 
-| Anti-Pattern | Better Approach |
-| ------------ | --------------- |
-| Hardcoded credentials | Use `dg.EnvVar("SECRET")` |
-| Creating connections in assets | Use resources for connection management |
+| Anti-Pattern                          | Better Approach                         |
+| ------------------------------------- | --------------------------------------- |
+| Hardcoded credentials                 | Use `dg.EnvVar("SECRET")`               |
+| Creating connections in assets        | Use resources for connection management |
 | No type annotation on resource params | Always type: `database: DuckDBResource` |
-| Global connection objects | Pass resources as parameters |
-| Ignoring cleanup | Use context managers or explicit close |
+| Global connection objects             | Pass resources as parameters            |
+| Ignoring cleanup                      | Use context managers or explicit close  |
 
 ---
 
@@ -617,4 +623,3 @@ class CachedAPIResource(dg.ConfigurableResource):
 - [Resources API](https://docs.dagster.io/api/dagster/resources)
 - [ConfigurableResource](https://docs.dagster.io/guides/build/external-resources)
 - [Built-in Integrations](https://docs.dagster.io/integrations)
-

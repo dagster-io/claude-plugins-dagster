@@ -1,21 +1,25 @@
 # Monitoring Integrations
 
-Observability platforms and metrics systems for tracking pipeline performance, health, and operational metrics.
+Observability platforms and metrics systems for tracking pipeline performance, health, and
+operational metrics.
 
 ---
 
 ### Datadog
+
 **Package:** `dagster-datadog` | **Support:** Dagster-supported
 
 Send metrics, events, and logs to Datadog for comprehensive monitoring and observability.
 
 **Use cases:**
+
 - Track pipeline performance metrics
 - Monitor asset materialization times
 - Send custom metrics to Datadog
 - Create dashboards for data operations
 
 **Quick start:**
+
 ```python
 from dagster_datadog import DatadogResource
 
@@ -51,17 +55,20 @@ def monitored_asset(
 ---
 
 ### Prometheus
+
 **Package:** `dagster-prometheus` | **Support:** Dagster-supported
 
 Export Dagster metrics to Prometheus for time-series monitoring.
 
 **Use cases:**
+
 - Expose Dagster metrics to Prometheus
 - Create Grafana dashboards
 - Monitor pipeline health over time
 - Track asset materialization rates
 
 **Quick start:**
+
 ```python
 from dagster_prometheus import PrometheusResource
 
@@ -91,17 +98,20 @@ def track_metric(prometheus: PrometheusResource):
 ---
 
 ### Papertrail
+
 **Package:** `dagster-papertrail` | **Support:** Dagster-supported
 
 Send logs to Papertrail for centralized log management.
 
 **Use cases:**
+
 - Centralize Dagster logs
 - Search and filter pipeline logs
 - Set up log-based alerts
 - Long-term log retention
 
 **Quick start:**
+
 ```python
 from dagster_papertrail import PapertrailResource
 
@@ -128,15 +138,16 @@ def logged_asset(
 
 ## Monitoring Tool Selection
 
-| Tool | Best For | Type | Features |
-|------|----------|------|----------|
-| **Datadog** | Comprehensive observability | APM/Metrics/Logs | Dashboards, alerts, tracing |
-| **Prometheus** | Time-series metrics | Metrics | Open-source, Grafana integration |
-| **Papertrail** | Log aggregation | Logging | Search, retention, alerts |
+| Tool           | Best For                    | Type             | Features                         |
+| -------------- | --------------------------- | ---------------- | -------------------------------- |
+| **Datadog**    | Comprehensive observability | APM/Metrics/Logs | Dashboards, alerts, tracing      |
+| **Prometheus** | Time-series metrics         | Metrics          | Open-source, Grafana integration |
+| **Papertrail** | Log aggregation             | Logging          | Search, retention, alerts        |
 
 ## Common Patterns
 
 ### Custom Metrics Tracking
+
 ```python
 @dg.asset
 def monitored_pipeline(
@@ -159,6 +170,7 @@ def monitored_pipeline(
 ```
 
 ### Performance Monitoring
+
 ```python
 @dg.asset
 def timed_asset(
@@ -189,6 +201,7 @@ def timed_asset(
 ```
 
 ### Log Aggregation
+
 ```python
 @dg.asset
 def logged_pipeline(
@@ -216,6 +229,7 @@ def logged_pipeline(
 ```
 
 ### Health Dashboard Pattern
+
 ```python
 @dg.asset
 def health_metrics(datadog: DatadogResource):

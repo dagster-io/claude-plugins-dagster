@@ -2,20 +2,21 @@
 
 ## Pattern Summary
 
-| Pattern | When to Use |
-| ------- | ----------- |
-| Direct function test | Simple asset with no resources |
-| Test with mock inputs | Asset with dependencies |
-| `dg.materialize()` | Test asset graph execution |
-| Mocked resources | Isolate from external services |
-| Integration tests | Verify real service connections |
-| Asset checks | Runtime data validation |
+| Pattern               | When to Use                     |
+| --------------------- | ------------------------------- |
+| Direct function test  | Simple asset with no resources  |
+| Test with mock inputs | Asset with dependencies         |
+| `dg.materialize()`    | Test asset graph execution      |
+| Mocked resources      | Isolate from external services  |
+| Integration tests     | Verify real service connections |
+| Asset checks          | Runtime data validation         |
 
 ---
 
 ## Testing Workflow
 
-Tests should focus on ensuring the logic of code when possible rather than testing Dagster functionality.
+Tests should focus on ensuring the logic of code when possible rather than testing Dagster
+functionality.
 
 ### Testing Philosophy
 
@@ -31,15 +32,16 @@ Use a **defense-in-depth testing strategy** with multiple layers:
 └─────────────────────────────────────────────────────────┘
 ```
 
-**Philosophy**: Test business logic extensively with fast, isolated tests. Use real implementations sparingly for integration validation.
+**Philosophy**: Test business logic extensively with fast, isolated tests. Use real implementations
+sparingly for integration validation.
 
 ### Test Distribution
 
-| Layer | Test Type | Location | Portion |
-| ----- | --------- | -------- | ------- |
-| 1 | Direct function tests | `tests/unit/test_*.py` | 55% |
-| 2 | Asset graph tests | `tests/unit/test_*.py` | 25% |
-| 3 | Integration & E2E tests | `tests/integration/test_*.py` | 20% |
+| Layer | Test Type               | Location                      | Portion |
+| ----- | ----------------------- | ----------------------------- | ------- |
+| 1     | Direct function tests   | `tests/unit/test_*.py`        | 55%     |
+| 2     | Asset graph tests       | `tests/unit/test_*.py`        | 25%     |
+| 3     | Integration & E2E tests | `tests/integration/test_*.py` | 20%     |
 
 ### Layer 1: Direct Function Tests (55%)
 
@@ -61,19 +63,21 @@ def test_calculate_revenue():
         {"price": 10.0, "quantity": 2},
         {"price": 25.0, "quantity": 1},
     ]
-    
+
     result = calculate_revenue(mock_orders)
-    
+
     assert result == 45.0
 ```
 
 **What to test at this layer**:
+
 - Business logic and calculations
 - Data transformations
 - Edge cases (empty inputs, nulls, invalid data)
 - Error conditions
 
 **Characteristics**:
+
 - Runs in milliseconds
 - No Dagster context needed
 - Provide mock inputs for upstream dependencies
@@ -81,27 +85,30 @@ def test_calculate_revenue():
 
 ### Layer 2: Asset Graph Tests (25%)
 
-**Purpose**: Test asset materialization, graph execution, and resource integration with mocked resources.
+**Purpose**: Test asset materialization, graph execution, and resource integration with mocked
+resources.
 
 **When to use**: When testing asset interactions, configs, or resource dependencies.
 
-**Why**: Validates Dagster-specific behavior (context, configs, IO managers) without slow external calls.
+**Why**: Validates Dagster-specific behavior (context, configs, IO managers) without slow external
+calls.
 
 ```python
 def test_asset_graph_with_mocked_resource():
     mocked_db = Mock()
     mocked_db.query.return_value = [{"id": 1, "name": "Alice"}]
-    
+
     result = dg.materialize(
         assets=[fetch_users, process_users],
         resources={"database": mocked_db},
     )
-    
+
     assert result.success
     assert result.output_for_node("process_users") == [{"id": 1, "name": "ALICE"}]
 ```
 
 **What to test at this layer**:
+
 - Asset graph execution order
 - Resource injection
 - Run configs and asset configs
@@ -110,6 +117,7 @@ def test_asset_graph_with_mocked_resource():
 - Partitioned asset logic
 
 **Characteristics**:
+
 - Uses `dg.materialize()` or `build_asset_context()`
 - Mock external resources (databases, APIs)
 - Validates Dagster integration points
@@ -119,11 +127,14 @@ def test_asset_graph_with_mocked_resource():
 
 **Purpose**: Validate real resource connections, external system behavior, and end-to-end workflows.
 
-**When to use**: For critical paths where mock behavior might diverge from reality, and for smoke testing complete workflows.
+**When to use**: For critical paths where mock behavior might diverge from reality, and for smoke
+testing complete workflows.
 
-**Why**: Catches issues that mocks miss (actual SQL syntax, API quirks, authentication, real system interactions).
+**Why**: Catches issues that mocks miss (actual SQL syntax, API quirks, authentication, real system
+interactions).
 
 **Resource connection test**:
+
 ```python
 @pytest.mark.integration
 def test_snowflake_connection():
@@ -134,7 +145,7 @@ def test_snowflake_connection():
         password=dg.EnvVar("SNOWFLAKE_PASSWORD"),
         database="STAGING",
     )
-    
+
     # Test actual connection works
     with resource.get_connection() as conn:
         result = conn.execute("SELECT 1").fetchone()
@@ -142,6 +153,7 @@ def test_snowflake_connection():
 ```
 
 **End-to-end pipeline test**:
+
 ```python
 @pytest.mark.integration
 def test_complete_etl_pipeline(docker_postgres):
@@ -150,9 +162,9 @@ def test_complete_etl_pipeline(docker_postgres):
         assets=[extract_orders, transform_orders, load_orders],
         resources={"database": docker_postgres},
     )
-    
+
     assert result.success
-    
+
     # Verify data actually landed
     with docker_postgres.get_connection() as conn:
         rows = conn.execute("SELECT COUNT(*) FROM orders").fetchone()
@@ -160,6 +172,7 @@ def test_complete_etl_pipeline(docker_postgres):
 ```
 
 **What to test at this layer**:
+
 - Database connection and query execution
 - API authentication and response parsing
 - Critical business workflows
@@ -167,6 +180,7 @@ def test_complete_etl_pipeline(docker_postgres):
 - Production configuration validation
 
 **Characteristics**:
+
 - Requires environment setup (credentials, staging systems, Docker)
 - Slower (seconds to minutes with real network calls)
 - May be skipped in CI without proper environment
@@ -191,24 +205,25 @@ def test_complete_etl_pipeline(docker_postgres):
    └─> Layer 3: Integration test (sparingly)
 ```
 
-**Default**: Start with Layer 1 (direct function test). Only move up layers when you need to test Dagster-specific behavior or real integrations.
+**Default**: Start with Layer 1 (direct function test). Only move up layers when you need to test
+Dagster-specific behavior or real integrations.
 
 ### When NOT to Use Higher Layers
 
-| Don't Use | For | Instead Use |
-| --------- | --- | ----------- |
-| Layer 2 (materialize) | Testing pure business logic | Layer 1 (direct call) |
-| Layer 3 (integration) | Testing error handling | Layer 1/2 with mocked errors |
-| Layer 3 (integration) | Rapid iteration during development | Layer 1/2 |
-| Layer 3 (integration) | Testing edge cases | Layer 1 with mock inputs |
+| Don't Use             | For                                | Instead Use                  |
+| --------------------- | ---------------------------------- | ---------------------------- |
+| Layer 2 (materialize) | Testing pure business logic        | Layer 1 (direct call)        |
+| Layer 3 (integration) | Testing error handling             | Layer 1/2 with mocked errors |
+| Layer 3 (integration) | Rapid iteration during development | Layer 1/2                    |
+| Layer 3 (integration) | Testing edge cases                 | Layer 1 with mock inputs     |
 
 ### Test Speed Guidelines
 
-| Layer | Expected Speed | If Slower, Consider |
-| ----- | -------------- | ------------------- |
-| 1 | < 100ms | Check for hidden I/O |
-| 2 | < 500ms | Mock expensive resources |
-| 3 | < 60s | Parallelize or reduce scope |
+| Layer | Expected Speed | If Slower, Consider         |
+| ----- | -------------- | --------------------------- |
+| 1     | < 100ms        | Check for hidden I/O        |
+| 2     | < 500ms        | Mock expensive resources    |
+| 3     | < 60s          | Parallelize or reduce scope |
 
 ---
 
@@ -232,7 +247,7 @@ def state_population_file() -> list[dict]:
 # tests/unit/test_population.py
 def test_state_population_file():
     result = population.state_population_file()
-    
+
     assert len(result) == 3
     assert result[0] == {
         "City": "New York",
@@ -259,9 +274,9 @@ def test_total_population():
         {"City": "Buffalo", "Population": "278349"},
         {"City": "Yonkers", "Population": "211569"},
     ]
-    
+
     result = total_population(mock_input)
-    
+
     assert result == 9294108
 ```
 
@@ -282,7 +297,7 @@ def test_asset_materialization():
             population.total_population,
         ]
     )
-    
+
     assert result.success
 ```
 
@@ -296,13 +311,13 @@ def test_asset_outputs():
             population.total_population,
         ]
     )
-    
+
     assert result.success
-    
+
     # Access individual outputs
     file_output = result.output_for_node("state_population_file")
     assert len(file_output) == 3
-    
+
     total = result.output_for_node("total_population")
     assert total == 9294108
 ```
@@ -317,7 +332,7 @@ def test_with_resources():
             "database": DuckDBResource(database=":memory:"),
         },
     )
-    
+
     assert result.success
 ```
 
@@ -385,7 +400,8 @@ def test_multi_asset():
 
 ## Ephemeral instance
 
-Some Dagster objects (such as sensors) rely on state in order to be tested correctly. Temporary state can be maintained for tests with `dg.DagsterInstance.ephemeral()`.
+Some Dagster objects (such as sensors) rely on state in order to be tested correctly. Temporary
+state can be maintained for tests with `dg.DagsterInstance.ephemeral()`.
 
 To test a sensor that checks for new files:
 
@@ -412,7 +428,8 @@ def my_sensor():
         yield dg.SkipReason("No new files found")
 ```
 
-There should be a test to confirm that sensor registers a `dg.RunRequest` when the sensor logic is met and that there is a `dg.SkipReason` when the logic is not met:
+There should be a test to confirm that sensor registers a `dg.RunRequest` when the sensor logic is
+met and that there is a `dg.SkipReason` when the logic is not met:
 
 ```python
 @patch("dagster_testing.defs.sensors.check_for_new_files", return_value=[])
@@ -436,7 +453,9 @@ def test_sensor_run(mock_check_new_files):
 
 ## Components
 
-Custom components can be tested using `from dagster.components.testing.utils import create_defs_folder_sandbox`. This creates a temporary component as if the user had run `dg scaffold defs` to initialize it.
+Custom components can be tested using
+`from dagster.components.testing.utils import create_defs_folder_sandbox`. This creates a temporary
+component as if the user had run `dg scaffold defs` to initialize it.
 
 This can be helpful when confirming the component schema when components have complex models:
 
@@ -509,7 +528,7 @@ def test_cookbook_component():
             }
 ```
 
-The asset can also be materialized for further testing: 
+The asset can also be materialized for further testing:
 
 ```python
     result = dg.materialize(
@@ -539,14 +558,14 @@ def test_api_asset(mock_get):
     }
     mock_response.raise_for_status.return_value = None
     mock_get.return_value = mock_response
-    
+
     # Execute asset
     result = my_api_asset()
-    
+
     # Verify results
     assert len(result) == 1
     assert result[0]["city"] == "New York"
-    
+
     # Verify mock was called correctly
     mock_get.assert_called_once()
 ```
@@ -562,10 +581,10 @@ def test_with_mocked_resource():
     mocked_resource.get_cities.return_value = [
         {"city": "Fakestown", "population": 42}
     ]
-    
+
     # Pass mock to asset
     result = state_population_api_resource(mocked_resource)
-    
+
     assert len(result) == 1
     assert result[0]["city"] == "Fakestown"
 ```
@@ -578,7 +597,7 @@ def test_materialization_with_mocked_resource():
     mocked_resource.get_cities.return_value = [
         {"city": "Fakestown", "population": 42}
     ]
-    
+
     result = dg.materialize(
         assets=[
             state_population_api_resource,
@@ -589,7 +608,7 @@ def test_materialization_with_mocked_resource():
             "state_population_api_resource": StateConfig(name="ny")
         }),
     )
-    
+
     assert result.success
     assert result.output_for_node("state_population_api_resource") == [
         {"city": "Fakestown", "population": 42}
@@ -599,12 +618,12 @@ def test_materialization_with_mocked_resource():
 
 ### When to Mock Functions vs Resources
 
-| Mock Functions When | Mock Resources When |
-| ------------------- | ------------------- |
-| Testing resource implementation | Testing asset logic |
-| Need to verify call parameters | Testing asset graph |
-| Resource has simple interface | Resource has multiple methods |
-| Testing error handling | Testing happy path |
+| Mock Functions When             | Mock Resources When           |
+| ------------------------------- | ----------------------------- |
+| Testing resource implementation | Testing asset logic           |
+| Need to verify call parameters  | Testing asset graph           |
+| Resource has simple interface   | Resource has multiple methods |
+| Testing error handling          | Testing happy path            |
 
 ---
 
@@ -661,7 +680,7 @@ def test_snowflake_staging():
         database="STAGING",
         warehouse="STAGING_WAREHOUSE",
     )
-    
+
     result = state_population_database(staging_resource)
     assert result.success
 ```
@@ -773,6 +792,7 @@ def validate_schema(raw_data: list[dict]) -> dg.AssetCheckResult:
 ```
 
 **When to Use Blocking**:
+
 - Schema validation before transformation
 - Critical data quality checks
 - Prerequisites for expensive downstream operations
@@ -783,7 +803,7 @@ def validate_schema(raw_data: list[dict]) -> dg.AssetCheckResult:
 @dg.asset_check(asset=my_data)
 def row_count_check(my_data: list) -> dg.AssetCheckResult:
     row_count = len(my_data)
-    
+
     if row_count == 0:
         return dg.AssetCheckResult(
             passed=False,
@@ -810,7 +830,7 @@ def test_non_negative_check():
     # Test passing case
     result_pass = non_negative(10)
     assert result_pass.passed
-    
+
     # Test failing case
     result_fail = non_negative(-10)
     assert not result_fail.passed
@@ -819,6 +839,7 @@ def test_non_negative_check():
 ### Multiple Asset Checks
 
 **Individual Checks**:
+
 ```python
 @dg.asset_check(asset=customer_data)
 def unique_ids(customer_data: list[dict]) -> dg.AssetCheckResult:
@@ -846,6 +867,7 @@ def no_null_emails(customer_data: list[dict]) -> dg.AssetCheckResult:
 ```
 
 **Multi-Asset Check (Efficient)**:
+
 ```python
 import dagster as dg
 
@@ -877,6 +899,7 @@ def customer_data_checks(customer_data: list[dict]):
 ```
 
 **Use `@multi_asset_check` when**:
+
 - Multiple checks run on the same data
 - Loading the asset is expensive
 - Checks share computation logic
@@ -924,7 +947,7 @@ def sample_population_data():
 @pytest.fixture
 def mock_database_resource():
     from unittest.mock import Mock
-    
+
     mock = Mock()
     mock.query.return_value = []
     return mock
@@ -954,10 +977,10 @@ def test_with_fixtures(sample_population_data, mock_database_resource):
 def test_definitions_load():
     """Verify all definitions can be loaded without errors."""
     from my_project.definitions import defs
-    
+
     # Check assets exist
     assert len(defs.get_all_asset_keys()) > 0
-    
+
     # Check jobs exist
     assert len(defs.get_all_job_defs()) > 0
 ```
@@ -967,15 +990,15 @@ def test_definitions_load():
 ```python
 def test_required_assets_exist():
     from my_project.definitions import defs
-    
+
     required_assets = [
         dg.AssetKey("raw_data"),
         dg.AssetKey("processed_data"),
         dg.AssetKey("final_report"),
     ]
-    
+
     all_keys = defs.get_all_asset_keys()
-    
+
     for asset in required_assets:
         assert asset in all_keys, f"Missing required asset: {asset}"
 ```
@@ -984,13 +1007,13 @@ def test_required_assets_exist():
 
 ## Anti-Patterns to Avoid
 
-| Anti-Pattern | Better Approach |
-| ------------ | --------------- |
-| Testing in production | Use staging or mock resources |
+| Anti-Pattern                   | Better Approach                           |
+| ------------------------------ | ----------------------------------------- |
+| Testing in production          | Use staging or mock resources             |
 | No assertions beyond `success` | Use `output_for_node()` to verify outputs |
-| Ignoring test isolation | Each test should be independent |
-| Hardcoded test data paths | Use fixtures and relative paths |
-| Skipping asset check tests | Test checks like any other function |
+| Ignoring test isolation        | Each test should be independent           |
+| Hardcoded test data paths      | Use fixtures and relative paths           |
+| Skipping asset check tests     | Test checks like any other function       |
 
 ---
 
@@ -999,4 +1022,3 @@ def test_required_assets_exist():
 - [Testing Assets](https://docs.dagster.io/guides/test/testing-assets)
 - [Asset Checks](https://docs.dagster.io/guides/test/asset-checks)
 - [Mocking Resources](https://docs.dagster.io/guides/test/mocking-resources)
-

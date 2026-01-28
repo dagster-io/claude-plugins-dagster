@@ -7,7 +7,9 @@ This document provides complete, canonical type annotation guidance for Python 3
 
 ## Overview
 
-Python 3.12 introduces PEP 695, a major syntactic improvement for generic types. The new type parameter syntax makes generic functions and classes significantly more readable. All syntax from 3.10 and 3.11 continues to work.
+Python 3.12 introduces PEP 695, a major syntactic improvement for generic types. The new type
+parameter syntax makes generic functions and classes significantly more readable. All syntax from
+3.10 and 3.11 continues to work.
 
 **What's new in 3.12:**
 

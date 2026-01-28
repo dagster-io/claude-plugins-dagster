@@ -1,0 +1,56 @@
+# markdownlint-cli2 configuration
+# See: https://github.com/DavidAnson/markdownlint/blob/main/doc/Prettier.md
+
+# Disable formatting rules that conflict with Prettier
+config:
+  # Enable all rules by default
+  default: true
+
+  # Disable formatting rules (handled by Prettier)
+  MD010: false  # Hard tabs
+  MD012: false  # Multiple consecutive blank lines
+  MD022: false  # Headers should be surrounded by blank lines
+  MD024: false  # Multiple headers with the same content
+  MD031: false  # Fenced code blocks should be surrounded by blank lines
+  MD032: false  # Lists should be surrounded by blank lines
+  MD034: false  # Bare URL used
+  MD041: false  # First line in file should be a top level header
+
+  # Keep semantic/structural rules enabled
+  MD001: false  # Header levels should only increment by one level at a time (allow h3 after h1 for reference docs)
+  MD003: true   # Header style
+  MD004: true   # Unordered list style
+  MD005: true   # Inconsistent indentation for list items at the same level
+  MD007: true   # Unordered list indentation
+  MD009: true   # Trailing spaces
+  MD011: true   # Reversed link syntax
+  MD013: false  # Line length (handled by Prettier)
+  MD018: true   # No space after hash on atx style header
+  MD019: true   # Multiple spaces after hash on atx style header
+  MD023: true   # Headers must start at the beginning of the line
+  MD025: true   # Multiple top level headers in the same document
+  MD026: false  # Trailing punctuation in header (allow for plugin documentation)
+  MD027: true   # Multiple spaces after blockquote symbol
+  MD028: true   # Blank line inside blockquote
+  MD029: true   # Ordered list item prefix
+  MD030: true   # Spaces after list markers
+  MD033: false  # Inline HTML (allow for documentation needs)
+  MD036: false  # Emphasis used instead of a header (allow bold text as emphasis)
+  MD037: true   # Spaces inside emphasis markers
+  MD038: true   # Spaces inside code span elements
+  MD039: true   # Spaces inside link text
+  MD040: false  # Fenced code blocks should have a language specified (allow unlabeled blocks)
+  MD042: true   # No empty links
+  MD045: true   # Images should have alternate text (alt text)
+  MD046: false  # Code block style (allow both fenced and indented)
+  MD047: true   # Files should end with a single newline character
+  MD049: true   # Emphasis style should be consistent
+  MD050: true   # Strong style should be consistent
+  MD051: false  # Link fragments should be valid (references across files may not validate)
+  MD053: true   # Link definitions should be needed
+  MD056: false  # Table column count (allow flexible table formatting)
+
+# Ignore patterns
+ignores:
+  - node_modules/
+  - .git/

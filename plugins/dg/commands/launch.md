@@ -1,13 +1,17 @@
 # Launch Dagster Assets
 
-This command guides you through materializing (launching) Dagster assets using the modern `dg launch` CLI.
+This command guides you through materializing (launching) Dagster assets using the modern
+`dg launch` CLI.
 
 ## Overview
 
-The `dg launch` command is the modern, streamlined way to materialize assets in Dagster projects. It replaces the legacy `dagster asset materialize` command with a simpler, more intuitive interface.
+The `dg launch` command is the modern, streamlined way to materialize assets in Dagster projects. It
+replaces the legacy `dagster asset materialize` command with a simpler, more intuitive interface.
 
 **Key Benefits:**
-- Simpler syntax: `dg launch --assets my_asset` vs `python -m dagster asset materialize --select my_asset`
+
+- Simpler syntax: `dg launch --assets my_asset` vs
+  `python -m dagster asset materialize --select my_asset`
 - Better asset selection syntax (tags, groups, kinds, patterns)
 - Native support for partitions and partition ranges
 - Seamless environment variable integration
@@ -86,6 +90,7 @@ dg launch --assets "tag:critical"
 ```
 
 **Example asset with tags:**
+
 ```python
 @dg.asset(
     tags={"priority": "high", "domain": "finance", "schedule": "daily"}
@@ -105,6 +110,7 @@ dg launch --assets "group:sales_analytics group:marketing"
 ```
 
 **Example asset with group:**
+
 ```python
 @dg.asset(group_name="sales_analytics")
 def customer_revenue():
@@ -122,6 +128,7 @@ dg launch --assets "kind:dbt kind:python"
 ```
 
 **Example asset with kinds:**
+
 ```python
 @dg.asset(kinds={"snowflake", "python"})
 def processed_data():
@@ -137,6 +144,7 @@ dg launch --assets "owner:data-engineering"
 ```
 
 **Example asset with owner:**
+
 ```python
 @dg.asset(owners=["team:data-engineering"])
 def pipeline_asset():
@@ -177,6 +185,7 @@ dg launch --assets my_asset --partition "region_us_west"
 ```
 
 **Example daily partitioned asset:**
+
 ```python
 from dagster import DailyPartitionsDefinition, asset
 
@@ -227,6 +236,7 @@ dg launch --assets regional_data --partition "us_east"
 ```
 
 **Example static partitioned asset:**
+
 ```python
 from dagster import StaticPartitionsDefinition, asset
 
@@ -288,6 +298,7 @@ dg launch --assets my_asset --config-json "$(cat launch_config.json)"
 ### Configurable Assets Example
 
 **Asset with config schema:**
+
 ```python
 from dagster import asset, Config
 
@@ -306,9 +317,11 @@ def my_asset(config: MyAssetConfig):
 
 ### Resource Configuration
 
-Resources are configured via environment variables (see Environment Setup section below), not via `--config-json`.
+Resources are configured via environment variables (see Environment Setup section below), not via
+`--config-json`.
 
 **Resource configuration happens in your code:**
+
 ```python
 from dagster import ConfigurableResource, EnvVar
 
@@ -321,7 +334,8 @@ class DatabaseResource(ConfigurableResource):
 
 ## Environment Variables
 
-Assets and resources often require environment variables for configuration (API keys, database URLs, etc.).
+Assets and resources often require environment variables for configuration (API keys, database URLs,
+etc.).
 
 ### Method 1: Direct uv with .env (Automatic)
 
@@ -355,6 +369,7 @@ dg launch --assets my_asset
 ```
 
 **One-liner version:**
+
 ```bash
 set -a; source .env; set +a; dg launch --assets my_asset
 ```
@@ -375,6 +390,7 @@ source .env.prod && dg launch --assets my_asset
 ```
 
 **Directory structure:**
+
 ```
 my_project/
 ├── .env              # Default (dev)
@@ -405,6 +421,7 @@ DATABASE_URL=postgresql://localhost:5432/mydb API_KEY=test-key dg launch --asset
 5. **Document requirements** - List all required variables in README
 
 **Example .env.example:**
+
 ```bash
 # Database Configuration
 DATABASE_URL=postgresql://localhost:5432/mydb
@@ -437,6 +454,7 @@ dg launch --job my_job --config-json '{"ops": {...}}'
 ```
 
 **Example job definition:**
+
 ```python
 import dagster as dg
 
@@ -468,6 +486,7 @@ defs = dg.Definitions(
 5. **Working directory**: Your project root
 
 **Alternative using uv:**
+
 - **Program**: `/path/to/uv`
 - **Parameters**: `run python -m dagster_dg_cli.cli launch --assets my_asset`
 - **Environment file**: Your `.env` file (automatically loaded by uv)
@@ -481,8 +500,8 @@ name: Launch Dagster Assets
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Daily at midnight
-  workflow_dispatch:      # Manual trigger
+    - cron: "0 0 * * *" # Daily at midnight
+  workflow_dispatch: # Manual trigger
 
 jobs:
   launch:
@@ -493,7 +512,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install uv
         run: pip install uv
@@ -579,6 +598,7 @@ run_launcher:
 ```
 
 With this configuration:
+
 - `dg launch` submits a run to Dagster Cloud
 - Execution happens on Cloud infrastructure (not locally)
 - Logs appear in Cloud UI
@@ -609,6 +629,7 @@ dg launch --assets my_asset
 ```
 
 **Example Kubernetes Run Launcher:**
+
 ```yaml
 # dagster.yaml
 run_launcher:
@@ -776,18 +797,19 @@ Migrating from legacy `dagster asset materialize` to modern `dg launch`.
 
 ### Command Mapping
 
-| Legacy Command | Modern Equivalent |
-|----------------|-------------------|
-| `dagster asset materialize -a my_asset` | `dg launch --assets my_asset` |
-| `dagster asset materialize --select my_asset` | `dg launch --assets my_asset` |
-| `dagster asset materialize -a asset1 -a asset2` | `dg launch --assets asset1,asset2` |
-| `python -m dagster asset materialize -a my_asset` | `dg launch --assets my_asset` or `uv run dg launch --assets my_asset` |
-| `dagster asset materialize --select "tag:priority=high"` | `dg launch --assets "tag:priority=high"` |
-| `dagster job execute -j my_job` | `dg launch --job my_job` |
+| Legacy Command                                           | Modern Equivalent                                                     |
+| -------------------------------------------------------- | --------------------------------------------------------------------- |
+| `dagster asset materialize -a my_asset`                  | `dg launch --assets my_asset`                                         |
+| `dagster asset materialize --select my_asset`            | `dg launch --assets my_asset`                                         |
+| `dagster asset materialize -a asset1 -a asset2`          | `dg launch --assets asset1,asset2`                                    |
+| `python -m dagster asset materialize -a my_asset`        | `dg launch --assets my_asset` or `uv run dg launch --assets my_asset` |
+| `dagster asset materialize --select "tag:priority=high"` | `dg launch --assets "tag:priority=high"`                              |
+| `dagster job execute -j my_job`                          | `dg launch --job my_job`                                              |
 
 ### Syntax Changes
 
 **Legacy (dagster asset materialize):**
+
 ```bash
 # Required full module invocation
 python -m dagster asset materialize --select my_asset
@@ -797,6 +819,7 @@ set -a; source .env; set +a; python -m dagster asset materialize -a my_asset
 ```
 
 **Modern (dg launch):**
+
 ```bash
 # Simple, direct command
 dg launch --assets my_asset
@@ -809,15 +832,15 @@ uv run dg launch --assets my_asset
 
 All legacy features are supported in `dg launch`:
 
-| Feature | Legacy | Modern |
-|---------|--------|--------|
-| Single asset | `-a my_asset` | `--assets my_asset` |
-| Multiple assets | `-a a1 -a a2` | `--assets a1,a2` |
-| Selection patterns | `--select "tag:x"` | `--assets "tag:x"` |
-| Partitions | `--partition` | `--partition` |
-| Partition ranges | `--partition-range` | `--partition-range` |
-| Config | `--config` | `--config-json` |
-| Jobs | `-j my_job` | `--job my_job` |
+| Feature            | Legacy              | Modern              |
+| ------------------ | ------------------- | ------------------- |
+| Single asset       | `-a my_asset`       | `--assets my_asset` |
+| Multiple assets    | `-a a1 -a a2`       | `--assets a1,a2`    |
+| Selection patterns | `--select "tag:x"`  | `--assets "tag:x"`  |
+| Partitions         | `--partition`       | `--partition`       |
+| Partition ranges   | `--partition-range` | `--partition-range` |
+| Config             | `--config`          | `--config-json`     |
+| Jobs               | `-j my_job`         | `--job my_job`      |
 
 ### Migration Checklist
 

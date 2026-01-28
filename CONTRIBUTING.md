@@ -1,10 +1,12 @@
 # Contributing to Dagster Claude Plugins
 
-Thank you for your interest in contributing to Dagster Claude Plugins! This document provides guidelines and instructions for contributing to this monorepo.
+Thank you for your interest in contributing to Dagster Claude Plugins! This document provides
+guidelines and instructions for contributing to this monorepo.
 
 ## Development Setup
 
-This repository contains Claude plugins for Dagster development. Each plugin is located in the `plugins/` directory:
+This repository contains Claude plugins for Dagster development. Each plugin is located in the
+`plugins/` directory:
 
 - `dg` - CLI commands for Dagster development
 - `dagster-conventions` - Best practices and conventions
@@ -14,6 +16,7 @@ This repository contains Claude plugins for Dagster development. Each plugin is 
 ### Local Development
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/dagster-io/claude-plugins-dagster.git
    cd claude-plugins-dagster
@@ -28,6 +31,7 @@ This repository contains Claude plugins for Dagster development. Each plugin is 
 ### Adding Features or Fixes
 
 1. **Create a branch** for your changes:
+
    ```bash
    git checkout -b your-feature-name
    ```
@@ -35,16 +39,20 @@ This repository contains Claude plugins for Dagster development. Each plugin is 
 2. **Make your changes** to the relevant plugin(s)
 
 3. **Update CHANGELOG.md** - Add your changes under the `[Unreleased]` section:
+
    ```markdown
    ## [Unreleased]
 
    ### Added
+
    - **plugin-name**: Description of new feature
 
    ### Fixed
+
    - **plugin-name**: Description of bug fix
 
    ### Changed
+
    - **plugin-name**: Description of modification
    ```
 
@@ -57,6 +65,7 @@ This repository contains Claude plugins for Dagster development. Each plugin is 
    - **Security** - Security improvements or fixes
 
 4. **Commit your changes**:
+
    ```bash
    git add -A
    git commit -m "Description of your changes"
@@ -69,7 +78,8 @@ This repository contains Claude plugins for Dagster development. Each plugin is 
 
 ## Release Procedure
 
-This repository uses a monorepo versioning system where all plugins share the same version number. Releases are managed through an automated GitHub Actions workflow.
+This repository uses a monorepo versioning system where all plugins share the same version number.
+Releases are managed through an automated GitHub Actions workflow.
 
 ### Overview
 
@@ -108,17 +118,21 @@ As you make changes, add entries to the `[Unreleased]` section of CHANGELOG.md:
 ## [Unreleased]
 
 ### Added
+
 - **dg**: New `/dg:analyze` command for pipeline analysis
 - **dagster-conventions**: Added guidance for multi-asset definitions
 
 ### Fixed
+
 - **dignified-python**: Fixed type annotation examples for Python 3.13
 
 ### Changed
+
 - **dagster-integrations**: Updated integration count to 90+
 ```
 
 **Tips:**
+
 - Prefix each entry with the plugin name in bold: `**plugin-name**:`
 - Write clear, concise descriptions
 - Use present tense ("Add" not "Added")
@@ -130,11 +144,13 @@ Only repository maintainers can create releases. Follow these steps:
 
 #### 1. Review Unreleased Changes
 
-Check the `[Unreleased]` section in CHANGELOG.md to see what changes will be included in the release.
+Check the `[Unreleased]` section in CHANGELOG.md to see what changes will be included in the
+release.
 
 #### 2. Decide on Version Number
 
 Based on the changes, choose the appropriate version number following semantic versioning:
+
 - Are there breaking changes? → Major version bump
 - Are there new features? → Minor version bump
 - Only bug fixes or small updates? → Patch version bump
@@ -150,6 +166,7 @@ Based on the changes, choose the appropriate version number following semantic v
 #### 4. Monitor Workflow Execution
 
 The workflow will:
+
 1. ✓ Validate the version format
 2. ✓ Check that the tag doesn't already exist
 3. ✓ Update all plugin.json files with the new version
@@ -170,6 +187,7 @@ After the workflow completes:
    - Verify the new release appears with correct version and notes
 
 2. **Verify plugin.json files**:
+
    ```bash
    git pull origin master
    cat plugins/dg/.claude-plugin/plugin.json
@@ -177,6 +195,7 @@ After the workflow completes:
    ```
 
 3. **Verify CHANGELOG.md**:
+
    ```bash
    cat CHANGELOG.md
    # Check that:
@@ -209,7 +228,9 @@ After a release, verify:
 
 **Problem**: The version tag already exists in the repository.
 
-**Solution**: Choose a different version number or delete the existing tag if it was created by mistake:
+**Solution**: Choose a different version number or delete the existing tag if it was created by
+mistake:
+
 ```bash
 git tag -d v0.0.2
 git push origin :refs/tags/v0.0.2
@@ -226,6 +247,7 @@ git push origin :refs/tags/v0.0.2
 **Problem**: Git operations failed (rare).
 
 **Solution**:
+
 1. Check the workflow logs for specific error
 2. Ensure no one else is releasing simultaneously
 3. Re-run the workflow
@@ -235,6 +257,7 @@ git push origin :refs/tags/v0.0.2
 **Problem**: The CHANGELOG.md section for that version is missing or malformed.
 
 **Solution**:
+
 1. Check CHANGELOG.md format
 2. Ensure version header is: `## [X.Y.Z] - YYYY-MM-DD`
 3. If needed, edit the GitHub release manually to fix notes
@@ -264,21 +287,136 @@ git checkout master
 git branch -D test-release
 ```
 
+## Code Quality
+
+This repository uses automated linting and formatting tools to maintain code quality and
+consistency. All pull requests must pass linting checks in CI.
+
+### Quick Start with Make
+
+The repository includes a Makefile for common development tasks:
+
+```bash
+make help      # Show available commands
+make install   # Install pre-commit hooks
+make lint      # Run all linting checks
+make format    # Auto-fix formatting issues
+make clean     # Clean up cache and temporary files
+```
+
+### Setup Pre-commit Hooks
+
+Install and enable pre-commit hooks to automatically check your changes before committing:
+
+```bash
+# Using Make (recommended)
+make install
+```
+
+Or manually:
+
+```bash
+# Install pre-commit (requires Python 3.11+)
+pip install pre-commit
+
+# Install git hooks
+pre-commit install
+```
+
+Now pre-commit will run automatically on `git commit`. The hooks will:
+
+- Check and format markdown files
+- Lint and format Python code
+- Validate JSON and YAML syntax
+- Remove trailing whitespace and fix line endings
+
+### Running Linters Manually
+
+To run all linters on all files:
+
+```bash
+make lint
+```
+
+Or directly with pre-commit:
+
+```bash
+pre-commit run --all-files
+```
+
+To run linters on specific files:
+
+```bash
+pre-commit run --files path/to/file.md path/to/script.py
+```
+
+### Auto-fixing Issues
+
+Most linting issues can be automatically fixed:
+
+**Auto-fix all files:**
+
+```bash
+make format
+```
+
+**Or manually:**
+
+Markdown formatting:
+
+```bash
+npx prettier --write "**/*.md"
+```
+
+Python formatting:
+
+```bash
+ruff format scripts/
+ruff check --fix scripts/
+```
+
+### Linting Tools Used
+
+- **markdownlint-cli2**: Semantic/structural markdown rules
+- **Prettier**: Automated markdown formatting
+- **Ruff**: Python linting and formatting (replaces Black, isort, Flake8)
+- **pre-commit-hooks**: JSON/YAML validation, trailing whitespace, etc.
+
+### CI Requirements
+
+All pull requests must pass the linting workflow in GitHub Actions. The workflow runs:
+
+```bash
+pre-commit run --all-files
+```
+
+If the linting check fails:
+
+1. Run `pre-commit run --all-files` locally to see the errors
+2. Fix the issues (many can be auto-fixed)
+3. Commit the fixes and push again
+
+You can view the linting workflow status in the "Checks" tab of your pull request.
+
 ## Code Standards
 
 ### Python Code
 
 For Python code in plugins, follow the **dignified-python** standards:
+
 - Use type annotations with modern syntax (`list[str]`, `str | None`)
 - Follow LBYL (Look Before You Leap) exception handling
 - Use pathlib for file operations
 - Use ABC-based interfaces for abstractions
+
+All Python code is automatically checked with Ruff (linting + formatting).
 
 ### Documentation
 
 - Keep documentation clear and concise
 - Include examples where helpful
 - Update CHANGELOG.md with all changes
+- All markdown is automatically formatted with Prettier and checked with markdownlint
 
 ### Commit Messages
 
@@ -289,6 +427,7 @@ For Python code in plugins, follow the **dignified-python** standards:
 ## Questions?
 
 If you have questions or need help:
+
 - Open an issue on GitHub
 - Check existing issues and discussions
 

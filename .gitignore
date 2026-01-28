@@ -2,3 +2,4 @@ release_notes.md
 __pycache__/
 *.pyc
 .claude/skills/
+node_modules/

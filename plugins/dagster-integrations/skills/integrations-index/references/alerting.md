@@ -1,21 +1,25 @@
 # Alerting Integrations
 
-Notification and alerting systems for pipeline monitoring, team communication, and incident management.
+Notification and alerting systems for pipeline monitoring, team communication, and incident
+management.
 
 ---
 
 ### Slack
+
 **Package:** `dagster-slack` | **Support:** Dagster-supported
 
 Send notifications and alerts to Slack channels for pipeline monitoring and team communication.
 
 **Use cases:**
+
 - Alert team on pipeline failures
 - Send success notifications
 - Share data quality reports
 - Post daily pipeline summaries
 
 **Quick start:**
+
 ```python
 from dagster_slack import SlackResource
 
@@ -35,6 +39,7 @@ def notify_completion(
 ```
 
 **Using sensors:**
+
 ```python
 from dagster_slack import make_slack_on_run_failure_sensor
 
@@ -49,17 +54,20 @@ slack_failure_sensor = make_slack_on_run_failure_sensor(
 ---
 
 ### PagerDuty
+
 **Package:** `dagster-pagerduty` | **Support:** Dagster-supported
 
 Create incidents and send alerts to PagerDuty for on-call incident management.
 
 **Use cases:**
+
 - Create incidents for critical pipeline failures
 - Escalate data quality issues
 - On-call alerting for production issues
 - Integrate with incident response workflows
 
 **Quick start:**
+
 ```python
 from dagster_pagerduty import PagerDutyResource
 
@@ -85,17 +93,20 @@ def critical_alert(pagerduty: PagerDutyResource):
 ---
 
 ### Microsoft Teams
+
 **Package:** `dagster-msteams` | **Support:** Dagster-supported
 
 Send notifications to Microsoft Teams channels for pipeline monitoring.
 
 **Use cases:**
+
 - Alert teams using Microsoft Teams
 - Send pipeline status updates
 - Share data reports in Teams channels
 - Enterprise communication integration
 
 **Quick start:**
+
 ```python
 from dagster_msteams import MSTeamsResource
 
@@ -117,17 +128,20 @@ def teams_notification(teams: MSTeamsResource):
 ---
 
 ### Twilio
+
 **Package:** `dagster-twilio` | **Support:** Dagster-supported
 
 Send SMS messages and make phone calls for critical alerts.
 
 **Use cases:**
+
 - SMS alerts for critical failures
 - Phone call escalation for urgent issues
 - Send verification codes
 - Multi-channel alerting
 
 **Quick start:**
+
 ```python
 from dagster_twilio import TwilioResource
 
@@ -150,17 +164,20 @@ def critical_sms_alert(twilio: TwilioResource):
 ---
 
 ### Apprise
+
 **Package:** `dagster-apprise` | **Support:** Community-supported
 
 Universal notification library supporting 80+ services (Discord, Telegram, Email, etc.).
 
 **Use cases:**
+
 - Send notifications to multiple services
 - Use services without dedicated integrations
 - Centralized notification configuration
 - Multi-channel alerting
 
 **Quick start:**
+
 ```python
 from dagster_apprise import AppriseResource
 
@@ -184,16 +201,19 @@ def multi_channel_alert(apprise: AppriseResource):
 ---
 
 ### DingTalk
+
 **Package:** `dagster-dingtalk` | **Support:** Community-supported
 
 Send notifications to DingTalk (popular in China) for team communication.
 
 **Use cases:**
+
 - Notify teams using DingTalk
 - Send pipeline alerts in Chinese organizations
 - Integration with Asian enterprise tools
 
 **Quick start:**
+
 ```python
 from dagster_dingtalk import DingTalkResource
 
@@ -215,18 +235,19 @@ def dingtalk_notification(dingtalk: DingTalkResource):
 
 ## Alerting Tool Selection
 
-| Tool | Best For | Type | Urgency |
-|------|----------|------|---------|
-| **Slack** | Team communication | Chat | Low-Medium |
-| **MS Teams** | Enterprise Microsoft | Chat | Low-Medium |
-| **PagerDuty** | On-call incidents | Incident Mgmt | High |
-| **Twilio** | SMS/Voice alerts | Communication | Critical |
-| **Apprise** | Multi-platform | Universal | All levels |
-| **DingTalk** | Asian markets | Chat | Low-Medium |
+| Tool          | Best For             | Type          | Urgency    |
+| ------------- | -------------------- | ------------- | ---------- |
+| **Slack**     | Team communication   | Chat          | Low-Medium |
+| **MS Teams**  | Enterprise Microsoft | Chat          | Low-Medium |
+| **PagerDuty** | On-call incidents    | Incident Mgmt | High       |
+| **Twilio**    | SMS/Voice alerts     | Communication | Critical   |
+| **Apprise**   | Multi-platform       | Universal     | All levels |
+| **DingTalk**  | Asian markets        | Chat          | Low-Medium |
 
 ## Common Patterns
 
 ### Run Failure Sensor
+
 ```python
 from dagster_slack import make_slack_on_run_failure_sensor
 
@@ -240,6 +261,7 @@ def slack_on_failure(context: dg.RunFailureContext, slack: SlackResource):
 ```
 
 ### Multi-Channel Alerting
+
 ```python
 @dg.asset
 def critical_pipeline(
@@ -266,6 +288,7 @@ def critical_pipeline(
 ```
 
 ### Escalation Pattern
+
 ```python
 @dg.asset
 def monitored_pipeline(

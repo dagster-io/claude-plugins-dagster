@@ -1,5 +1,7 @@
 ---
-description: Detailed exception handling patterns including B904 chaining, third-party API compatibility, and anti-patterns.
+description:
+  Detailed exception handling patterns including B904 chaining, third-party API compatibility, and
+  anti-patterns.
 ---
 
 # Exception Handling Reference
@@ -47,7 +49,10 @@ def _get_bigquery_sample(sql_client, table_name):
         return sql_client.run_query(f"SELECT * FROM {table_name} ORDER BY RAND()...")
 ```
 
-> **The test for "no alternative exists"**: Can you validate or check the condition BEFORE calling the API? If yes (even using a different function/method), use LBYL. The exception only applies when the API provides NO way to determine success a priori—you literally must attempt the operation to know if it will work.
+> **The test for "no alternative exists"**: Can you validate or check the condition BEFORE calling
+> the API? If yes (even using a different function/method), use LBYL. The exception only applies
+> when the API provides NO way to determine success a priori—you literally must attempt the
+> operation to know if it will work.
 
 ### What Does NOT Qualify as Third-Party API Compatibility
 
@@ -96,7 +101,8 @@ except yaml.YAMLError as e:
 
 ## Exception Chaining (B904 Lint Compliance)
 
-**Ruff rule B904** requires explicit exception chaining when raising inside an `except` block. This prevents losing the original traceback.
+**Ruff rule B904** requires explicit exception chaining when raising inside an `except` block. This
+prevents losing the original traceback.
 
 ```python
 # CORRECT: Chain to preserve context

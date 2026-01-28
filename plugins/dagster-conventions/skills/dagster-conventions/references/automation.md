@@ -2,16 +2,17 @@
 
 ## Pattern Summary
 
-| Pattern | When to Use |
-| ------- | ----------- |
-| `AutomationCondition` | Modern asset-centric automation with conditions |
-| `ScheduleDefinition` | Fixed time intervals (daily, hourly, monthly) |
-| `@dg.schedule` decorator | Custom schedule logic with dynamic job selection |
-| `@dg.sensor` | Event-driven triggers (file changes, API updates) |
-| `PartitionsDefinition` | Time-series or categorical data splits |
-| Partitioned schedules | Automate partition materialization |
+| Pattern                  | When to Use                                       |
+| ------------------------ | ------------------------------------------------- |
+| `AutomationCondition`    | Modern asset-centric automation with conditions   |
+| `ScheduleDefinition`     | Fixed time intervals (daily, hourly, monthly)     |
+| `@dg.schedule` decorator | Custom schedule logic with dynamic job selection  |
+| `@dg.sensor`             | Event-driven triggers (file changes, API updates) |
+| `PartitionsDefinition`   | Time-series or categorical data splits            |
+| Partitioned schedules    | Automate partition materialization                |
 
-**Modern Recommendation**: Use `AutomationCondition` for new asset-centric pipelines. Schedules and sensors remain useful for ops-based jobs and event-driven automation.
+**Modern Recommendation**: Use `AutomationCondition` for new asset-centric pipelines. Schedules and
+sensors remain useful for ops-based jobs and event-driven automation.
 
 ---
 
@@ -21,7 +22,9 @@
 
 ### What is Declarative Automation?
 
-Instead of defining schedules or sensors that trigger jobs, you define **conditions** directly on assets. Dagster evaluates these conditions and automatically materializes assets when conditions are met.
+Instead of defining schedules or sensors that trigger jobs, you define **conditions** directly on
+assets. Dagster evaluates these conditions and automatically materializes assets when conditions are
+met.
 
 ### Basic AutomationCondition Patterns
 
@@ -81,13 +84,13 @@ def conditional_report() -> None:
 
 ### Common AutomationCondition Patterns
 
-| Condition | Behavior |
-| --------- | -------- |
-| `on_missing()` | Materialize if never created |
-| `on_cron(schedule)` | Materialize on cron schedule |
-| `eager()` | Materialize when upstream assets update |
-| `any_deps_updated()` | True if any upstream assets updated |
-| `any_deps_missing()` | True if any upstream assets are missing |
+| Condition                           | Behavior                                      |
+| ----------------------------------- | --------------------------------------------- |
+| `on_missing()`                      | Materialize if never created                  |
+| `on_cron(schedule)`                 | Materialize on cron schedule                  |
+| `eager()`                           | Materialize when upstream assets update       |
+| `any_deps_updated()`                | True if any upstream assets updated           |
+| `any_deps_missing()`                | True if any upstream assets are missing       |
 | `all_deps_updated_since_cron(cron)` | True if all deps updated since last cron tick |
 
 ### Benefits of Declarative Automation
@@ -171,17 +174,17 @@ trip_update_schedule = dg.ScheduleDefinition(
 
 ### Common Cron Patterns
 
-| Pattern | Meaning |
-| ------- | ------- |
-| `* * * * *` | Every minute |
-| `0 * * * *` | Every hour (at minute 0) |
-| `0 0 * * *` | Daily at midnight |
-| `0 6 * * *` | Daily at 6:00 AM |
-| `0 0 * * 1` | Weekly on Monday at midnight |
-| `0 0 * * 1-5` | Weekdays at midnight |
-| `0 0 1 * *` | Monthly on the 1st at midnight |
-| `0 0 5 * *` | Monthly on the 5th at midnight |
-| `15 5 * * 1-5` | Weekdays at 5:15 AM |
+| Pattern        | Meaning                        |
+| -------------- | ------------------------------ |
+| `* * * * *`    | Every minute                   |
+| `0 * * * *`    | Every hour (at minute 0)       |
+| `0 0 * * *`    | Daily at midnight              |
+| `0 6 * * *`    | Daily at 6:00 AM               |
+| `0 0 * * 1`    | Weekly on Monday at midnight   |
+| `0 0 * * 1-5`  | Weekdays at midnight           |
+| `0 0 1 * *`    | Monthly on the 1st at midnight |
+| `0 0 5 * *`    | Monthly on the 5th at midnight |
+| `15 5 * * 1-5` | Weekdays at 5:15 AM            |
 
 **Tip**: Use [Crontab Guru](https://crontab.guru/) to create and test cron expressions.
 
@@ -202,7 +205,7 @@ my_schedule = dg.ScheduleDefinition(
 def custom_schedule(context: dg.ScheduleEvaluationContext):
     """Schedule with custom logic."""
     scheduled_date = context.scheduled_execution_time.strftime("%Y-%m-%d")
-    
+
     return dg.RunRequest(
         run_key=f"daily_{scheduled_date}",
         run_config={
@@ -236,6 +239,7 @@ monthly_schedule = dg.build_schedule_from_partitioned_job(
 ### Sensor Anatomy
 
 Sensors follow this lifecycle:
+
 1. Read cursor (previous state)
 2. Observe current state
 3. Compare states and create run requests for changes
@@ -253,13 +257,13 @@ def file_sensor(context: dg.SensorEvaluationContext):
     previous_state = json.loads(context.cursor) if context.cursor else {}
     current_state = {}
     runs_to_request = []
-    
+
     # 2. Observe current state
     for filepath in get_files_to_watch():
         last_modified = os.path.getmtime(filepath)
         filename = os.path.basename(filepath)
         current_state[filename] = last_modified
-        
+
         # 3. Check for changes
         if filename not in previous_state or previous_state[filename] != last_modified:
             runs_to_request.append(dg.RunRequest(
@@ -272,7 +276,7 @@ def file_sensor(context: dg.SensorEvaluationContext):
                     }
                 }
             ))
-    
+
     # 4. Return result with updated cursor
     return dg.SensorResult(
         run_requests=runs_to_request,
@@ -292,21 +296,21 @@ def adhoc_request_sensor(context: dg.SensorEvaluationContext):
         os.path.dirname(__file__),
         "../../../data/requests",
     )
-    
+
     previous_state = json.loads(context.cursor) if context.cursor else {}
     current_state = {}
     runs_to_request = []
-    
+
     for filename in os.listdir(PATH_TO_REQUESTS):
         file_path = os.path.join(PATH_TO_REQUESTS, filename)
         if filename.endswith(".json") and os.path.isfile(file_path):
             last_modified = os.path.getmtime(file_path)
             current_state[filename] = last_modified
-            
+
             if filename not in previous_state or previous_state[filename] != last_modified:
                 with open(file_path, "r") as f:
                     request_config = json.load(f)
-                
+
                 runs_to_request.append(dg.RunRequest(
                     run_key=f"request_{filename}_{last_modified}",
                     run_config={
@@ -320,7 +324,7 @@ def adhoc_request_sensor(context: dg.SensorEvaluationContext):
                         }
                     }
                 ))
-    
+
     return dg.SensorResult(
         run_requests=runs_to_request,
         cursor=json.dumps(current_state),
@@ -346,10 +350,10 @@ def upstream_sensor(context: dg.SensorEvaluationContext, asset_event):
 @dg.sensor(job=my_job, minimum_interval_seconds=60)
 def conditional_sensor(context: dg.SensorEvaluationContext):
     new_files = check_for_new_files()
-    
+
     if not new_files:
         return dg.SkipReason("No new files found")
-    
+
     return dg.RunRequest(run_key=f"files_{len(new_files)}")
 ```
 
@@ -429,6 +433,7 @@ def add_new_customer(customer_id: str):
 ```
 
 **Use Cases**:
+
 - Customer-specific processing where customers are added dynamically
 - File-based partitioning where files arrive unpredictably
 - Any scenario where partition keys aren't known at definition time
@@ -457,9 +462,9 @@ def monthly_data(context: dg.AssetExecutionContext) -> None:
     """Process data for a specific month."""
     partition_date_str = context.partition_key  # "2023-01-01"
     month = partition_date_str[:-3]  # "2023-01"
-    
+
     context.log.info(f"Processing partition: {month}")
-    
+
     data = fetch_data_for_month(month)
     save_data(data, month)
 ```
@@ -471,10 +476,10 @@ def monthly_data(context: dg.AssetExecutionContext) -> None:
 def windowed_data(context: dg.AssetExecutionContext) -> None:
     """Access partition time window."""
     time_window = context.partition_time_window
-    
+
     start = time_window.start  # datetime
     end = time_window.end      # datetime
-    
+
     context.log.info(f"Processing from {start} to {end}")
 ```
 
@@ -508,6 +513,7 @@ result = partitioned_job.execute_in_process(
 Backfills materialize multiple partitions at once:
 
 ### UI Backfill
+
 1. Navigate to the asset in the Dagster UI
 2. Click "Materialize" dropdown
 3. Select "Backfill"
@@ -551,7 +557,7 @@ monthly_schedule = dg.build_schedule_from_partitioned_job(
 @dg.sensor(job=partitioned_job)
 def partition_sensor(context: dg.SensorEvaluationContext):
     missing_partitions = get_missing_partitions()
-    
+
     return [
         dg.RunRequest(
             run_key=f"backfill_{partition}",
@@ -565,13 +571,13 @@ def partition_sensor(context: dg.SensorEvaluationContext):
 
 ## Anti-Patterns to Avoid
 
-| Anti-Pattern | Better Approach |
-| ------------ | --------------- |
-| No cursor in sensors | Always use cursor for state tracking |
-| Polling too frequently | Set `minimum_interval_seconds` |
-| Giant backfills at once | Use `max_runtime` on backfill policies |
-| Hardcoded partition dates | Use dynamic start/end with constants |
-| Ignoring timezone | Set `execution_timezone` on schedules |
+| Anti-Pattern              | Better Approach                        |
+| ------------------------- | -------------------------------------- |
+| No cursor in sensors      | Always use cursor for state tracking   |
+| Polling too frequently    | Set `minimum_interval_seconds`         |
+| Giant backfills at once   | Use `max_runtime` on backfill policies |
+| Hardcoded partition dates | Use dynamic start/end with constants   |
+| Ignoring timezone         | Set `execution_timezone` on schedules  |
 
 ---
 
@@ -581,4 +587,3 @@ def partition_sensor(context: dg.SensorEvaluationContext):
 - [Sensors](https://docs.dagster.io/guides/automate/sensors)
 - [Partitions](https://docs.dagster.io/guides/build/partitions)
 - [Asset Selection Syntax](https://docs.dagster.io/concepts/assets/asset-selection-syntax)
-

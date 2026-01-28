@@ -1,21 +1,25 @@
 # Testing Integrations
 
-Data quality and testing frameworks for validation, schema compliance, and ensuring data pipeline reliability.
+Data quality and testing frameworks for validation, schema compliance, and ensuring data pipeline
+reliability.
 
 ---
 
 ### Great Expectations
+
 **Package:** `dagster-ge` | **Support:** Dagster-supported
 
 Data validation framework with expectations for testing data quality and generating documentation.
 
 **Use cases:**
+
 - Validate data quality with reusable expectations
 - Test data for anomalies and schema violations
 - Generate data quality documentation
 - Monitor data quality over time
 
 **Quick start:**
+
 ```python
 from dagster_ge import ge_validation_factory
 import great_expectations as ge
@@ -45,6 +49,7 @@ def validated_data():
 ```
 
 **Using validation factory:**
+
 ```python
 # Create validation op from expectation suite
 validation_op = ge_validation_factory(
@@ -63,6 +68,7 @@ def data_pipeline():
 **Docs:** https://docs.dagster.io/integrations/libraries/great-expectations
 
 **Key features:**
+
 - 300+ built-in expectations
 - Custom expectation development
 - Data documentation generation
@@ -71,17 +77,20 @@ def data_pipeline():
 ---
 
 ### Pandera
+
 **Package:** `dagster-pandera` | **Support:** Dagster-supported
 
 Statistical data validation library for DataFrames with schema typing support.
 
 **Use cases:**
+
 - Type-safe DataFrame validation
 - Statistical checks on data distributions
 - Runtime schema enforcement
 - Pandas and Polars DataFrame validation
 
 **Quick start:**
+
 ```python
 from dagster_pandera import pandera_schema_to_dagster_type
 import pandera as pa
@@ -113,6 +122,7 @@ def validated_users() -> UserDataFrame:
 **Docs:** https://docs.dagster.io/integrations/libraries/pandera
 
 **Key features:**
+
 - Type annotations for DataFrames
 - Statistical validation (mean, std, quantiles)
 - Custom check functions
@@ -123,18 +133,19 @@ def validated_users() -> UserDataFrame:
 
 ## Data Quality Tool Comparison
 
-| Feature | Great Expectations | Pandera |
-|---------|-------------------|---------|
-| **Style** | Expectation-based | Schema-based |
-| **Typing** | Runtime validation | Type annotations |
-| **Complexity** | More setup | Simpler |
-| **Documentation** | Auto-generated docs | Code-first |
-| **Statistical tests** | Basic | Advanced |
-| **Best for** | Enterprise validation | Type-safe pipelines |
+| Feature               | Great Expectations    | Pandera             |
+| --------------------- | --------------------- | ------------------- |
+| **Style**             | Expectation-based     | Schema-based        |
+| **Typing**            | Runtime validation    | Type annotations    |
+| **Complexity**        | More setup            | Simpler             |
+| **Documentation**     | Auto-generated docs   | Code-first          |
+| **Statistical tests** | Basic                 | Advanced            |
+| **Best for**          | Enterprise validation | Type-safe pipelines |
 
 ## Common Patterns
 
 ### Basic Validation
+
 ```python
 # Great Expectations
 @dg.asset
@@ -158,6 +169,7 @@ def validated_data_pandera() -> pa.typing.DataFrame[UserSchema]:
 ```
 
 ### Conditional Validation
+
 ```python
 # Pandera with custom checks
 class SalesSchema(pa.DataFrameModel):
@@ -172,6 +184,7 @@ class SalesSchema(pa.DataFrameModel):
 ```
 
 ### Multi-Stage Validation
+
 ```python
 @dg.asset
 def raw_data() -> pd.DataFrame:

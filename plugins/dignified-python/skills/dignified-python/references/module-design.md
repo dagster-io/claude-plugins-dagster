@@ -158,7 +158,8 @@ def process_user(user: "User") -> None:
 
 #### 4. Startup Time Optimization (Rare)
 
-Some packages have genuinely heavy import costs (pyspark, jupyter ecosystem, large ML frameworks). Deferring these imports can improve CLI startup time.
+Some packages have genuinely heavy import costs (pyspark, jupyter ecosystem, large ML frameworks).
+Deferring these imports can improve CLI startup time.
 
 **However, apply "innocent until proven guilty":**
 

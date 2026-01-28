@@ -13,7 +13,8 @@ description: All decision checklists consolidated for final review before commit
 - [ ] Is this at an error boundary? (CLI/API level)
 - [ ] Can I check the condition proactively? (LBYL)
 - [ ] Am I adding meaningful context, or just hiding?
-- [ ] Is third-party API forcing me to use exceptions? (No LBYL check exists—not even format validation)
+- [ ] Is third-party API forcing me to use exceptions? (No LBYL check exists—not even format
+      validation)
 - [ ] Have I encapsulated the violation?
 - [ ] Am I catching specific exceptions, not broad?
 - [ ] If catching at error boundary, am I logging/warning? (Never silently swallow)

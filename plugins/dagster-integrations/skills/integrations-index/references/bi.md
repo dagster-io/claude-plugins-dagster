@@ -5,17 +5,20 @@ Business intelligence and visualization platforms for data exploration, dashboar
 ---
 
 ### Looker
+
 **Package:** `dagster-looker` | **Support:** Dagster-supported
 
 Google's business intelligence platform for creating interactive dashboards and SQL-based analytics.
 
 **Use cases:**
+
 - Refresh Looker PDTs (persistent derived tables)
 - Trigger Looker dashboard regeneration
 - Integrate Looker explores with Dagster assets
 - Schedule Looker report updates
 
 **Quick start:**
+
 ```python
 from dagster_looker import LookerResource
 
@@ -39,17 +42,20 @@ def refresh_looker_pdt(looker: LookerResource):
 ---
 
 ### Tableau
+
 **Package:** `dagster-tableau` | **Support:** Dagster-supported
 
 Interactive data visualization and dashboarding platform for business analytics.
 
 **Use cases:**
+
 - Refresh Tableau data sources
 - Publish workbooks to Tableau Server
 - Trigger extract refreshes
 - Integrate with Tableau prep workflows
 
 **Quick start:**
+
 ```python
 from dagster_tableau import TableauResource
 
@@ -73,17 +79,20 @@ def refresh_tableau_datasource(tableau: TableauResource):
 ---
 
 ### PowerBI
+
 **Package:** `dagster-powerbi` | **Support:** Dagster-supported
 
 Microsoft's business intelligence platform for creating reports and dashboards.
 
 **Use cases:**
+
 - Refresh PowerBI datasets
 - Trigger PowerBI report generation
 - Update PowerBI dataflows
 - Schedule dashboard refreshes
 
 **Quick start:**
+
 ```python
 from dagster_powerbi import PowerBIResource
 
@@ -107,17 +116,20 @@ def refresh_powerbi_dataset(powerbi: PowerBIResource):
 ---
 
 ### Sigma
+
 **Package:** `dagster-sigma` | **Support:** Dagster-supported
 
 Cloud-native analytics and BI platform with spreadsheet-like interface for data exploration.
 
 **Use cases:**
+
 - Refresh Sigma materialized datasets
 - Trigger Sigma workbook updates
 - Integrate with Sigma workflows
 - Schedule data refreshes
 
 **Quick start:**
+
 ```python
 from dagster_sigma import SigmaResource
 
@@ -140,17 +152,20 @@ def refresh_sigma_workbook(sigma: SigmaResource):
 ---
 
 ### Hex
+
 **Package:** `dagster-hex` | **Support:** Community-supported
 
 Collaborative data notebooks platform combining SQL, Python, and visualizations.
 
 **Use cases:**
+
 - Run Hex projects from Dagster
 - Schedule Hex notebook execution
 - Pass data between Dagster and Hex
 - Trigger Hex workflows
 
 **Quick start:**
+
 ```python
 from dagster_hex import HexResource
 
@@ -173,17 +188,20 @@ def run_hex_project(hex: HexResource):
 ---
 
 ### Evidence
+
 **Package:** `dagster-evidence` | **Support:** Community-supported
 
 Markdown-based BI tool for building data reports and dashboards with code.
 
 **Use cases:**
+
 - Generate Evidence reports from Dagster
 - Build data-driven documentation
 - Create automated reports
 - Version-controlled analytics
 
 **Quick start:**
+
 ```python
 from dagster_evidence import EvidenceResource
 
@@ -202,17 +220,20 @@ def generate_evidence_report(evidence: EvidenceResource):
 ---
 
 ### Cube
+
 **Package:** `dagster-cube` | **Support:** Community-supported
 
 Semantic layer and headless BI platform for building consistent metrics across tools.
 
 **Use cases:**
+
 - Define metrics and dimensions
 - Create semantic data models
 - Power multiple BI tools from single definition
 - API-first analytics
 
 **Quick start:**
+
 ```python
 from dagster_cube import CubeResource
 
@@ -237,19 +258,20 @@ def query_cube_metrics(cube: CubeResource):
 
 ## BI Tool Selection
 
-| Tool | Best For | Deployment | Complexity | Cost |
-|------|----------|------------|------------|------|
-| **Looker** | SQL-based analytics | Cloud | Medium | High |
-| **Tableau** | Interactive viz | Cloud/Server | Medium | High |
-| **PowerBI** | Microsoft ecosystem | Cloud/Desktop | Low | Medium |
-| **Sigma** | Spreadsheet interface | Cloud | Low | Medium |
-| **Hex** | Notebooks + BI | Cloud | Medium | Medium |
-| **Evidence** | Code-first reports | Self-hosted | Low | Free |
-| **Cube** | Semantic layer | Self-hosted/Cloud | High | Free/Paid |
+| Tool         | Best For              | Deployment        | Complexity | Cost      |
+| ------------ | --------------------- | ----------------- | ---------- | --------- |
+| **Looker**   | SQL-based analytics   | Cloud             | Medium     | High      |
+| **Tableau**  | Interactive viz       | Cloud/Server      | Medium     | High      |
+| **PowerBI**  | Microsoft ecosystem   | Cloud/Desktop     | Low        | Medium    |
+| **Sigma**    | Spreadsheet interface | Cloud             | Low        | Medium    |
+| **Hex**      | Notebooks + BI        | Cloud             | Medium     | Medium    |
+| **Evidence** | Code-first reports    | Self-hosted       | Low        | Free      |
+| **Cube**     | Semantic layer        | Self-hosted/Cloud | High       | Free/Paid |
 
 ## Common Patterns
 
 ### Data Refresh Pattern
+
 ```python
 # Transform data in Dagster
 @dg.asset
@@ -274,6 +296,7 @@ def refreshed_dashboard(
 ```
 
 ### Scheduled Report Generation
+
 ```python
 @dg.asset
 def daily_report(hex: HexResource):
@@ -294,6 +317,7 @@ daily_schedule = dg.ScheduleDefinition(
 ```
 
 ### Multi-Tool Refresh
+
 ```python
 @dg.asset
 def core_data() -> pd.DataFrame:

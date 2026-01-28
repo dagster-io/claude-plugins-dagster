@@ -1,23 +1,27 @@
 # Other Integrations
 
-Miscellaneous integrations that don't fit into other categories, including DataFrame libraries and utility tools.
+Miscellaneous integrations that don't fit into other categories, including DataFrame libraries and
+utility tools.
 
 ---
 
 ## DataFrame Libraries
 
 ### Pandas
+
 **Package:** `dagster-pandas` | **Support:** Dagster-supported
 
 In-memory DataFrame library for data manipulation and analysis with type validation.
 
 **Use cases:**
+
 - Small to medium dataset transformations
 - Data cleaning and preparation
 - Exploratory data analysis
 - CSV/Excel file processing
 
 **Quick start:**
+
 ```python
 from dagster_pandas import PandasColumn, create_dagster_pandas_dataframe_type
 import pandas as pd
@@ -46,17 +50,20 @@ def events() -> EventDataFrame:
 ---
 
 ### Polars
+
 **Package:** `dagster-polars` | **Support:** Community-supported
 
 Fast DataFrame library with columnar storage and lazy evaluation, often 5-10x faster than pandas.
 
 **Use cases:**
+
 - Fast in-memory transformations
 - Processing medium to large datasets
 - Lazy evaluation for query optimization
 - Alternative to pandas with better performance
 
 **Quick start:**
+
 ```python
 import polars as pl
 
@@ -86,19 +93,20 @@ def lazy_polars() -> pl.LazyFrame:
 
 ## DataFrame Library Comparison
 
-| Feature | Pandas | Polars |
-|---------|--------|--------|
-| **Performance** | Good | Excellent (5-10x faster) |
-| **Memory usage** | Higher | Lower (columnar) |
-| **API** | Mature, widely used | Modern, Rust-based |
-| **Lazy evaluation** | No | Yes |
-| **Best for** | < 10GB datasets | < 100GB datasets |
-| **Learning curve** | Low (widely known) | Low-Medium |
-| **Ecosystem** | Extensive | Growing |
+| Feature             | Pandas              | Polars                   |
+| ------------------- | ------------------- | ------------------------ |
+| **Performance**     | Good                | Excellent (5-10x faster) |
+| **Memory usage**    | Higher              | Lower (columnar)         |
+| **API**             | Mature, widely used | Modern, Rust-based       |
+| **Lazy evaluation** | No                  | Yes                      |
+| **Best for**        | < 10GB datasets     | < 100GB datasets         |
+| **Learning curve**  | Low (widely known)  | Low-Medium               |
+| **Ecosystem**       | Extensive           | Growing                  |
 
 ## Common Patterns
 
 ### In-Memory DataFrame Processing
+
 ```python
 @dg.asset
 def load_data() -> pd.DataFrame:
@@ -114,6 +122,7 @@ def save_data(transform_data: pd.DataFrame):
 ```
 
 ### Type-Safe DataFrames
+
 ```python
 # Using Dagster's pandas type system
 UserDataFrame = create_dagster_pandas_dataframe_type(
@@ -133,6 +142,7 @@ def validated_users() -> UserDataFrame:
 ```
 
 ### Lazy Evaluation with Polars
+
 ```python
 @dg.asset
 def lazy_pipeline() -> pl.DataFrame:
@@ -152,6 +162,7 @@ def lazy_pipeline() -> pl.DataFrame:
 ```
 
 ### Migrating from Pandas to Polars
+
 ```python
 # Pandas version
 @dg.asset
@@ -173,6 +184,7 @@ def polars_transform() -> pl.DataFrame:
 ## Tips
 
 ### For Pandas:
+
 - **Memory**: Monitor memory usage for datasets > 1GB
 - **Dtypes**: Specify dtypes when reading CSVs to save memory
 - **Chunking**: Use `chunksize` parameter for large CSV files
@@ -180,6 +192,7 @@ def polars_transform() -> pl.DataFrame:
 - **Copy vs View**: Be aware of whether operations return copies or views
 
 ### For Polars:
+
 - **Lazy evaluation**: Use `scan_*` methods for large files
 - **Streaming**: Enable streaming mode for larger-than-memory datasets
 - **Expressions**: Learn Polars expression API for optimal performance
@@ -187,6 +200,7 @@ def polars_transform() -> pl.DataFrame:
 - **Type system**: Polars has stricter types - embrace them for better performance
 
 ### General:
+
 - **Start with Pandas**: If you're familiar with pandas, start there
 - **Upgrade to Polars**: When performance becomes an issue, consider migrating
 - **File formats**: Use Parquet over CSV for better performance

@@ -1,12 +1,16 @@
 # List Dagster Definitions and Components
 
-This command guides you through discovering and inspecting Dagster definitions, components, and environment variables using the `dg list` command group.
+This command guides you through discovering and inspecting Dagster definitions, components, and
+environment variables using the `dg list` command group.
 
 ## Overview
 
-The `dg list` command group provides tools for discovery and inspection of your Dagster project. Use these commands to see what assets, jobs, schedules, sensors, and resources are registered, discover available component types, check environment variables, and understand your project structure.
+The `dg list` command group provides tools for discovery and inspection of your Dagster project. Use
+these commands to see what assets, jobs, schedules, sensors, and resources are registered, discover
+available component types, check environment variables, and understand your project structure.
 
 **Key Benefits:**
+
 - Discover all registered definitions (assets, jobs, schedules, sensors, resources)
 - Find available component types for scaffolding
 - Inspect environment variables and Dagster Plus secrets
@@ -57,9 +61,11 @@ The `dg list` command group includes six specialized subcommands for different d
 
 ### `dg list defs`
 
-List all registered Dagster definitions in your project, including assets, asset checks, jobs, schedules, sensors, and resources.
+List all registered Dagster definitions in your project, including assets, asset checks, jobs,
+schedules, sensors, and resources.
 
 **Basic usage:**
+
 ```bash
 # List all definitions with default columns
 dg list defs
@@ -77,6 +83,7 @@ dg list defs --assets "group:sales_analytics"
 ```
 
 **Output sections:**
+
 - **Assets** - Data assets with metadata
 - **Asset Checks** - Data quality checks
 - **Jobs** - Executable jobs
@@ -85,6 +92,7 @@ dg list defs --assets "group:sales_analytics"
 - **Resources** - Shared resources
 
 **Default columns for assets:**
+
 - `key` - Asset key/name
 - `group` - Asset group membership
 - `deps` - Upstream dependencies
@@ -93,6 +101,7 @@ dg list defs --assets "group:sales_analytics"
 - `cron` - Schedule cron expression (for schedules)
 
 **Example output:**
+
 ```
 ┏━━━━━━━━━━━━━┳━━━━━━━━━━━━┓
 ┃ Section     ┃ Definitions ┃
@@ -116,6 +125,7 @@ dg list defs --assets "group:sales_analytics"
 List all available Dagster component types that can be scaffolded in your Python environment.
 
 **Basic usage:**
+
 ```bash
 # List all components
 dg list components
@@ -129,6 +139,7 @@ dg list components --json
 ```
 
 **Common component types:**
+
 - `dagster.asset` - Basic Dagster asset
 - `dagster.schedule` - Time-based schedule
 - `dagster.sensor` - Event-driven sensor
@@ -138,6 +149,7 @@ dg list components --json
 - `sling.SlingReplicationComponent` - Sling data replication
 
 **Example output:**
+
 ```
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Key                           ┃ Summary                       ┃
@@ -150,6 +162,7 @@ dg list components --json
 ```
 
 **Use with scaffold:**
+
 ```bash
 # First, discover available components
 dg list components --package dagster_dbt
@@ -160,15 +173,18 @@ dg scaffold defs dagster_dbt.DbtProjectComponent my_dbt_project
 
 ### `dg list envs`
 
-List environment variables from the `.env` file and show which components require them. When authenticated with Dagster Plus, also shows which deployment scopes have values set.
+List environment variables from the `.env` file and show which components require them. When
+authenticated with Dagster Plus, also shows which deployment scopes have values set.
 
 **Basic usage:**
+
 ```bash
 # List environment variables
 dg list envs
 ```
 
 **Output columns:**
+
 - **Env Var** - Variable name
 - **Value** - Checkmark (✓) if set in local .env file
 - **Components** - Which component instances use this variable
@@ -177,6 +193,7 @@ dg list envs
 - **Full** - (Dagster Plus only) Set in full deployment scope
 
 **Example output (without Dagster Plus):**
+
 ```
 ┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━┓
 ┃ Env Var           ┃ Value ┃ Components   ┃
@@ -189,6 +206,7 @@ dg list envs
 ```
 
 **Example output (with Dagster Plus):**
+
 ```
 ┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━┳━━━━━┳━━━━━━━━┳━━━━━━┓
 ┃ Env Var           ┃ Value ┃ Components   ┃ Dev ┃ Branch ┃ Full ┃
@@ -201,6 +219,7 @@ dg list envs
 ```
 
 **Use cases:**
+
 - Identify missing environment variables before launch
 - Verify Dagster Plus secrets are configured
 - Audit which components require which variables
@@ -208,9 +227,11 @@ dg list envs
 
 ### `dg list projects`
 
-List projects in the current workspace, or emit the current project directory if in a standalone project.
+List projects in the current workspace, or emit the current project directory if in a standalone
+project.
 
 **Basic usage:**
+
 ```bash
 # In a workspace: lists all project paths
 dg list projects
@@ -220,6 +241,7 @@ dg list projects
 ```
 
 **Example output (in workspace):**
+
 ```
 ./project_a
 ./project_b
@@ -228,16 +250,19 @@ dg list projects
 ```
 
 **Example output (in standalone project):**
+
 ```
 .
 ```
 
 **Use cases:**
+
 - CI/CD scripts that need to iterate over all projects
 - Workspace validation
 - Multi-project automation
 
 **CI/CD example:**
+
 ```bash
 # Run tests for all projects in workspace
 for project in $(dg list projects); do
@@ -251,6 +276,7 @@ done
 List all registered dg plugins (registry modules) in the current Python environment.
 
 **Basic usage:**
+
 ```bash
 # List all plugins
 dg list registry-modules
@@ -260,6 +286,7 @@ dg list registry-modules --json
 ```
 
 **Example output:**
+
 ```
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Module                    ┃
@@ -273,6 +300,7 @@ dg list registry-modules --json
 ```
 
 **Use cases:**
+
 - Verify plugin installation
 - Audit available integrations
 - Debug component discovery issues
@@ -283,6 +311,7 @@ dg list registry-modules --json
 Display a hierarchical tree view of component instances in the current project.
 
 **Basic usage:**
+
 ```bash
 # Print tree to stdout
 dg list component-tree
@@ -292,6 +321,7 @@ dg list component-tree --output-file component_tree.txt
 ```
 
 **Example output:**
+
 ```
 my_project/
 ├── defs/
@@ -305,6 +335,7 @@ my_project/
 ```
 
 **Use cases:**
+
 - Visualize project structure
 - Document component organization
 - Debug component hierarchy issues
@@ -317,6 +348,7 @@ my_project/
 ### Common Options (All Subcommands)
 
 **`--target-path <path>`**
+
 - Specify directory context for the command
 - Typically a folder with `dg.toml` or `pyproject.toml`
 - Default: Current working directory
@@ -326,6 +358,7 @@ dg list defs --target-path /path/to/project
 ```
 
 **`--verbose`**
+
 - Enable verbose output for debugging
 - Shows additional diagnostic information
 
@@ -336,6 +369,7 @@ dg list defs --verbose
 ### `dg list defs` Options
 
 **`--json`**
+
 - Output as JSON instead of formatted table
 - Useful for scripting and automation
 
@@ -344,6 +378,7 @@ dg list defs --json
 ```
 
 **`-p, --path <path>`**
+
 - Path to specific definitions to list
 - Filter definitions by directory
 
@@ -352,6 +387,7 @@ dg list defs --path ./my_project/defs/sales
 ```
 
 **`-a, --assets <selection>`**
+
 - Asset selection to filter results
 - Uses same syntax as `dg launch --assets`
 - Supports tags, groups, kinds, owners, patterns
@@ -374,6 +410,7 @@ dg list defs --assets "tag:priority=high kind:dbt"
 ```
 
 **`-c, --columns <columns>`**
+
 - Customize displayed columns
 - Can be comma-separated list or multiple flags
 - Available columns: `key`, `group`, `deps`, `kinds`, `description`, `tags`, `cron`, `is_executable`
@@ -391,6 +428,7 @@ dg list defs -c key -c group -c deps -c kinds -c description -c tags -c is_execu
 ```
 
 **Column availability by definition type:**
+
 - Assets: `key`, `group`, `deps`, `kinds`, `description`, `tags`, `is_executable`
 - Asset Checks: `key`, `deps`, `description`
 - Jobs: `key`, `description`
@@ -401,6 +439,7 @@ dg list defs -c key -c group -c deps -c kinds -c description -c tags -c is_execu
 ### `dg list components` Options
 
 **`-p, --package <package>`**
+
 - Filter components by package name
 - Supports dot-separated module names for finer granularity
 
@@ -413,6 +452,7 @@ dg list components --package dagster_dbt
 ```
 
 **`--json`**
+
 - Output as JSON instead of table
 
 ```bash
@@ -422,6 +462,7 @@ dg list components --json
 ### `dg list registry-modules` Options
 
 **`--json`**
+
 - Output as JSON instead of table
 
 ```bash
@@ -431,6 +472,7 @@ dg list registry-modules --json
 ### `dg list component-tree` Options
 
 **`--output-file <file>`**
+
 - Write tree to file instead of stdout
 - Useful for documentation generation
 
@@ -519,6 +561,7 @@ dg list defs --assets "group:sales_analytics kind:python"
 ### Discovery: Finding What Exists
 
 **Explore project definitions:**
+
 ```bash
 # See everything registered
 dg list defs
@@ -534,6 +577,7 @@ dg list defs --assets "tag:priority=high"
 ```
 
 **Discover available components:**
+
 ```bash
 # What component types can I scaffold?
 dg list components
@@ -548,6 +592,7 @@ dg list components | grep -i "fivetran\|airbyte\|dlt"
 ### Validation: Pre-Flight Checks
 
 **Before launching assets:**
+
 ```bash
 # Verify definitions load
 dg list defs
@@ -560,6 +605,7 @@ dg list envs
 ```
 
 **CI/CD validation:**
+
 ```bash
 #!/bin/bash
 # Validate all projects in workspace
@@ -588,6 +634,7 @@ done
 ### Automation: Scripting with JSON
 
 **Generate asset inventory:**
+
 ```bash
 # Export all assets as JSON
 dg list defs --json > asset_inventory.json
@@ -603,6 +650,7 @@ dg list defs --json | jq -r '.assets | group_by(.kinds[]) | map({kind: .[0].kind
 ```
 
 **Generate documentation:**
+
 ```bash
 #!/bin/bash
 # Generate markdown documentation from definitions
@@ -623,6 +671,7 @@ echo "Documentation generated: assets.md"
 ```
 
 **Monitor environment variables:**
+
 ```bash
 # Check if all required variables are set
 dg list envs --json | jq -r '.[] | select(.value == "") | .env_var'
@@ -634,6 +683,7 @@ dg list envs | grep "DATABASE_URL"
 ### Debugging: Understanding Issues
 
 **Component discovery issues:**
+
 ```bash
 # What plugins are registered?
 dg list registry-modules
@@ -646,6 +696,7 @@ dg list component-tree
 ```
 
 **Asset dependency visualization:**
+
 ```bash
 # Show asset dependencies
 dg list defs --columns key,deps
@@ -660,12 +711,14 @@ dg list defs --json | jq -r '.assets[] | select(.deps | length > 5) | "\(.key): 
 ### Documentation: Generating References
 
 **Component catalog:**
+
 ```bash
 # Generate component reference
 dg list components --json | jq -r '.[] | "## \(.key)\n\n\(.summary)\n"' > components.md
 ```
 
 **Environment variable reference:**
+
 ```bash
 # Document required variables
 echo "# Environment Variables" > env_vars.md
@@ -681,6 +734,7 @@ dg list envs | grep "✓" | awk '{print "- `" $1 "` - Used by: " $3}'  >> env_va
 **PyCharm External Tool:**
 
 Create external tool to list definitions:
+
 1. Settings → Tools → External Tools → Add
 2. **Program**: `dg` (or `/path/to/dg`)
 3. **Arguments**: `list defs --columns key,group,kinds,description`
@@ -689,6 +743,7 @@ Create external tool to list definitions:
 **VSCode Task:**
 
 Add to `.vscode/tasks.json`:
+
 ```json
 {
   "version": "2.0.0",
@@ -714,6 +769,7 @@ Add to `.vscode/tasks.json`:
 ### JSON Processing with jq
 
 **Filter and transform:**
+
 ```bash
 # Assets by group
 dg list defs --json | jq '.assets | group_by(.group) | map({group: .[0].group, assets: map(.key)})'
@@ -726,6 +782,7 @@ dg list defs --json | jq '.schedules | map({name: .name, cron: .cron_schedule})'
 ```
 
 **Generate reports:**
+
 ```bash
 # Asset counts by kind
 dg list defs --json | jq -r '
@@ -748,6 +805,7 @@ dg list defs --json | jq -r '
 ### CI/CD Integration
 
 **GitHub Actions:**
+
 ```yaml
 name: Validate Definitions
 
@@ -762,7 +820,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install uv
         run: pip install uv
@@ -791,6 +849,7 @@ jobs:
 ```
 
 **GitLab CI:**
+
 ```yaml
 validate_definitions:
   stage: test
@@ -807,6 +866,7 @@ validate_definitions:
 ### Workspace Automation
 
 **Iterate over all projects:**
+
 ```bash
 #!/bin/bash
 # Run command for each project
@@ -823,6 +883,7 @@ done
 ```
 
 **Aggregate statistics:**
+
 ```bash
 #!/bin/bash
 # Count assets across all projects
@@ -866,6 +927,7 @@ Default output is a formatted table with borders and styling:
 ```
 
 **Characteristics:**
+
 - Human-readable formatting
 - Nested tables for sections
 - Truncated descriptions (max 100 characters)
@@ -902,12 +964,14 @@ Use `--json` flag for machine-readable output:
 ```
 
 **Characteristics:**
+
 - Complete data (no truncation)
 - Parseable with `jq`, `python`, etc.
 - Suitable for automation
 - No color formatting
 
 **Processing JSON output:**
+
 ```bash
 # Pretty print
 dg list defs --json | jq '.'
@@ -1010,6 +1074,7 @@ cat ~/.dagster/dagster-plus.yaml
 ### Debug Mode
 
 **Enable verbose output:**
+
 ```bash
 # Show detailed information
 dg list defs --verbose
@@ -1022,6 +1087,7 @@ dg check defs
 ```
 
 **Diagnose component discovery:**
+
 ```bash
 # What plugins are loaded?
 dg list registry-modules --verbose
@@ -1036,6 +1102,7 @@ dg list components | grep -i "my_component"
 ### Testing Before Production
 
 **Validate in CI:**
+
 ```bash
 # Check definitions load
 dg list defs || exit 1

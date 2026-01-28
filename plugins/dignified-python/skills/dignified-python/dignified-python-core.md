@@ -3,7 +3,8 @@
 
 # Dignified Python - Core Standards
 
-This document contains the core Python coding standards that apply to 80%+ of Python code. These principles are loaded with every skill invocation.
+This document contains the core Python coding standards that apply to 80%+ of Python code. These
+principles are loaded with every skill invocation.
 
 For conditional loading of specialized patterns:
 
@@ -18,7 +19,8 @@ For detailed reference material, see the "When to Read Each Reference" section i
 
 **Look Before You Leap: Check conditions proactively, NEVER use exceptions for control flow.**
 
-This is the single most important rule in dignified Python. Every pattern below flows from this principle.
+This is the single most important rule in dignified Python. Every pattern below flows from this
+principle.
 
 ```python
 # CORRECT: Check first
@@ -42,7 +44,8 @@ except KeyError:
 
 **ALWAYS use LBYL, NEVER EAFP for control flow**
 
-LBYL means checking conditions before acting. EAFP (Easier to Ask for Forgiveness than Permission) means trying operations and catching exceptions. In dignified Python, we strongly prefer LBYL.
+LBYL means checking conditions before acting. EAFP (Easier to Ask for Forgiveness than Permission)
+means trying operations and catching exceptions. In dignified Python, we strongly prefer LBYL.
 
 ### Dictionary Access Patterns
 
@@ -79,7 +82,8 @@ Exceptions are ONLY acceptable at:
 
 **Default: Let exceptions bubble up**
 
-For detailed exception handling patterns including B904 chaining, third-party API examples, and anti-patterns, see `references/exception-handling.md`.
+For detailed exception handling patterns including B904 chaining, third-party API examples, and
+anti-patterns, see `references/exception-handling.md`.
 
 ---
 
@@ -153,7 +157,8 @@ content = path.read_text()  # Platform-dependent!
 
 1. **Default: ALWAYS place imports at module level**
 2. **Use absolute imports only** (no relative imports)
-3. **Inline imports only for specific exceptions** (circular deps, TYPE_CHECKING, conditional features)
+3. **Inline imports only for specific exceptions** (circular deps, TYPE_CHECKING, conditional
+   features)
 
 ```python
 # CORRECT: Module-level imports

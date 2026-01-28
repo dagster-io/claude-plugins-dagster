@@ -1,10 +1,12 @@
 # Create a new Dagster workspace
 
-Initialize a new Dagster workspace for managing multiple projects with shared deployments and configuration.
+Initialize a new Dagster workspace for managing multiple projects with shared deployments and
+configuration.
 
 **Usage:** `/dg:create-workspace <name>`
 
 Parameters:
+
 - `$1` (required): Workspace name or path. Use `.` to create in the current directory.
 
 ## Execution
@@ -14,6 +16,7 @@ Run the `uvx create-dagster workspace` command with the provided path:
     yes | uvx create-dagster workspace $1
 
 The command will:
+
 - Create a new directory (unless using `.`)
 - Generate workspace structure with projects/, deployments/, and dg.toml
 - Prompt to run `uv sync` to install dependencies
@@ -52,11 +55,13 @@ After successful execution, inform the user about:
 ## Error Handling
 
 If the directory already exists, `create-dagster` will show an error. Inform the user to:
+
 - Choose a different workspace name
 - Remove the existing directory if intentional
 - Use `.` if they want to scaffold into an existing empty directory
 
 If the command fails, check:
+
 - Current directory permissions
 - Valid workspace name (avoid special characters)
 - Sufficient disk space
@@ -64,12 +69,14 @@ If the command fails, check:
 ## When to Use Workspaces
 
 Use a workspace when:
+
 - Managing multiple related Dagster projects
 - Sharing common dependencies across projects
 - Building modular data pipelines with cross-project dependencies
 - Deploying multiple projects together
 
 Use a single project when:
+
 - Starting with a simple implementation
 - All assets belong to one logical domain
 - No need for project separation

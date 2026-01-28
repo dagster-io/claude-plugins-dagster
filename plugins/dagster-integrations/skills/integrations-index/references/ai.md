@@ -5,17 +5,20 @@ AI integrations for machine learning platforms, LLM APIs, and experiment trackin
 ---
 
 ### OpenAI
+
 **Package:** `dagster-openai` | **Support:** Dagster-supported
 
 Integrate OpenAI's GPT models, embeddings, and other AI capabilities into data pipelines.
 
 **Use cases:**
+
 - Generate text with GPT models
 - Create embeddings for semantic search
 - Build LLM-powered data processing
 - Content generation and summarization
 
 **Quick start:**
+
 ```python
 from dagster_openai import OpenAIResource
 
@@ -40,17 +43,20 @@ def generate_summary(openai: OpenAIResource):
 ---
 
 ### Anthropic
+
 **Package:** `dagster-anthropic` | **Support:** Community-supported
 
 Integrate Claude AI models for advanced language understanding and generation.
 
 **Use cases:**
+
 - Use Claude models for text processing
 - Long-context document analysis
 - AI-powered data transformation
 - Content analysis and generation
 
 **Quick start:**
+
 ```python
 from dagster_anthropic import AnthropicResource
 
@@ -76,17 +82,20 @@ def claude_analysis(anthropic: AnthropicResource):
 ---
 
 ### Gemini
+
 **Package:** `dagster-gemini` | **Support:** Community-supported
 
 Google's multimodal AI model for text, image, and video understanding.
 
 **Use cases:**
+
 - Multimodal content analysis
 - Image and video processing
 - Document understanding
 - AI-powered insights
 
 **Quick start:**
+
 ```python
 from dagster_gemini import GeminiResource
 
@@ -108,17 +117,20 @@ def gemini_analysis(gemini: GeminiResource):
 ---
 
 ### MLflow
+
 **Package:** `dagster-mlflow` | **Support:** Dagster-supported
 
 Experiment tracking, model registry, and ML lifecycle management platform.
 
 **Use cases:**
+
 - Track ML experiments and metrics
 - Version and deploy models
 - Compare model performance
 - Manage ML model lifecycle
 
 **Quick start:**
+
 ```python
 from dagster_mlflow import mlflow_tracking
 
@@ -143,17 +155,20 @@ def train_model(context):
 ---
 
 ### Weights & Biases (W&B)
+
 **Package:** `dagster-wandb` | **Support:** Community-supported
 
 ML experiment tracking and visualization platform with advanced collaboration features.
 
 **Use cases:**
+
 - Track ML experiments with rich visualizations
 - Compare hyperparameter configurations
 - Monitor training runs in real-time
 - Collaborate on ML projects
 
 **Quick start:**
+
 ```python
 from dagster_wandb import wandb_resource
 import wandb
@@ -180,17 +195,20 @@ def train_with_wandb(context):
 ---
 
 ### NotDiamond
+
 **Package:** `dagster-notdiamond` | **Support:** Community-supported
 
 LLM routing and optimization platform for selecting the best model for each query.
 
 **Use cases:**
+
 - Optimize LLM selection for cost/quality
 - Route queries to appropriate models
 - A/B test different LLMs
 - Reduce LLM costs
 
 **Quick start:**
+
 ```python
 from dagster_notdiamond import NotDiamondResource
 
@@ -215,18 +233,19 @@ def optimized_llm_call(notdiamond: NotDiamondResource):
 
 ## AI/ML Integration Selection
 
-| Integration | Best For | Type | Cost Model |
-|-------------|----------|------|------------|
-| **OpenAI** | General LLM tasks | LLM API | Pay per token |
-| **Anthropic** | Long-context, reasoning | LLM API | Pay per token |
-| **Gemini** | Multimodal AI | LLM API | Pay per token |
-| **MLflow** | Experiment tracking | Platform | Open-source |
-| **W&B** | Advanced ML tracking | Platform | Freemium |
-| **NotDiamond** | LLM optimization | Routing | Pay per call |
+| Integration    | Best For                | Type     | Cost Model    |
+| -------------- | ----------------------- | -------- | ------------- |
+| **OpenAI**     | General LLM tasks       | LLM API  | Pay per token |
+| **Anthropic**  | Long-context, reasoning | LLM API  | Pay per token |
+| **Gemini**     | Multimodal AI           | LLM API  | Pay per token |
+| **MLflow**     | Experiment tracking     | Platform | Open-source   |
+| **W&B**        | Advanced ML tracking    | Platform | Freemium      |
+| **NotDiamond** | LLM optimization        | Routing  | Pay per call  |
 
 ## Common Patterns
 
 ### LLM Processing Pipeline
+
 ```python
 @dg.asset
 def raw_data() -> list[str]:
@@ -251,6 +270,7 @@ def llm_processed_data(
 ```
 
 ### ML Experiment Tracking
+
 ```python
 @dg.asset
 def train_model(mlflow: MLflowResource):
@@ -273,6 +293,7 @@ def train_model(mlflow: MLflowResource):
 ```
 
 ### Embeddings Generation
+
 ```python
 @dg.asset
 def generate_embeddings(

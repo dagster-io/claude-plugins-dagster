@@ -2,13 +2,13 @@
 
 ## Pattern Summary
 
-| Pattern | When to Use |
-| ------- | ----------- |
-| File import assets | Loading CSVs, Parquet, JSON from local/cloud storage |
-| API resource + assets | Fetching data from REST APIs |
-| dlt integration | Embedded ETL with schema inference and pagination |
-| Sling integration | Database-to-database replication |
-| Configurable ingestion | Dynamic file/endpoint selection at runtime |
+| Pattern                | When to Use                                          |
+| ---------------------- | ---------------------------------------------------- |
+| File import assets     | Loading CSVs, Parquet, JSON from local/cloud storage |
+| API resource + assets  | Fetching data from REST APIs                         |
+| dlt integration        | Embedded ETL with schema inference and pagination    |
+| Sling integration      | Database-to-database replication                     |
+| Configurable ingestion | Dynamic file/endpoint selection at runtime           |
 
 ---
 
@@ -43,7 +43,7 @@ def raw_data_table(
 ) -> None:
     """Load CSV file into DuckDB table."""
     table_name = "raw_data"
-    
+
     with database.get_connection() as conn:
         # Create table if not exists
         conn.execute(f"""
@@ -53,7 +53,7 @@ def raw_data_table(
                 category VARCHAR
             )
         """)
-        
+
         # Load data using COPY
         conn.execute(f"COPY {table_name} FROM '{import_file}'")
 ```
@@ -61,12 +61,14 @@ def raw_data_table(
 ### Running with Config
 
 **CLI:**
+
 ```bash
 dg launch --assets import_file,raw_data_table \
   --config-json '{"ops": {"import_file": {"config": {"path": "2024-01-01.csv"}}}}'
 ```
 
 **UI YAML:**
+
 ```yaml
 ops:
   import_file:
@@ -87,7 +89,7 @@ import requests
 class NASAResource(dg.ConfigurableResource):
     api_key: str
     base_url: str = "https://api.nasa.gov"
-    
+
     def get_near_earth_asteroids(self, start_date: str, end_date: str) -> list:
         url = f"{self.base_url}/neo/rest/v1/feed"
         params = {
@@ -95,7 +97,7 @@ class NASAResource(dg.ConfigurableResource):
             "end_date": end_date,
             "api_key": self.api_key,
         }
-        
+
         response = requests.get(url, params=params)
         response.raise_for_status()
         return response.json()["near_earth_objects"][start_date]
@@ -149,7 +151,7 @@ def simple_source():
             {"id": 2, "name": "Bob"},
         ]
         yield data
-    
+
     return load_dict
 
 # Standalone execution
@@ -177,7 +179,7 @@ def simple_source():
             {"id": 2, "name": "Bob"},
         ]
         yield data
-    
+
     return load_dict
 
 @dlt_assets(
@@ -269,12 +271,12 @@ streams:
 
 ### Sling Replication Modes
 
-| Mode | Description |
-| ---- | ----------- |
-| `full-refresh` | Drop and recreate table each run |
-| `incremental` | Append new records |
-| `truncate` | Truncate table before loading |
-| `snapshot` | Full refresh with point-in-time snapshot |
+| Mode           | Description                              |
+| -------------- | ---------------------------------------- |
+| `full-refresh` | Drop and recreate table each run         |
+| `incremental`  | Append new records                       |
+| `truncate`     | Truncate table before loading            |
+| `snapshot`     | Full refresh with point-in-time snapshot |
 
 ### Sling Assets
 
@@ -304,14 +306,14 @@ def resources():
 
 ## Choosing ETL Approach
 
-| Scenario | Recommended Approach |
-| -------- | -------------------- |
-| Load local files | File import pattern |
-| Custom REST API | API resource + assets |
-| Standard API (Stripe, GitHub) | dlt verified sources |
-| Schema-on-read ingestion | dlt |
-| Database replication | Sling |
-| Complex transformations | Custom assets or dbt |
+| Scenario                      | Recommended Approach  |
+| ----------------------------- | --------------------- |
+| Load local files              | File import pattern   |
+| Custom REST API               | API resource + assets |
+| Standard API (Stripe, GitHub) | dlt verified sources  |
+| Schema-on-read ingestion      | dlt                   |
+| Database replication          | Sling                 |
+| Complex transformations       | Custom assets or dbt  |
 
 ---
 
@@ -335,7 +337,7 @@ def daily_load(
     daily_import: str,
 ) -> None:
     partition = context.partition_key
-    
+
     with database.get_connection() as conn:
         # Delete existing partition data
         conn.execute(f"DELETE FROM raw_data WHERE date = '{partition}'")
@@ -368,13 +370,13 @@ def validated_data(database: DuckDBResource) -> dg.MaterializeResult:
         # Check row count
         result = conn.execute("SELECT COUNT(*) FROM raw_data").fetchone()
         row_count = result[0]
-        
+
         # Check for nulls
         null_check = conn.execute(
             "SELECT COUNT(*) FROM raw_data WHERE value IS NULL"
         ).fetchone()
         null_count = null_check[0]
-    
+
     return dg.MaterializeResult(
         metadata={
             "row_count": row_count,
@@ -395,7 +397,7 @@ def no_duplicate_records(database: DuckDBResource) -> dg.AssetCheckResult:
             FROM raw_data
         """).fetchone()
         duplicates = result[0]
-    
+
     return dg.AssetCheckResult(
         passed=duplicates == 0,
         metadata={"duplicate_count": duplicates},
@@ -414,7 +416,7 @@ import time
 class RobustAPIResource(dg.ConfigurableResource):
     api_key: str
     max_retries: int = 3
-    
+
     def fetch_with_retry(self, endpoint: str) -> dict:
         for attempt in range(self.max_retries):
             try:
@@ -449,13 +451,13 @@ def api_data_with_fallback(
 
 ## Anti-Patterns to Avoid
 
-| Anti-Pattern | Better Approach |
-| ------------ | --------------- |
-| Hardcoded file paths | Use `Config` for dynamic paths |
-| No schema validation | Add asset checks for data quality |
-| Ignoring pagination | Use dlt or implement proper pagination |
-| Full refresh always | Consider incremental loading |
-| No retry logic | Add retries with exponential backoff |
+| Anti-Pattern         | Better Approach                        |
+| -------------------- | -------------------------------------- |
+| Hardcoded file paths | Use `Config` for dynamic paths         |
+| No schema validation | Add asset checks for data quality      |
+| Ignoring pagination  | Use dlt or implement proper pagination |
+| Full refresh always  | Consider incremental loading           |
+| No retry logic       | Add retries with exponential backoff   |
 
 ---
 
@@ -466,4 +468,3 @@ def api_data_with_fallback(
 - [Dagster dlt Integration](https://docs.dagster.io/integrations/libraries/dlt)
 - [Dagster Sling Integration](https://docs.dagster.io/integrations/libraries/sling)
 - [ETL Pipeline Tutorial](https://docs.dagster.io/etl-pipeline-tutorial)
-

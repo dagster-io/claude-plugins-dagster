@@ -7,7 +7,9 @@ This document provides complete, canonical type annotation guidance for Python 3
 
 ## Overview
 
-Python 3.11 builds on 3.10's type syntax with the addition of the `Self` type (PEP 673), making method chaining and builder patterns significantly cleaner. All modern syntax from 3.10 continues to work.
+Python 3.11 builds on 3.10's type syntax with the addition of the `Self` type (PEP 673), making
+method chaining and builder patterns significantly cleaner. All modern syntax from 3.10 continues to
+work.
 
 **What's new in 3.11:**
 
