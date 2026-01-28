@@ -1,7 +1,7 @@
 ## Summary & Motivation
 
+> Provide a short 2-3 sentence summary of why this change was necessary
+
 ## How I Tested These Changes
 
-## Changelog
-
-> Insert changelog entry or delete this section.
+> Share details on how you've validated these changes
