@@ -10,6 +10,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.0.3] - 2026-01-28
+
+### Added
+
+### Changed
 - **dg**: Simplified `/dg:launch` skill documentation
   - Clarified that `.env` files are automatically loaded by Dagster
   - Updated partition range syntax to use `...` instead of `:` (e.g., `2024-01-01...2024-01-31`)
@@ -79,6 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Modern type syntax (list[str], str | None)
   - Pathlib operations and ABC-based interfaces
 
-[Unreleased]: https://github.com/dagster-io/claude-plugins-dagster/compare/v0.0.2...HEAD
+[Unreleased]: https://github.com/dagster-io/claude-plugins-dagster/compare/v0.0.3...HEAD
 [0.0.2]: https://github.com/dagster-io/claude-plugins-dagster/releases/tag/v0.0.2
+[0.0.3]: https://github.com/dagster-io/claude-plugins-dagster/releases/tag/v0.0.3
 [0.0.1]: https://github.com/dagster-io/claude-plugins-dagster/releases/tag/v0.0.1
