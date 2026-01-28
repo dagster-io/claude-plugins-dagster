@@ -30,11 +30,24 @@ To update your marketplace plugins:
 
 ### dg
 
-Commands for building, executing, and debugging Dagster projects.
+Commands for building executing, and debugging Dagster projects.
+
+Discover:
+  - `/dg:list` - List and inspect Dagster definitions, components, environment variables, and project structure
+    - `dg list defs` - Show all registered definitions (assets, jobs, schedules, sensors, resources)
+    - `dg list components` - Discover available component types for scaffolding
+    - `dg list envs` - Inspect environment variables and Dagster Plus secrets
+    - `dg list projects` - List projects in workspace
+    - Supports asset selection (tags, groups, kinds, patterns) and JSON output
 
 Build:
   - `/dg:create-project <name>` - Create a new Dagster project with recommended structure
   - `/dg:create-workspace <name>` - Initialize a workspace for managing multiple projects
+  - `/dg:scaffold` - Scaffold Dagster components, assets, schedules, sensors, and integrations
+    - Dynamically discover and create component instances (assets, schedules, sensors)
+    - Integrate with dbt, Fivetran, dlt, Sling, and other tools
+    - Support for both YAML and Python formats
+    - Interactive component type disambiguation
   - `/dg:prototype <requirements>` - Build production-ready Dagster implementations with best practices, testing, and validation
 
 Execute:

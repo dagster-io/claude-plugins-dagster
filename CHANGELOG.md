@@ -8,6 +8,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **dg**: `/dg:list` command and skill for discovering and inspecting Dagster definitions
+  - Complete documentation for `dg list` CLI command group
+  - `dg list defs` - List all registered definitions (assets, jobs, schedules, sensors, resources)
+  - `dg list components` - Discover available component types for scaffolding
+  - `dg list envs` - Inspect environment variables and Dagster Plus secrets
+  - `dg list projects` - List projects in workspace
+  - `dg list registry-modules` - List dg plugins
+  - `dg list component-tree` - Show component hierarchy
+  - Asset selection syntax (tags, groups, kinds, patterns)
+  - Column customization for definitions
+  - JSON output for automation and scripting
+  - Natural language skill wrapper for conversational discovery
+- **dg**: `/dg:scaffold` command and skill for scaffolding Dagster components and code
+  - Complete documentation for `dg scaffold` CLI command group
+  - `dg scaffold defs <component_type>` - Dynamically scaffold component instances
+  - `dg scaffold defs inline-component` - Create custom inline components
+  - `dg scaffold component` - Create reusable component types
+  - Support for core Dagster components (assets, schedules, sensors)
+  - Support for integrations (dbt, Fivetran, dlt, Sling)
+  - Format options (YAML vs Python)
+  - Parameter strategies (JSON params vs individual flags)
+  - Interactive disambiguation for partial matches
+  - Natural language skill wrapper for conversational scaffolding
 
 ### Changed
 
