@@ -8,14 +8,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **dagster-integrations**: Added comprehensive audit summary document (AUDIT_SUMMARY.md)
+  - Documents all 82+ integration verifications
+  - Lists critical fixes applied and remaining work
 
 ### Changed
+- **dagster-integrations**: Updated storage.md integration examples
+  - Improved Postgres section with ConfigurableResource pattern and instance storage clarification
+  - Updated Delta Lake to use correct `DeltaTableResource` API
+  - Enhanced Redshift example with `RedshiftClientResource`
+  - Improved DataHub example with correct `DatahubRESTEmitterResource`
+  - Updated LakeFS to show custom resource pattern with lakefs-client SDK
 
 ### Deprecated
 
 ### Removed
+- **dagster-integrations**: Removed fabricated integrations from storage.md
+  - Removed MongoDB section (dagster-mongo package doesn't exist)
+  - Removed Atlan section (Dagster+ cloud CLI feature, not a Python library)
+  - Removed Secoda section (no library integration exists)
 
 ### Fixed
+- **dagster-integrations**: Fixed critical PostgresResource hallucinations across multiple files
+  - storage.md: Replaced fabricated dagster-postgres resource API with custom ConfigurableResource pattern
+  - Fixed 5 support level misclassifications:
+    - dagster-looker: Community-supported → Dagster-supported
+    - dagster-sigma: Community-supported → Dagster-supported
+    - dagster-polars: Dagster-supported → Community-supported
+    - dagster-wandb: Dagster-supported → Community-supported
+    - dagster-papertrail: Community-supported → Dagster-supported
+- **dagster-conventions**: Fixed PostgresResource hallucinations in resources.md
+  - Updated factory pattern example with custom PostgresResource definition
+- **dagster-conventions**: Fixed PostgresResource hallucinations in testing.md
+  - Updated test examples with custom ConfigurableResource implementations
+- **dagster-integrations**: Fixed other.md Polars integration
+  - Removed non-existent `PolarsDataFrame` import
+  - Corrected support level to Community-supported
 
 ### Security
 
