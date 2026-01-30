@@ -23,20 +23,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-### Changed
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
-
-## [0.0.7] - 2026-01-30
-
-### Added
-
 - **all-skills**: Added frontmatter metadata to all SKILL.md files
   - Added `name`, `description`, and `references` fields to each skill
   - Enables better skill discovery and AI navigation
@@ -340,5 +326,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 [0.0.4]: https://github.com/dagster-io/skills/releases/tag/v0.0.4
 [0.0.3]: https://github.com/dagster-io/skills/releases/tag/v0.0.3
 [0.0.2]: https://github.com/dagster-io/skills/releases/tag/v0.0.2
-[0.0.7]: https://github.com/dagster-io/skills/releases/tag/v0.0.7
 [0.0.1]: https://github.com/dagster-io/skills/releases/tag/v0.0.1
