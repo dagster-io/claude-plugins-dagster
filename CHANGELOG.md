@@ -41,12 +41,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- 🔥 **BREAKING**: Consolidated 9 skills into 4 simple skills with flat structure (55% reduction)
+- Consolidated 9 skills into 4 simple skills with flat structure (55% reduction)
   - Merged 6 separate `/dg:*` skills into single `/dg` skill with natural language invocation
   - Renamed `/dagster-conventions` → `/dagster-best-practices` for clearer purpose
   - Renamed `/integrations-index` → `/dagster-integrations` for better discoverability
   - Kept `/dignified-python` as general Python standards skill
-- 🔥 **BREAKING**: Flattened directory structure from `plugins/*/skills/*/` to `skills/*/`
+- Flattened directory structure from `plugins/*/skills/*/` to `skills/*/`
   - Removed nested plugin architecture in favor of simple flat structure
   - All skills now directly in `skills/` directory at repository root
   - Easier navigation and simpler mental model
@@ -100,14 +100,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Deprecated
 
-- 🔥 **BREAKING**: Deprecated individual `/dg:*` namespaced skills in favor of single `/dg` skill
+- **BREAKING**: Deprecated individual `/dg:*` namespaced skills in favor of single `/dg` skill
   - `/dg:create-project` → Use `/dg` with natural language
   - `/dg:create-workspace` → Use `/dg` with natural language
   - `/dg:scaffold` → Use `/dg` with natural language
   - `/dg:launch` → Use `/dg` with natural language
   - `/dg:list` → Use `/dg` with natural language
   - `/dg:prototype` → Use `/dg` with natural language
-- 🔥 **BREAKING**: Deprecated old skill names
+- **BREAKING**: Deprecated old skill names
   - `/dagster-conventions` → Use `/dagster-best-practices`
   - `/integrations-index` → Use `/dagster-integrations`
 
