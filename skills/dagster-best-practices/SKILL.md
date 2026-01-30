@@ -1,26 +1,99 @@
 ---
-name: dagster-conventions
-description:
-  Expert guidance for Dagster data orchestration including assets, resources, schedules, sensors,
-  partitions, testing, and ETL patterns. Use when building or extending Dagster projects, writing
-  assets, configuring automation, or integrating with dbt/dlt/Sling.
+name: dagster-best-practices
+description: Expert guidance for Dagster data orchestration including assets, resources, automation, testing, ETL patterns, and project structure. Use when deciding how to structure projects, choosing automation methods, designing assets, or understanding Dagster patterns and best practices.
+references:
+  - assets
+  - automation
+  - etl-patterns
+  - project-structure
+  - resources
+  - testing
 ---
 
-# Dagster Development Expert
+# Dagster Best Practices Skill
+
+Expert guidance for building production-quality Dagster projects with recommended patterns and architectural decisions.
+
+## When to Use This Skill
+
+Auto-invoke when users ask about:
+
+- "what's the best way to..." / "how should I..." / "recommended approach for..."
+- "how do I structure assets" / "asset design patterns"
+- "choosing automation" / "schedules vs sensors" / "automation conditions"
+- "resource patterns" / "managing resources" / "dependency injection"
+- "testing strategies" / "how to test assets"
+- "ETL patterns" / "data pipeline patterns"
+- "project structure" / "organizing code" / "components vs definitions"
+- "dbt integration patterns"
+- "partition strategies"
+- Any architectural or design question about Dagster
+
+## Architecture Decision Tree
+
+Choose the right Dagster pattern based on what you're building:
+
+```
+What do you need guidance on?
+
+├─ Structuring assets?
+│  ├─ Basic asset design → references/assets.md#basic-patterns
+│  ├─ Asset dependencies → references/assets.md#dependencies
+│  ├─ Partitioned assets → references/assets.md#partitions
+│  ├─ Multi-assets → references/assets.md#multi-assets
+│  ├─ Asset groups → references/assets.md#organization
+│  └─ Asset metadata → references/assets.md#metadata
+│
+├─ Choosing automation?
+│  ├─ Modern approach → references/automation.md#declarative-automation (recommended)
+│  ├─ Time-based → references/automation.md#schedules
+│  ├─ Event-driven → references/automation.md#sensors
+│  ├─ Partition automation → references/automation.md#partition-automation
+│  └─ Backfills → references/automation.md#backfills
+│
+├─ Managing resources?
+│  ├─ Database connections → references/resources.md#database-resources
+│  ├─ API clients → references/resources.md#api-resources
+│  ├─ Environment config → references/resources.md#environment-variables
+│  ├─ Resource dependencies → references/resources.md#dependencies
+│  └─ Testing with resources → references/resources.md#testing
+│
+├─ Testing strategies?
+│  ├─ Unit testing assets → references/testing.md#unit-tests
+│  ├─ Integration tests → references/testing.md#integration-tests
+│  ├─ Asset checks → references/testing.md#asset-checks
+│  ├─ Testing with resources → references/testing.md#mock-resources
+│  └─ Test fixtures → references/testing.md#fixtures
+│
+├─ ETL patterns?
+│  ├─ dbt integration → references/etl-patterns.md#dbt
+│  ├─ dlt pipelines → references/etl-patterns.md#dlt
+│  ├─ Sling replication → references/etl-patterns.md#sling
+│  ├─ Extract-Load-Transform → references/etl-patterns.md#elt
+│  └─ Data quality → references/etl-patterns.md#quality
+│
+└─ Project structure?
+   ├─ Single project → references/project-structure.md#single-project
+   ├─ Workspace (multi-project) → references/project-structure.md#workspaces
+   ├─ Components vs definitions → references/project-structure.md#components
+   ├─ Code locations → references/project-structure.md#code-locations
+   └─ Directory conventions → references/project-structure.md#conventions
+```
 
 ## When to Use This Skill vs. Others
 
-| If User Says...                  | Use This Skill/Command                      | Why                            |
-| -------------------------------- | ------------------------------------------- | ------------------------------ |
-| "what's the best way to X"       | `/dagster-conventions`                      | Need patterns/best practices   |
-| "how do I structure assets"      | `/dagster-conventions`                      | Asset design guidance          |
-| "which integration should I use" | `/dagster-integrations`                     | Integration discovery needed   |
-| "implement X pipeline"           | `/dg:prototype`                             | Ready to build, not just learn |
-| "is this pythonic"               | `/dignified-python`                         | Python code review needed      |
-| "create new project"             | `/dg:create-project`                        | Project initialization needed  |
-| "how do I test assets"           | `/dagster-conventions` (testing section)    | Testing patterns guidance      |
-| "schedule patterns"              | `/dagster-conventions` (automation section) | Scheduling/automation guidance |
-| "dbt best practices"             | `/dagster-conventions` (dbt section)        | dbt-specific patterns          |
+| User Need | Use This Skill | Alternative Skill |
+|-----------|----------------|-------------------|
+| "what's the best way to X" | ✅ Yes - architectural guidance | |
+| "how do I structure assets" | ✅ Yes - asset design patterns | |
+| "which integration should I use" | ❌ No | `/dagster-integrations` |
+| "create an asset" | ❌ No | `/dg` for scaffolding |
+| "launch my assets" | ❌ No | `/dg` for execution |
+| "Python code standards" | ❌ No | `/dignified-python` |
+| "how do I test assets" | ✅ Yes - testing strategies | |
+| "schedule patterns" | ✅ Yes - automation guidance | |
+| "dbt best practices" | ✅ Yes - dbt patterns | |
+| "implement X pipeline" | ❌ First learn patterns here, then use `/dg` | |
 
 ## Core Philosophy
 

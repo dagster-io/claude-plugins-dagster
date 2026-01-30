@@ -1,0 +1,5 @@
+{
+  "name": "dagster-skills",
+  "description": "Dagster skills for CLI operations, best practices, integrations, and Python standards",
+  "version": "0.0.7"
+}

@@ -11,23 +11,115 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- **docs**: Rebranded from "Dagster Claude Plugins" to "Dagster Skills"
-  - Updated README.md title and subtitle to reflect multi-tool compatibility
-  - Changed "Plugins" section to "Skills" throughout documentation
-  - Updated CONTRIBUTING.md title and all references from "plugins" to "skills"
-  - Added compatibility statement for Agent Skills-compatible tools (Claude Code, OpenCode, OpenAI
-    Codex, Pi)
-- **docs**: Added comprehensive multi-tool installation documentation
-  - Added "npx skills" installation method (`npx skills add dagster-io/skills`)
-  - Added manual installation instructions for OpenCode (`~/.config/opencode/skill/`)
-  - Added manual installation instructions for OpenAI Codex (`~/.codex/skills/`)
-  - Added manual installation instructions for Pi Agent (`~/.pi/agent/skills/`)
-  - Restructured README.md installation section with subsections for each method
-  - Preserved existing Claude Code marketplace installation method
-
 ### Deprecated
 
 ### Removed
+
+### Fixed
+
+### Security
+
+## [0.0.7] - 2026-01-30
+
+### Added
+
+- **all-skills**: Added frontmatter metadata to all SKILL.md files
+  - Added `name`, `description`, and `references` fields to each skill
+  - Enables better skill discovery and AI navigation
+- **all-skills**: Added decision trees to all skills for workflow navigation
+  - `/dg`: Workflow decision tree (create, scaffold, launch, list, logs, troubleshoot)
+  - `/dagster-best-practices`: Architecture decision tree (assets, automation, resources, testing,
+    ETL, structure)
+  - `/dagster-integrations`: Integration discovery tree (by use case)
+  - `/dignified-python`: Python pattern tree (type hints, exceptions, paths, CLI)
+- **all-skills**: Added README.md navigation guides to all references/ directories
+  - Created comprehensive table of contents for each skill's reference documentation
+  - Added quick reference sections and navigation tips
+  - Included cross-skill workflow guidance
+- **root**: Added root-level `.claude-plugin/plugin.json` (v0.0.7)
+  - Unified plugin configuration for all skills
+
+### Changed
+
+- 🔥 **BREAKING**: Consolidated 9 skills into 4 simple skills with flat structure (55% reduction)
+  - Merged 6 separate `/dg:*` skills into single `/dg` skill with natural language invocation
+  - Renamed `/dagster-conventions` → `/dagster-best-practices` for clearer purpose
+  - Renamed `/integrations-index` → `/dagster-integrations` for better discoverability
+  - Kept `/dignified-python` as general Python standards skill
+- 🔥 **BREAKING**: Flattened directory structure from `plugins/*/skills/*/` to `skills/*/`
+  - Removed nested plugin architecture in favor of simple flat structure
+  - All skills now directly in `skills/` directory at repository root
+  - Easier navigation and simpler mental model
+- **dg**: Changed from 6 namespaced skills to 1 comprehensive skill
+  - Replaced `/dg:create-project`, `/dg:create-workspace`, `/dg:scaffold`, `/dg:launch`,
+    `/dg:list`, `/dg:prototype` with single `/dg` skill
+  - Users now invoke with natural language: `/dg create a project` instead of `/dg:create-project`
+  - All CLI documentation moved from `commands/` to `skills/dg/references/`
+  - Added comprehensive decision tree for choosing right workflow
+- **dg**: Enhanced SKILL.md with cross-references to other skills
+  - Links to `/dagster-best-practices` for architectural guidance
+  - Links to `/dagster-integrations` for integration discovery
+  - Links to `/dignified-python` for Python code quality
+- **dagster-best-practices**: Renamed and enhanced skill (formerly dagster-conventions)
+  - Clearer name emphasizes architectural guidance over rules
+  - Updated description to highlight decision-making and pattern selection
+  - Added comprehensive decision tree for architecture choices
+  - Added cross-references to other skills
+- **dagster-integrations**: Renamed and enhanced skill (formerly integrations-index)
+  - More discoverable name aligns with user expectations
+  - Added integration discovery decision tree by use case
+  - Added cross-references to other skills for implementation
+- **dignified-python**: Reorganized reference structure
+  - Created `references/versions/` subdirectory for Python version-specific docs
+  - Created `references/advanced/` subdirectory for advanced topics
+  - Clarified in description that it's general Python, not Dagster-specific
+  - Updated navigation to new directory structure
+- **docs**: Completely rewrote README.md for v0.0.7 structure
+  - Added "What's New" section highlighting simplification
+  - Added skills overview table with clear purpose statements
+  - Added detailed skill documentation with natural language examples
+  - Added usage examples and workflow patterns
+  - Added comprehensive migration guide from v0.0.6
+  - Added philosophy section ("At the end of the day it's all markdown")
+  - Updated directory structure diagram
+  - Added version history
+- **docs**: Updated all skill descriptions to emphasize self-selection
+  - Clear "When to Use This Skill" sections
+  - Explicit cross-references to alternative skills
+  - Natural language trigger phrases for auto-invocation
+- **docs**: Rebranded from "Dagster Claude Plugins" to "Dagster Skills" (carried over from
+  Unreleased)
+  - Updated README.md title and subtitle to reflect multi-tool compatibility
+  - Changed "Plugins" section to "Skills" throughout documentation
+  - Updated CONTRIBUTING.md title and all references from "plugins" to "skills"
+  - Added compatibility statement for Agent Skills-compatible tools
+- **docs**: Added comprehensive multi-tool installation documentation (carried over from Unreleased)
+  - Added "npx skills" installation method
+  - Added manual installation instructions for OpenCode, OpenAI Codex, Pi Agent
+  - Updated paths to reflect new flat structure
+
+### Deprecated
+
+- 🔥 **BREAKING**: Deprecated individual `/dg:*` namespaced skills in favor of single `/dg` skill
+  - `/dg:create-project` → Use `/dg` with natural language
+  - `/dg:create-workspace` → Use `/dg` with natural language
+  - `/dg:scaffold` → Use `/dg` with natural language
+  - `/dg:launch` → Use `/dg` with natural language
+  - `/dg:list` → Use `/dg` with natural language
+  - `/dg:prototype` → Use `/dg` with natural language
+- 🔥 **BREAKING**: Deprecated old skill names
+  - `/dagster-conventions` → Use `/dagster-best-practices`
+  - `/integrations-index` → Use `/dagster-integrations`
+
+### Removed
+
+- **all-skills**: Removed `plugins/` directory and nested plugin architecture
+  - Deleted `plugins/dg/.claude-plugin/plugin.json`
+  - Deleted `plugins/dagster-conventions/.claude-plugin/plugin.json`
+  - Deleted `plugins/dagster-integrations/.claude-plugin/plugin.json`
+  - Deleted `plugins/dignified-python/.claude-plugin/plugin.json`
+  - All content migrated to flat `skills/` structure
+- **dg**: Removed `commands/` directory (merged into `skills/dg/references/`)
 
 ### Fixed
 
@@ -227,10 +319,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - Modern type syntax (list[str], str | None)
   - Pathlib operations and ABC-based interfaces
 
-[Unreleased]: https://github.com/dagster-io/skills/compare/v0.0.6...HEAD
-[0.0.2]: https://github.com/dagster-io/skills/releases/tag/v0.0.2
-[0.0.3]: https://github.com/dagster-io/skills/releases/tag/v0.0.3
-[0.0.4]: https://github.com/dagster-io/skills/releases/tag/v0.0.4
-[0.0.5]: https://github.com/dagster-io/skills/releases/tag/v0.0.5
+[Unreleased]: https://github.com/dagster-io/skills/compare/v0.0.7...HEAD
+[0.0.7]: https://github.com/dagster-io/skills/releases/tag/v0.0.7
 [0.0.6]: https://github.com/dagster-io/skills/releases/tag/v0.0.6
+[0.0.5]: https://github.com/dagster-io/skills/releases/tag/v0.0.5
+[0.0.4]: https://github.com/dagster-io/skills/releases/tag/v0.0.4
+[0.0.3]: https://github.com/dagster-io/skills/releases/tag/v0.0.3
+[0.0.2]: https://github.com/dagster-io/skills/releases/tag/v0.0.2
 [0.0.1]: https://github.com/dagster-io/skills/releases/tag/v0.0.1

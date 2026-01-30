@@ -1,29 +1,95 @@
 ---
-name: integrations-index
-description:
-  Comprehensive index of 82+ Dagster integrations organized by official tags.yml taxonomy including
-  AI (OpenAI, Anthropic), ETL (dbt, Fivetran, Airbyte, PySpark), Storage (Snowflake, BigQuery),
-  Compute (AWS, Databricks, Spark), BI (Looker, Tableau), Monitoring, Alerting, and Testing. Use
-  when discovering integrations or finding the right tool for a use case.
+name: dagster-integrations
+description: Comprehensive index of 82+ Dagster integrations organized by category. Includes AI (OpenAI, Anthropic), ETL (dbt, Fivetran, Airbyte, PySpark), Storage (Snowflake, BigQuery), Compute (AWS, Databricks, Spark), BI (Looker, Tableau), Monitoring, Alerting, and Testing. Use when discovering integrations or finding the right tool for a use case.
+references:
+  - ai
+  - alerting
+  - bi
+  - compute
+  - etl
+  - monitoring
+  - other
+  - storage
+  - testing
 ---
 
-# Dagster Integrations Index
+# Dagster Integrations Skill
 
-Navigate 82+ Dagster integrations organized by Dagster's official taxonomy. Find AI/ML tools, ETL
-platforms, data storage, compute services, BI tools, and monitoring integrations.
+Comprehensive catalog of 82+ Dagster integrations organized by category to help you find the right tool for your data pipeline needs.
+
+## When to Use This Skill
+
+Auto-invoke when users ask about:
+
+- "which integration for..." / "does dagster support..."
+- "snowflake vs bigquery" / comparing integrations
+- "what integrations are available" / discovering tools
+- "how to connect to X" / integration discovery
+- "best tool for Y" / choosing between similar integrations
+- "dbt in dagster" / specific integration questions
+- Any question about external tool integration with Dagster
+
+## Integration Discovery Tree
+
+Find the right integration based on your needs:
+
+```
+What do you need to do?
+
+├─ Load data from external sources?
+│  ├─ SaaS applications → references/etl.md (Fivetran, Airbyte)
+│  ├─ Files/databases → references/etl.md (dlt, Sling, Meltano)
+│  └─ Cloud storage → references/storage.md (S3, GCS, Azure Blob)
+│
+├─ Transform data?
+│  ├─ SQL transformations → references/etl.md (dbt)
+│  ├─ Distributed transformations → references/etl.md (PySpark)
+│  ├─ DataFrame operations → references/other.md (Pandas, Polars)
+│  └─ Large-scale processing → references/compute.md (Spark, Dask, Ray)
+│
+├─ Store data?
+│  ├─ Cloud data warehouse → references/storage.md (Snowflake, BigQuery, Redshift)
+│  ├─ Relational database → references/storage.md (Postgres, MySQL)
+│  ├─ File/object storage → references/storage.md (S3, GCS, Azure, LakeFS)
+│  ├─ Analytics database → references/storage.md (DuckDB)
+│  └─ Vector embeddings → references/storage.md (Weaviate, Chroma, Qdrant)
+│
+├─ Validate data quality?
+│  ├─ Schema validation → references/testing.md (Pandera)
+│  └─ Quality checks → references/testing.md (Great Expectations)
+│
+├─ Run ML workloads?
+│  ├─ LLM integration → references/ai.md (OpenAI, Anthropic, Gemini)
+│  ├─ Experiment tracking → references/ai.md (MLflow, W&B)
+│  └─ Distributed training → references/compute.md (Ray, Spark)
+│
+├─ Execute computation?
+│  ├─ Cloud compute → references/compute.md (AWS, Azure, GCP, Databricks)
+│  ├─ Containers → references/compute.md (Docker, Kubernetes)
+│  └─ Distributed processing → references/compute.md (Spark, Dask, Ray)
+│
+├─ Monitor pipelines?
+│  ├─ Team notifications → references/alerting.md (Slack, MS Teams, PagerDuty)
+│  ├─ Metrics tracking → references/monitoring.md (Datadog, Prometheus)
+│  └─ Log aggregation → references/monitoring.md (Papertrail)
+│
+└─ Visualize data?
+   ├─ BI dashboards → references/bi.md (Looker, Tableau, PowerBI)
+   └─ Analytics platform → references/bi.md (Sigma, Hex, Evidence)
+```
 
 ## When to Use This Skill vs. Others
 
-| If User Says...           | Use This Skill/Command               | Why                                      |
-| ------------------------- | ------------------------------------ | ---------------------------------------- |
-| "which integration for X" | `/dagster-integrations`              | Need to discover appropriate integration |
-| "does dagster support X"  | `/dagster-integrations`              | Check integration availability           |
-| "snowflake vs bigquery"   | `/dagster-integrations`              | Compare integrations in same category    |
-| "best practices for X"    | `/dagster-conventions`               | Implementation patterns needed           |
-| "implement X integration" | `/dg:prototype`                      | Ready to build with specific integration |
-| "how do I use dbt"        | `/dagster-conventions` (dbt section) | dbt-specific implementation patterns     |
-| "make this code better"   | `/dignified-python`                  | Python code review needed                |
-| "create new project"      | `/dg:create-project`                 | Project initialization needed            |
+| User Need | Use This Skill | Alternative Skill |
+|-----------|----------------|-------------------|
+| "which integration for X" | ✅ Yes - discover integrations | |
+| "does dagster support X" | ✅ Yes - check availability | |
+| "snowflake vs bigquery" | ✅ Yes - compare options | |
+| "best practices for X" | ❌ No | `/dagster-best-practices` |
+| "implement X integration" | ❌ First discover here, then use `/dg` | |
+| "how do I use dbt" | ❌ Discover here, learn patterns at `/dagster-best-practices` | |
+| "create new project" | ❌ No | `/dg` for scaffolding |
+| "scaffold dbt integration" | ❌ First discover here, then use `/dg` | |
 
 ## Quick Reference by Category
 
