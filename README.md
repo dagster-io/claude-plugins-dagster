@@ -8,8 +8,7 @@
 
 AI assistant skills for building workflows and data pipelines using Dagster.
 
-**Compatible with Claude Code, OpenCode, OpenAI Codex, Pi, and other Agent Skills-compatible
-tools.**
+**Compatible with Claude Code, OpenCode, OpenAI Codex, Pi, and other Agent Skills-compatible tools.**
 
 ## Installation
 
@@ -62,7 +61,7 @@ cp -r skills/skills/* ~/.pi/agent/skills/
 
 ## Skills
 
-### `/dg` - Dagster CLI
+### `dg`
 
 Comprehensive skill for all `dg` CLI operations. Use natural language to interact with the Dagster
 command-line tool.
@@ -85,7 +84,7 @@ command-line tool.
 /dg help me debug why my asset failed
 ```
 
-### `/dagster-best-practices` - Architectural Guidance
+### `dagster-best-practices`
 
 Expert guidance for Dagster patterns and architectural decisions.
 
@@ -107,21 +106,21 @@ How do I test my data pipeline?
 What's the best way to integrate dbt?
 ```
 
-### `/dagster-integrations` - Integration Catalog
+### `dagster-integrations`
 
 Comprehensive catalog of 82+ Dagster integrations organized by category.
 
 **What's included:**
 
-- **AI & ML** (6): OpenAI, Anthropic, Gemini, MLflow, W&B
-- **ETL/ELT** (9): dbt, Fivetran, Airbyte, dlt, Sling, PySpark
-- **Storage** (35+): Snowflake, BigQuery, Postgres, S3, DuckDB, Weaviate
-- **Compute** (15+): AWS, Azure, GCP, Databricks, Spark, Kubernetes
-- **BI** (7): Looker, Tableau, PowerBI, Sigma, Hex
-- **Monitoring** (3): Datadog, Prometheus, Papertrail
-- **Alerting** (6): Slack, PagerDuty, MS Teams, Discord, Twilio
-- **Testing** (2): Great Expectations, Pandera
-- **Other** (2+): Pandas, Polars
+- **AI & ML**: OpenAI, Anthropic, Gemini, MLflow, W&B
+- **ETL/ELT**: dbt, Fivetran, Airbyte, dlt, Sling, PySpark
+- **Storage**: Snowflake, BigQuery, Postgres, S3, DuckDB, Weaviate
+- **Compute**: AWS, Azure, GCP, Databricks, Spark, Kubernetes
+- **BI**: Looker, Tableau, PowerBI, Sigma, Hex
+- **Monitoring**: Datadog, Prometheus, Papertrail
+- **Alerting**: Slack, PagerDuty, MS Teams, Discord, Twilio
+- **Testing**: Great Expectations, Pandera
+- **Other**: Pandas, Polars
 
 **Example questions:**
 
@@ -132,10 +131,11 @@ How do I compare Snowflake vs BigQuery?
 What integrations are available for ML?
 ```
 
-### `/dignified-python` - Python Standards
+### `dignified-python`
 
-Production-quality Python coding standards for modern Python (3.10-3.13). Use for general Python
-code quality, not Dagster-specific patterns.
+Production-quality Python coding standards for modern Python.
+
+Use for general Python code quality, not Dagster-specific patterns.
 
 **What's included:**
 
@@ -155,42 +155,6 @@ Is this good Python code?
 How should I annotate this function?
 What's the difference between LBYL and EAFP?
 Should I use pathlib or os.path?
-```
-
-## Usage Examples
-
-### Creating a New Project
-
-```
-/dg create a new project called my-analytics
-```
-
-Then scaffold components:
-
-```
-/dg scaffold a dbt integration
-/dg scaffold an asset for customers
-```
-
-### Getting Architectural Guidance
-
-```
-/dagster-best-practices
-How should I structure my data pipeline with dbt and downstream assets?
-```
-
-### Discovering Integrations
-
-```
-/dagster-integrations
-I need to load data from Salesforce and transform it with SQL. What tools should I use?
-```
-
-### Improving Code Quality
-
-```
-/dignified-python
-Can you review this Python code and suggest improvements?
 ```
 
 ## Contributing

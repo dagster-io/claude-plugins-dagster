@@ -1,5 +1,5 @@
 {
-  "proseWrap": "always",
+  "proseWrap": "preserve",
   "printWidth": 100,
   "tabWidth": 2,
   "useTabs": false,
@@ -8,7 +8,7 @@
     {
       "files": "*.md",
       "options": {
-        "proseWrap": "always"
+        "proseWrap": "preserve"
       }
     }
   ]

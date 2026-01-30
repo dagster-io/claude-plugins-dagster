@@ -1,6 +1,5 @@
 ---
-description:
-  ABC vs Protocol decision guide, dependency injection patterns, and complete DI examples.
+description: ABC vs Protocol decision guide, dependency injection patterns, and complete DI examples.
 ---
 
 # Interface Design Reference

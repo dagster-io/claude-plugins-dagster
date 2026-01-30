@@ -1,6 +1,5 @@
 ---
-description:
-  Advanced typing patterns including cast() with assertions, Literal types for programmatic strings.
+description: Advanced typing patterns including cast() with assertions, Literal types for programmatic strings.
 ---
 
 # Advanced Typing Reference
