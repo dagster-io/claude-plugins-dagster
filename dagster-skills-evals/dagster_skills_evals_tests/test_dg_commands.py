@@ -15,9 +15,6 @@ def test_create_dagster_project(baseline_manager: BaselineManager):
     # Run with skills enabled
     with unset_virtualenv(), tempfile.TemporaryDirectory() as tmp_dir:
         result = execute_prompt(prompt, tmp_dir)
-        print(result)
-        print("--------------------------------")
-        print(result.conversation_summary())
 
         # make sure the skill was used
         assert "dg:create-project" in result.summary.skills_used
@@ -47,10 +44,6 @@ def test_scaffold_asset(baseline_manager: BaselineManager):
         )
         project_dir = Path(tmp_dir) / project_name
         result = execute_prompt(prompt, project_dir.as_posix())
-
-        print(result)
-        print("--------------------------------")
-        print(result.conversation_summary())
 
         # make sure the skill was used
         assert "dg:scaffold" in result.summary.skills_used
