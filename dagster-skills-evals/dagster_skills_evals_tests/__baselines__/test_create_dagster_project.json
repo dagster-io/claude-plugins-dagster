@@ -1,1 +1,1 @@
-{"__class__": "ClaudeExecutionResultSummary", "execution_time_ms": 30107, "input_tokens": 29, "output_tokens": 990, "skills_used": ["dagster-skills:dg"], "tools_used": ["Skill", "Bash", "Bash", "Bash", "Read", "Bash"]}
+{"__class__": "ClaudeExecutionResultSummary", "execution_time_ms": 17095, "input_tokens": 18, "output_tokens": 681, "skills_used": ["dagster-skills:dg"], "tools_used": ["Skill", "Read", "Bash"]}
