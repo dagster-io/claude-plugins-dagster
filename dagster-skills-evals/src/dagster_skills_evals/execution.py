@@ -9,6 +9,7 @@ from dagster_shared.record import record
 from dagster_shared.serdes import whitelist_for_serdes
 
 _PLUGINS_DIR = Path(__file__).parent.parent.parent.parent / "skills"
+assert _PLUGINS_DIR.exists()
 
 
 @whitelist_for_serdes

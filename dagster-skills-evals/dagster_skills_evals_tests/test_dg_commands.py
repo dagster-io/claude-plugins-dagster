@@ -46,13 +46,13 @@ def test_scaffold_asset(baseline_manager: BaselineManager):
         # assert "dg" in result.summary.skills_used
 
         # make sure the asset was scaffolded
-        # defs_result = subprocess.run(
-        #     ["uv", "run", "dg", "list", "defs"],
-        #     cwd=project_dir,
-        #     check=True,
-        #     capture_output=True,
-        #     text=True,
-        # )
-        # assert asset_name in defs_result.stdout
+        defs_result = subprocess.run(
+            ["uv", "run", "dg", "list", "defs"],
+            cwd=project_dir,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        assert asset_name in defs_result.stdout
 
         baseline_manager.assert_improved(result.summary)
