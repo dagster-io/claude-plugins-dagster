@@ -1,4 +1,4 @@
-.PHONY: help install lint format clean
+.PHONY: help install lint format test clean
 
 help:  ## Show this help message
 	@echo "Available targets:"
@@ -21,6 +21,10 @@ format:  ## Auto-fix formatting issues
 	@ruff format scripts/
 	@ruff check --fix scripts/
 	@echo "Formatting complete!"
+
+test:  ## Run all tests using tox
+	@echo "Running tests..."
+	@cd dagster-skills-evals && tox
 
 clean:  ## Clean up cache and temporary files
 	@echo "Cleaning up..."

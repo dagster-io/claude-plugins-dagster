@@ -61,7 +61,10 @@ def update_changelog(repo_root: Path, version: str) -> None:
     unreleased_match = re.search(unreleased_pattern, content, re.DOTALL)
 
     if not unreleased_match:
-        print("Error: Could not find [Unreleased] section in CHANGELOG.md", file=sys.stderr)
+        print(
+            "Error: Could not find [Unreleased] section in CHANGELOG.md",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     # Replace [Unreleased] header with new version
@@ -113,7 +116,8 @@ def main() -> None:
     if not validate_version(version):
         print(f"Error: Invalid version format: {version}", file=sys.stderr)
         print(
-            "Version must follow semantic versioning (X.Y.Z or X.Y.Z-prerelease)", file=sys.stderr
+            "Version must follow semantic versioning (X.Y.Z or X.Y.Z-prerelease)",
+            file=sys.stderr,
         )
         sys.exit(1)
 
@@ -124,7 +128,10 @@ def main() -> None:
     plugin_file = repo_root / ".claude-plugin" / "plugin.json"
 
     if not plugin_file.exists():
-        print("Error: plugin.json not found at .claude-plugin/plugin.json", file=sys.stderr)
+        print(
+            "Error: plugin.json not found at .claude-plugin/plugin.json",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     print(f"Bumping version to {version}...")

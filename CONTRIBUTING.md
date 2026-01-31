@@ -29,6 +29,25 @@ tools.
 
 3. Test your changes locally using your preferred AI assistant tool
 
+### Testing Skills
+
+The `dagster-skills-evals` module provides an evaluation framework for testing that skills are called as expected. Requires a logged-in Claude account.
+
+**Running tests:**
+
+```bash
+make test  # Run all tests in a tox environment
+```
+
+**Developing new tests:**
+
+```bash
+cd dagster-skills-evals
+uv sync --all-extras
+source .venv/bin/activate
+# Develop your tests here
+```
+
 ## Making Changes
 
 ### Adding Features or Fixes

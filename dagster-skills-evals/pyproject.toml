@@ -1,12 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
-name = "skills"
-version = "0.0.5"
-description = "Claude plugins and skills for Dagster development"
-requires-python = ">=3.11"
+name = "dagster_skills_evals"
+version = "0.0.6"
+description = "Utilities for evaluating the dagster-provided skills"
+requires-python = ">=3.13,<3.14"
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0.0",
+    "dagster_shared",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py313"
 
 [tool.ruff.lint]
 select = [

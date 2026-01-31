@@ -42,7 +42,9 @@ def extract_version_section(changelog_path: Path, version: str) -> str:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Extract changelog section for a specific version")
+    parser = argparse.ArgumentParser(
+        description="Extract changelog section for a specific version"
+    )
     parser.add_argument("version", help="Version to extract (e.g., 0.0.1, 1.0.0)")
     parser.add_argument(
         "--changelog",
@@ -63,7 +65,9 @@ def main() -> None:
     section = extract_version_section(changelog_path, args.version)
 
     if not section:
-        print(f"Error: Version {args.version} not found in CHANGELOG.md", file=sys.stderr)
+        print(
+            f"Error: Version {args.version} not found in CHANGELOG.md", file=sys.stderr
+        )
         sys.exit(1)
 
     print(section)
